@@ -1,0 +1,9 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #f4f2ee;
+  color: #1a1a1a;
+  font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: #ffe0b2; }
+@keyframes spin { to { transform: rotate(360deg); } }
