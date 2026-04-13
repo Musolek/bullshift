@@ -1,28 +1,31 @@
-const express = require('express');
-const axios = require('axios');
-
-const router = express.Router();
+import axios from 'axios';
 
 // POST handler for translating between Human and LinkedIn formats
-router.post('/translate', async (req, res) => {
-    const { mode, text } = req.body;
-
-    if (!mode || !text) {
-        return res.status(400).json({ error: 'Mode and text are required.' });
-    }
-
-    let prompt;
-    if (mode === 'humanToLinkedin') {
-        prompt = `Translate the following text to a LinkedIn style: 
-        ${text}`;
-    } else if (mode === 'linkedinToHuman') {
-        prompt = `Translate the following LinkedIn text to a more human-readable style: 
-        ${text}`;
-    } else {
-        return res.status(400).json({ error: 'Invalid mode. Use humanToLinkedin or linkedinToHuman.' });
-    }
-
+export async function POST(request) {
     try {
+        const { mode, text } = await request.json();
+
+        if (!mode || !text) {
+            return Response.json(
+                { error: 'Mode and text are required.' },
+                { status: 400 }
+            );
+        }
+
+        let prompt;
+        if (mode === 'humanToLinkedin') {
+            prompt = `Translate the following text to a LinkedIn style: 
+            ${text}`;
+        } else if (mode === 'linkedinToHuman') {
+            prompt = `Translate the following LinkedIn text to a more human-readable style: 
+            ${text}`;
+        } else {
+            return Response.json(
+                { error: 'Invalid mode. Use humanToLinkedin or linkedinToHuman.' },
+                { status: 400 }
+            );
+        }
+
         const response = await axios.post('https://api.anthropic.com/v1/claude', {
             model: 'claude-sonnet-4-20250514',
             prompt: prompt,
@@ -34,11 +37,12 @@ router.post('/translate', async (req, res) => {
             }
         });
 
-        res.json({ translatedText: response.data.completion });
+        return Response.json({ translatedText: response.data.completion });
     } catch (error) {
         console.error('Error calling Anthropic API:', error);
-        res.status(500).json({ error: 'Internal server error. Please try again later.' });
+        return Response.json(
+            { error: 'Internal server error. Please try again later.' },
+            { status: 500 }
+        );
     }
-});
-
-module.exports = router;
+}
