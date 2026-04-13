@@ -1,44 +1,19 @@
-const express = require('express');
-const axios = require('axios');
+import { NextResponse } from 'next/server';
+import { AnthropicAPI } from 'anthropic';
 
-const router = express.Router();
+const client = new AnthropicAPI({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-// POST handler for translating between Human and LinkedIn formats
-router.post('/translate', async (req, res) => {
-    const { mode, text } = req.body;
-
-    if (!mode || !text) {
-        return res.status(400).json({ error: 'Mode and text are required.' });
-    }
-
-    let prompt;
-    if (mode === 'humanToLinkedin') {
-        prompt = `Translate the following text to a LinkedIn style: 
-        ${text}`;
-    } else if (mode === 'linkedinToHuman') {
-        prompt = `Translate the following LinkedIn text to a more human-readable style: 
-        ${text}`;
-    } else {
-        return res.status(400).json({ error: 'Invalid mode. Use humanToLinkedin or linkedinToHuman.' });
-    }
-
+export async function POST(req) {
     try {
-        const response = await axios.post('https://api.anthropic.com/v1/claude', {
-            model: 'claude-sonnet-4-20250514',
-            prompt: prompt,
-            max_tokens: 100
-        }, {
-            headers: {
-                'Authorization': `Bearer YOUR_ANTHROPIC_API_KEY`,
-                'Content-Type': 'application/json'
-            }
+        const body = await req.json();
+        const response = await client.completions.create({
+            model: 'claude-v1',
+            prompt: body.prompt,
+            max_tokens: 100,
         });
-
-        res.json({ translatedText: response.data.completion });
+        return NextResponse.json(response);
     } catch (error) {
-        console.error('Error calling Anthropic API:', error);
-        res.status(500).json({ error: 'Internal server error. Please try again later.' });
+        console.error('Error during API call:', error);
+        return NextResponse.error();
     }
-});
-
-module.exports = router;
+}
