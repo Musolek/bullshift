@@ -1,34 +1,39 @@
-"use client";
+import React, { useState } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-const LOADING_MSGS_ADD = ['Adding your information...','Processing your data...'];
-const LOADING_MSGS_SHIFT = ['Shifting your details...','Loading your profile...'];
-
-export default function BullShift() {
-    const [mode, setMode] = useState('humanToLinkedin');
+const BullShift = () => {
+    const [mode, setMode] = useState('light');
     const [input, setInput] = useState('');
     const [output, setOutput] = useState('');
-    const [loading, setLoading] = useState(false);
-    
+
+    const handleInputChange = (e) => {
+        setInput(e.target.value);
+    };
+
+    const handleTranslate = () => {
+        // Translation logic goes here
+        setOutput(`Translated: ${input}`);
+        toast.success('Translation successful!');
+    };
+
     const toggleMode = () => {
-        setMode(prevMode => prevMode === 'humanToLinkedin' ? 'linkedinToHuman' : 'humanToLinkedin');
+        setMode(mode === 'light' ? 'dark' : 'light');
     };
-    
-    const handleSubmit = async () => {
-        setLoading(true);
-        const response = await fetch('/api/translate', {method: 'POST', body: JSON.stringify({input, mode})});
-        const data = await response.json();
-        setOutput(data.output);
-        setLoading(false);
-    };
-    
+
     return (
-        <div style={{padding: '20px', border: '1px solid #ccc'}}>
-            <h1>BullShift</h1>
+        <div className={mode}>
+            <h1>BullShift Component</h1>
             <button onClick={toggleMode}>Toggle Mode</button>
-            <textarea onChange={(e) => setInput(e.target.value)} value={input} />
-            <button onClick={handleSubmit}>Submit</button>
-            {loading && <p>{LOADING_MSGS_ADD[Math.floor(Math.random() * LOADING_MSGS_ADD.length)]}</p>}
-            <div>{output}</div>
+            <textarea onChange={handleInputChange} value={input} placeholder='Enter text here...' />
+            <button onClick={handleTranslate}>Translate</button>
+            <div>
+                <h2>Output:</h2>
+                <p>{output}</p>
+            </div>
+            <ToastContainer />
         </div>
     );
-}
+};
+
+export default BullShift;
