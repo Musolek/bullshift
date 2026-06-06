@@ -10,6 +10,15 @@ const TONES = [
   { id: 5, label: "Obliterate",  desc: "Surgical baseline exposure. Withering analytical execution." },
 ];
 
+const PALETTES = [
+  { id: "tan", name: "Tan", bg: "#F5F0E8", text: "#1A1714", muted: "#6B6560", accent: "#F0B429", border: "#1A1714" },
+  { id: "purple", name: "Purple", bg: "#3D348B", text: "#F0E2E7", muted: "#B8A8C8", accent: "#F7B801", border: "#F0E2E7" },
+  { id: "yellow", name: "Gold", bg: "#F7B801", text: "#1B1F3B", muted: "#4A4A2A", accent: "#F35B04", border: "#1B1F3B" },
+  { id: "orange", name: "Orange", bg: "#F35B04", text: "#F0E2E7", muted: "#D4A8A8", accent: "#F7B801", border: "#1B1F3B" },
+  { id: "pink", name: "Pink", bg: "#F0E2E7", text: "#1B1F3B", muted: "#6B6560", accent: "#F35B04", border: "#3D348B" },
+  { id: "dark", name: "Dark", bg: "#1B1F3B", text: "#F0E2E7", muted: "#B8A8C8", accent: "#F7B801", border: "#F0E2E7" },
+];
+
 const syne = { fontFamily: "'Syne', sans-serif" };
 const mono = { fontFamily: "'Space Mono', monospace" };
 const sans = { fontFamily: "'DM Sans', sans-serif" };
@@ -164,7 +173,7 @@ function CinematicFrame() {
   );
 }
 
-function SpotlightCard({ original, shifted, note }) {
+function SpotlightCard({ original, shifted, note, palette }) {
   const [mousePos, setMousePos] = useState({ x: -1000, y: -1000 });
   const containerRef = useRef(null);
   const handleMouseMove = (e) => {
@@ -177,18 +186,18 @@ function SpotlightCard({ original, shifted, note }) {
       position: "relative",
       borderRadius: 16,
       overflow: "hidden",
-      border: "1.5px solid #1A1714",
-      background: "rgba(255,255,255,0.5)",
+      border: "1.5px solid " + palette.border,
+      background: "rgba(255,255,255,0.3)",
       backdropFilter: "blur(12px)",
     }}>
-      <div style={{ padding: 32, borderBottom: "1.5px solid #1A1714", background: "rgba(255,255,255,0.3)" }}>
-        <div style={{ ...mono, fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", color: "#8A847A", marginBottom: 16 }}>Original Transmission // Move cursor over text to scan</div>
-        <p style={{ fontSize: 16, lineHeight: 1.7, color: "#3D3830" }}>{original}</p>
+      <div style={{ padding: 32, borderBottom: "1.5px solid " + palette.border, background: "rgba(255,255,255,0.2)" }}>
+        <div style={{ ...mono, fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", color: palette.muted, marginBottom: 16 }}>Original Transmission // Move cursor over text to scan</div>
+        <p style={{ fontSize: 16, lineHeight: 1.7, color: palette.text }}>{original}</p>
       </div>
-      <div style={{ padding: 32, background: "#1A1714" }}>
-        <div style={{ ...mono, fontSize: 11, color: "#F0B429", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 16 }}>Decoded Core Intention</div>
-        <p style={{ fontSize: 18, fontWeight: 600, lineHeight: 1.6, color: "#EDE8DE" }}>{shifted}</p>
-        {note && <div style={{ marginTop: 24, paddingTop: 16, borderTop: "1px solid rgba(255,255,255,0.1)", fontSize: 14, color: "#A8A39D", fontStyle: "italic" }}>⚡ {note}</div>}
+      <div style={{ padding: 32, background: palette.text }}>
+        <div style={{ ...mono, fontSize: 11, color: palette.accent, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 16 }}>Decoded Core Intention</div>
+        <p style={{ fontSize: 18, fontWeight: 600, lineHeight: 1.6, color: palette.bg }}>{shifted}</p>
+        {note && <div style={{ marginTop: 24, paddingTop: 16, borderTop: "1px solid rgba(255,255,255,0.1)", fontSize: 14, color: palette.muted, fontStyle: "italic" }}>⚡ {note}</div>}
       </div>
     </div>
   );
@@ -259,6 +268,7 @@ export default function BullShift() {
   const [copyState, setCopyState] = useState("idle");
   const [history, setHistory] = useState(ORIGINAL_HISTORY);
   const [showCBRS, setShowCBRS] = useState(false);
+  const [palette, setPalette] = useState(PALETTES[0]); // Default to tan palette
 
   useEffect(() => setMounted(true), []);
   useEffect(() => {
@@ -309,47 +319,66 @@ export default function BullShift() {
   const cbrs = calculateCBRS(history);
 
   return (
-    <div style={{ background: "#F5F0E8", minHeight: "100vh", ...sans, color: "#1A1714" }}>
+    <div style={{ background: palette.bg, minHeight: "100vh", ...sans, color: palette.text }}>
       {cbrs && <CBRSShareCard cbrs={cbrs} />}
       
       {/* NAV */}
       <nav style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "16px 40px", borderBottom: "1.5px solid #1A1714",
-        background: "#F5F0E8",
+        padding: "16px 40px", borderBottom: "1.5px solid " + palette.border,
+        background: palette.bg,
       }}>
-        <Link href="/" style={{ ...syne, fontWeight: 800, fontSize: 22, letterSpacing: "-0.04em", color: "#1A1714", textDecoration: "none" }}>
-          Bull<em style={{ color: "#F0B429", fontStyle: "normal" }}>Shift</em>
+        <Link href="/" style={{ ...syne, fontWeight: 800, fontSize: 22, letterSpacing: "-0.04em", color: palette.text, textDecoration: "none" }}>
+          Bull<em style={{ color: palette.accent, fontStyle: "normal" }}>Shift</em>
         </Link>
         <div style={{ display: "flex", gap: 24, alignItems: "center" }}>
-          <Link href="/about" style={{ fontSize: 13, color: "#3D3830", textDecoration: "none" }}>About</Link>
-          <Link href="/faq" style={{ fontSize: 13, color: "#3D3830", textDecoration: "none" }}>FAQ</Link>
-          <Link href="/privacy" style={{ fontSize: 13, color: "#3D3830", textDecoration: "none" }}>Privacy</Link>
+          <Link href="/about" style={{ fontSize: 13, color: palette.muted, textDecoration: "none" }}>About</Link>
+          <Link href="/faq" style={{ fontSize: 13, color: palette.muted, textDecoration: "none" }}>FAQ</Link>
+          <Link href="/privacy" style={{ fontSize: 13, color: palette.muted, textDecoration: "none" }}>Privacy</Link>
+          {/* Palette Toggle */}
+          <div style={{ display: "flex", gap: 8, alignItems: "center", marginLeft: 16, paddingLeft: 16, borderLeft: "1px solid " + palette.border }}>
+            {PALETTES.map((p) => (
+              <button
+                key={p.id}
+                onClick={() => setPalette(p)}
+                style={{
+                  width: 24,
+                  height: 24,
+                  borderRadius: 4,
+                  border: palette.id === p.id ? "2px solid " + palette.text : "1px solid " + palette.border,
+                  background: p.bg,
+                  cursor: "pointer",
+                  transition: "all 0.2s"
+                }}
+                title={p.name}
+              />
+            ))}
+          </div>
         </div>
       </nav>
 
       {/* HERO */}
       <div style={{ padding: "64px 40px 0", maxWidth: 860, margin: "0 auto" }}>
-        <div style={{ ...mono, fontSize: "10px", letterSpacing: "0.12em", color: "#F0B429", textTransform: "uppercase", marginBottom: 14 }}>
+        <div style={{ ...mono, fontSize: "10px", letterSpacing: "0.12em", color: palette.accent, textTransform: "uppercase", marginBottom: 14 }}>
           Translation Engine
         </div>
-        <h1 style={{ ...syne, fontWeight: 800, fontSize: "clamp(48px,8vw,88px)", lineHeight: 0.92, letterSpacing: "-0.04em", color: "#1A1714", marginBottom: 28 }}>
+        <h1 style={{ ...syne, fontWeight: 800, fontSize: "clamp(48px,8vw,88px)", lineHeight: 0.92, letterSpacing: "-0.04em", color: palette.text, marginBottom: 28 }}>
           LinkedIn jargon<br />
-          <span style={{ textDecoration: "line-through", textDecorationThickness: 3, color: "#8A847A" }}>decoded</span><br />
-          without <span style={{ color: "#F0B429" }}>mercy</span>
+          <span style={{ textDecoration: "line-through", textDecorationThickness: 3, color: palette.muted }}>decoded</span><br />
+          without <span style={{ color: palette.accent }}>mercy</span>
         </h1>
-        <p style={{ fontSize: 17, lineHeight: 1.7, color: "#3D3830", fontWeight: 300, maxWidth: 580 }}>
+        <p style={{ fontSize: 17, lineHeight: 1.7, color: palette.muted, fontWeight: 300, maxWidth: 580 }}>
           Paste any opaque corporate communication down below. We analyze the speech architecture, isolate baseline truths, and strip away tactical filler words.
         </p>
       </div>
 
       {/* TICKER */}
-      <div style={{ margin: "48px 0", overflow: "hidden", borderTop: "1.5px solid #1A1714", borderBottom: "1.5px solid #1A1714" }}>
+      <div style={{ margin: "48px 0", overflow: "hidden", borderTop: "1.5px solid " + palette.border, borderBottom: "1.5px solid " + palette.border }}>
         <div style={{ display: "flex", gap: 0, whiteSpace: "nowrap", animation: "ticker 28s linear infinite", padding: "12px 0" }}>
           {[...JARGON_WORDS, ...JARGON_WORDS].map((word, i) => (
             <span key={i} style={{ display: "inline-flex", alignItems: "center" }}>
-              <span style={{ ...mono, fontSize: 11, color: "#8A847A", padding: "0 16px" }}>{word}</span>
-              <span style={{ color: "#D4CFC8" }}>·</span>
+              <span style={{ ...mono, fontSize: 11, color: palette.muted, padding: "0 16px" }}>{word}</span>
+              <span style={{ color: palette.border }}>·</span>
             </span>
           ))}
         </div>
@@ -357,16 +386,16 @@ export default function BullShift() {
 
       {/* Red Thread: Dimension Explanations */}
       <section style={{ maxWidth: "860px", margin: "0 auto", padding: "48px 40px" }}>
-        <div style={{ ...mono, fontSize: "10px", letterSpacing: "0.12em", textTransform: "uppercase", color: "#F0B429", marginBottom: 20 }}>
+        <div style={{ ...mono, fontSize: "10px", letterSpacing: "0.12em", textTransform: "uppercase", color: palette.accent, marginBottom: 20 }}>
           Corporate Bullshit Receptivity Scale — Four Dimensions
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 24 }}>
           {DIMENSIONS.map((dim) => (
             <div key={dim.key} style={{ borderTop: `3px solid ${dim.color}`, paddingTop: 16 }}>
-              <div style={{ ...mono, fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.08em", color: "#8A847A", marginBottom: 8 }}>
+              <div style={{ ...mono, fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.08em", color: palette.muted, marginBottom: 8 }}>
                 {dim.name}
               </div>
-              <div style={{ fontSize: 13, color: "#1A1714", lineHeight: 1.5, fontWeight: 500 }}>
+              <div style={{ fontSize: 13, color: palette.text, lineHeight: 1.5, fontWeight: 500 }}>
                 {dim.desc}
               </div>
             </div>
@@ -381,23 +410,23 @@ export default function BullShift() {
           <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
             <div>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 14, alignItems: "center" }}>
-                <label style={{ ...mono, fontSize: 12, textTransform: "uppercase", color: "#8A847A" }}>Input Matrix</label>
-                <button onClick={() => { setInput(EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)]); setOutput(null); }} style={{ background: "none", border: "none", fontSize: 13, fontWeight: 600, cursor: "pointer", ...sans, color: "#1A1714" }}>Load random example →</button>
+                <label style={{ ...mono, fontSize: 12, textTransform: "uppercase", color: palette.muted }}>Input Matrix</label>
+                <button onClick={() => { setInput(EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)]); setOutput(null); }} style={{ background: "none", border: "none", fontSize: 13, fontWeight: 600, cursor: "pointer", ...sans, color: palette.text }}>Load random example →</button>
               </div>
-              <textarea value={input} onChange={e => setInput(e.target.value)} placeholder="Paste corporate communication strings here..." style={{ width: "100%", minHeight: 200, padding: 16, borderRadius: 8, border: "1.5px solid #1A1714", background: "rgba(255,255,255,0.5)", backdropFilter: "blur(12px)", fontFamily: sans, fontSize: 15, color: "#1A1714", resize: "vertical" }} />
+              <textarea value={input} onChange={e => setInput(e.target.value)} placeholder="Paste corporate communication strings here..." style={{ width: "100%", minHeight: 200, padding: 16, borderRadius: 8, border: "1.5px solid " + palette.border, background: "rgba(255,255,255,0.3)", backdropFilter: "blur(12px)", fontFamily: sans, fontSize: 15, color: palette.text, resize: "vertical" }} />
             </div>
 
             <div>
-              <label style={{ ...mono, fontSize: 12, textTransform: "uppercase", color: "#8A847A", display: "block", marginBottom: 16 }}>Translation Mode</label>
+              <label style={{ ...mono, fontSize: 12, textTransform: "uppercase", color: palette.muted, display: "block", marginBottom: 16 }}>Translation Mode</label>
               <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
                 <button 
                   onClick={() => setMode("linkedin-to-human")}
                   style={{
                     flex: 1,
                     padding: "12px 16px",
-                    background: mode === "linkedin-to-human" ? "#1A1714" : "rgba(255,255,255,0.5)",
-                    color: mode === "linkedin-to-human" ? "#F5F0E8" : "#1A1714",
-                    border: "1.5px solid #1A1714",
+                    background: mode === "linkedin-to-human" ? palette.text : "rgba(255,255,255,0.3)",
+                    color: mode === "linkedin-to-human" ? palette.bg : palette.text,
+                    border: "1.5px solid " + palette.border,
                     borderRadius: 8,
                     fontSize: 13,
                     fontWeight: 600,
@@ -412,9 +441,9 @@ export default function BullShift() {
                   style={{
                     flex: 1,
                     padding: "12px 16px",
-                    background: mode === "human-to-linkedin" ? "#1A1714" : "rgba(255,255,255,0.5)",
-                    color: mode === "human-to-linkedin" ? "#F5F0E8" : "#1A1714",
-                    border: "1.5px solid #1A1714",
+                    background: mode === "human-to-linkedin" ? palette.text : "rgba(255,255,255,0.3)",
+                    color: mode === "human-to-linkedin" ? palette.bg : palette.text,
+                    border: "1.5px solid " + palette.border,
                     borderRadius: 8,
                     fontSize: 13,
                     fontWeight: 600,
@@ -428,7 +457,7 @@ export default function BullShift() {
             </div>
 
             <div>
-              <label style={{ ...mono, fontSize: 12, textTransform: "uppercase", color: "#8A847A", display: "block", marginBottom: 16 }}>Severity Profile Settings</label>
+              <label style={{ ...mono, fontSize: 12, textTransform: "uppercase", color: palette.muted, display: "block", marginBottom: 16 }}>Severity Profile Settings</label>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                 {TONES.map(t => (
                   <button 
@@ -436,9 +465,9 @@ export default function BullShift() {
                     onClick={() => setTone(t.id)}
                     style={{
                       padding: "8px 16px",
-                      background: tone === t.id ? "#1A1714" : "rgba(255,255,255,0.5)",
-                      color: tone === t.id ? "#F5F0E8" : "#1A1714",
-                      border: "1.5px solid #1A1714",
+                      background: tone === t.id ? palette.text : "rgba(255,255,255,0.3)",
+                      color: tone === t.id ? palette.bg : palette.text,
+                      border: "1.5px solid " + palette.border,
                       borderRadius: 6,
                       fontSize: 12,
                       fontWeight: 600,
@@ -450,7 +479,7 @@ export default function BullShift() {
                   </button>
                 ))}
               </div>
-              <div style={{ marginTop: 14, fontSize: 14, color: "#6B6560", fontStyle: "italic" }}>↳ Posture: {TONES[tone - 1].desc}</div>
+              <div style={{ marginTop: 14, fontSize: 14, color: palette.muted, fontStyle: "italic" }}>↳ Posture: {TONES[tone - 1].desc}</div>
             </div>
 
             <button 
@@ -458,8 +487,8 @@ export default function BullShift() {
               disabled={loading || !input.trim()}
               style={{
                 padding: "14px 24px",
-                background: loading || !input.trim() ? "#D4CFC8" : "#1A1714",
-                color: loading || !input.trim() ? "#8A847A" : "#F5F0E8",
+                background: loading || !input.trim() ? palette.border : palette.text,
+                color: loading || !input.trim() ? palette.muted : palette.bg,
                 border: "none",
                 borderRadius: 6,
                 fontSize: 13,
@@ -475,24 +504,24 @@ export default function BullShift() {
 
           {/* Right Output Panel */}
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <label style={{ ...mono, fontSize: 12, textTransform: "uppercase", color: "#8A847A", marginBottom: 14, display: "block" }}>Output Spectrum Matrix</label>
+            <label style={{ ...mono, fontSize: 12, textTransform: "uppercase", color: palette.muted, marginBottom: 14, display: "block" }}>Output Spectrum Matrix</label>
             
             {output && !loading ? (
               <div style={{ display: "flex", flexDirection: "column", gap: 24, height: "100%" }}>
-                <SpotlightCard original={input} shifted={output.translation} note={output.note} />
+                <SpotlightCard original={input} shifted={output.translation} note={output.note} palette={palette} />
                 
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: 32, background: "rgba(255,255,255,0.5)", backdropFilter: "blur(12px)", borderRadius: 16, border: "1.5px solid #1A1714" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: 32, background: "rgba(255,255,255,0.3)", backdropFilter: "blur(12px)", borderRadius: 16, border: "1.5px solid " + palette.border }}>
                   <div>
-                    <div style={{ ...mono, fontSize: 11, color: "#8A847A", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>
+                    <div style={{ ...mono, fontSize: 11, color: palette.muted, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>
                       Jargon Density Index
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-                      <span style={{ fontSize: 48, ...syne, fontWeight: 800, lineHeight: 1 }}>{scoreVal}<span style={{ fontSize: 18, color: "#6B6560", ...sans, fontWeight: 400 }}>/100</span></span>
+                      <span style={{ fontSize: 48, ...syne, fontWeight: 800, lineHeight: 1 }}>{scoreVal}<span style={{ fontSize: 18, color: palette.muted, ...sans, fontWeight: 400 }}>/100</span></span>
                       <span style={{ background: badge.bg, color: badge.color, border: `1px solid ${badge.border}`, padding: "6px 14px", borderRadius: 8, fontSize: 12, ...mono, fontWeight: 500 }}>
                         {badge.label}
                       </span>
                     </div>
-                    <div style={{ marginTop: 14, fontSize: 14, color: "#6B6560", fontWeight: 500, lineHeight: 1.4 }}>
+                    <div style={{ marginTop: 14, fontSize: 14, color: palette.muted, fontWeight: 500, lineHeight: 1.4 }}>
                       {getVerdict(scoreVal)}
                     </div>
                   </div>
@@ -500,10 +529,10 @@ export default function BullShift() {
                     onClick={copyOutput}
                     style={{ 
                       padding: "14px 24px", 
-                      background: "#1A1714", 
-                      border: "1.5px solid #1A1714", 
+                      background: palette.text, 
+                      border: "1.5px solid " + palette.border, 
                       borderRadius: 6, 
-                      color: "#F5F0E8", 
+                      color: palette.bg, 
                       ...mono, 
                       fontSize: 13, 
                       cursor: "pointer", 
@@ -516,7 +545,7 @@ export default function BullShift() {
 
                 {output.jargon?.length > 0 && (
                   <div>
-                    <div style={{ ...mono, fontSize: 11, color: "#8A847A", textTransform: "uppercase", marginBottom: 16 }}>Purged Linguistic Inflations</div>
+                    <div style={{ ...mono, fontSize: 11, color: palette.muted, textTransform: "uppercase", marginBottom: 16 }}>Purged Linguistic Inflations</div>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
                       {output.jargon.map((j, i) => (
                         <span key={i} style={{ padding: "8px 16px", background: "rgba(192, 57, 43, 0.1)", color: "#C0392B", borderRadius: 8, fontSize: 13, ...mono, border: "1px solid rgba(192, 57, 43, 0.2)", textDecoration: "line-through" }}>
@@ -529,15 +558,15 @@ export default function BullShift() {
               </div>
             ) : (
               /* Empty State */
-              <div style={{ flex: 1, borderRadius: 16, border: "1.5px dashed #D4CFC8", display: "flex", flexDirection: "column", padding: 48, background: "rgba(255,255,255,0.3)", backdropFilter: "blur(12px)" }}>
+              <div style={{ flex: 1, borderRadius: 16, border: "1.5px dashed " + palette.border, display: "flex", flexDirection: "column", padding: 48, background: "rgba(255,255,255,0.2)", backdropFilter: "blur(12px)" }}>
                 {loading ? (
                   <div style={{ margin: "auto", textAlign: "center" }}>
-                    <div style={{ width: 40, height: 40, border: "3px solid #D4CFC8", borderTopColor: "#F0B429", borderRadius: "50%", animation: "spin 1s linear infinite", margin: "0 auto 24px" }} />
-                    <p style={{ fontSize: 14, ...mono, color: "#6B6560", textTransform: "uppercase", letterSpacing: "0.1em" }}>Analyzing Speech Matrix...</p>
+                    <div style={{ width: 40, height: 40, border: "3px solid " + palette.border, borderTopColor: palette.accent, borderRadius: "50%", animation: "spin 1s linear infinite", margin: "0 auto 24px" }} />
+                    <p style={{ fontSize: 14, ...mono, color: palette.muted, textTransform: "uppercase", letterSpacing: "0.1em" }}>Analyzing Speech Matrix...</p>
                   </div>
                 ) : (
                   <>
-                    <h3 style={{ fontSize: 14, ...mono, textTransform: "uppercase", letterSpacing: "0.15em", color: "#1A1714", marginBottom: 32 }}>Engine Diagnostics Protocol</h3>
+                    <h3 style={{ fontSize: 14, ...mono, textTransform: "uppercase", letterSpacing: "0.15em", color: palette.text, marginBottom: 32 }}>Engine Diagnostics Protocol</h3>
                     <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
                       {[
                         ["01 /", "Isolate Context Layer", "Drop messy organizational copy, performance alignment reports, or abstract LinkedIn communications into the frame."],
@@ -545,10 +574,10 @@ export default function BullShift() {
                         ["03 /", "Deconstruct Speak Elements", "Extract plain text representations immediately. Isolate dense structural bloat with full numerical score data."]
                       ].map(([step, title, desc], i) => (
                         <div key={i} style={{ display: "grid", gridTemplateColumns: "60px 1fr", gap: 16 }}>
-                          <span style={{ ...mono, color: "#F0B429", fontSize: 14, fontWeight: 500 }}>{step}</span>
+                          <span style={{ ...mono, color: palette.accent, fontSize: 14, fontWeight: 500 }}>{step}</span>
                           <div>
                             <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 6, letterSpacing: "-0.01em" }}>{title}</div>
-                            <div style={{ color: "#6B6560", fontSize: 14, lineHeight: 1.5 }}>{desc}</div>
+                            <div style={{ color: palette.muted, fontSize: 14, lineHeight: 1.5 }}>{desc}</div>
                           </div>
                         </div>
                       ))}
@@ -566,45 +595,45 @@ export default function BullShift() {
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 24, alignItems: "center" }}>
           <div>
             <h2 style={{ ...syne, fontSize: 18, fontWeight: 800, letterSpacing: "-0.5px", marginBottom: 4 }}>The Bullpen</h2>
-            <p style={{ fontSize: 13, color: "#6B6560" }}>Linguistic ledger tracking audited pipeline corporate updates</p>
+            <p style={{ fontSize: 13, color: palette.muted }}>Linguistic ledger tracking audited pipeline corporate updates</p>
           </div>
           {history.length > 0 && <button onClick={() => setHistory([])} style={{ background: "none", border: "none", ...mono, fontSize: 11, color: "#C0392B", cursor: "pointer", fontWeight: 600 }}>Purge Records [×]</button>}
         </div>
 
         {/* CBRS Diagnostic - Shows after 5 translations */}
         {showCBRS && cbrs && (
-          <div style={{ marginBottom: 32, padding: 32, background: "rgba(255,255,255,0.5)", backdropFilter: "blur(12px)", borderRadius: 16, border: "1.5px solid #1A1714" }}>
-            <div style={{ marginBottom: 24, paddingBottom: 16, borderBottom: "1px solid rgba(26,23,20,0.1)" }}>
-              <div style={{ ...mono, fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: "#F0B429", marginBottom: 8 }}>
+          <div style={{ marginBottom: 32, padding: 32, background: "rgba(255,255,255,0.3)", backdropFilter: "blur(12px)", borderRadius: 16, border: "1.5px solid " + palette.border }}>
+            <div style={{ marginBottom: 24, paddingBottom: 16, borderBottom: "1px solid rgba(0,0,0,0.1)" }}>
+              <div style={{ ...mono, fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: palette.accent, marginBottom: 8 }}>
                 Corporate Bullshit Receptivity Scale
               </div>
-              <div style={{ fontSize: 32, ...syne, fontWeight: 800, color: "#1A1714", lineHeight: 1, marginBottom: 8 }}>
+              <div style={{ fontSize: 32, ...syne, fontWeight: 800, color: palette.text, lineHeight: 1, marginBottom: 8 }}>
                 {cbrs.archetype}
               </div>
-              <div style={{ fontSize: 14, color: "#6B6560", lineHeight: 1.5 }}>
+              <div style={{ fontSize: 14, color: palette.muted, lineHeight: 1.5 }}>
                 {cbrs.archetypeDesc}
               </div>
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
               {DIMENSIONS.map((dim) => (
-                <div key={dim.key} style={{ padding: 16, background: "rgba(255,255,255,0.5)", borderRadius: 8 }}>
+                <div key={dim.key} style={{ padding: 16, background: "rgba(255,255,255,0.3)", borderRadius: 8 }}>
                   <div style={{ fontSize: 28, ...syne, fontWeight: 800, color: dim.color, lineHeight: 1, marginBottom: 4 }}>
                     {cbrs[dim.key]}
                   </div>
-                  <div style={{ ...mono, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.08em", color: "#6B6560", marginBottom: 6 }}>
+                  <div style={{ ...mono, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.08em", color: palette.muted, marginBottom: 6 }}>
                     {dim.name}
                   </div>
-                  <div style={{ fontSize: 11, color: "#6B6560", lineHeight: 1.4 }}>
+                  <div style={{ fontSize: 11, color: palette.muted, lineHeight: 1.4 }}>
                     {dim.desc}
                   </div>
                 </div>
               ))}
             </div>
 
-            <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid rgba(26,23,20,0.1)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <div style={{ fontSize: 13, color: "#6B6560" }}>
-                Composite Score: <span style={{ color: "#1A1714", fontWeight: 700 }}>{cbrs.composite}/100</span>
+            <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid rgba(0,0,0,0.1)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div style={{ fontSize: 13, color: palette.muted }}>
+                Composite Score: <span style={{ color: palette.text, fontWeight: 700 }}>{cbrs.composite}/100</span>
               </div>
               <button 
                 onClick={() => {
@@ -612,7 +641,7 @@ export default function BullShift() {
                   navigator.clipboard.writeText(text);
                   alert('Archetype copied to clipboard! Share it on LinkedIn for maximum irony.');
                 }}
-                style={{ padding: "10px 20px", background: "#F0B429", color: "#1A1714", border: "none", borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: "pointer", ...mono }}
+                style={{ padding: "10px 20px", background: palette.accent, color: palette.text, border: "none", borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: "pointer", ...mono }}
               >
                 Share Archetype
               </button>
@@ -621,15 +650,15 @@ export default function BullShift() {
         )}
 
         {/* History Grid */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 0, border: "1.5px solid #1A1714", borderRadius: 8, overflow: "hidden" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 0, border: "1.5px solid " + palette.border, borderRadius: 8, overflow: "hidden" }}>
           {history.map((item) => (
-            <div key={item.id} style={{ display: "grid", gridTemplateColumns: "100px 1fr 1fr 120px", gap: 0, padding: 20, borderBottom: "1.5px solid #D4CFC8", ...(item === history[history.length - 1] ? { borderBottom: "none" } : {}) }}>
+            <div key={item.id} style={{ display: "grid", gridTemplateColumns: "100px 1fr 1fr 120px", gap: 0, padding: 20, borderBottom: "1.5px solid " + palette.border, ...(item === history[history.length - 1] ? { borderBottom: "none" } : {}) }}>
               <div>
-                <div style={{ fontSize: 12, color: "#6B6560" }}>{item.time}</div>
-                <div style={{ color: "#1A1714", fontWeight: 700, marginTop: 2, fontSize: 13 }}>{item.tone}</div>
+                <div style={{ fontSize: 12, color: palette.muted }}>{item.time}</div>
+                <div style={{ color: palette.text, fontWeight: 700, marginTop: 2, fontSize: 13 }}>{item.tone}</div>
               </div>
-              <div style={{ fontSize: 14, color: "#3D3830", lineHeight: 1.5, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.original}</div>
-              <div style={{ fontSize: 14, color: "#1A1714", fontWeight: 500, lineHeight: 1.5, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.translation}</div>
+              <div style={{ fontSize: 14, color: palette.muted, lineHeight: 1.5, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.original}</div>
+              <div style={{ fontSize: 14, color: palette.text, fontWeight: 500, lineHeight: 1.5, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.translation}</div>
               <div style={{ display: "flex", alignItems: "center", gap: 12, justifyContent: "flex-end" }}>
                 <span style={{ ...mono, fontSize: 12, fontWeight: 700, background: getBadge(item.score).bg, color: getBadge(item.score).color, padding: "4px 10px", borderRadius: 6 }}>{item.score} IDX</span>
                 <button onClick={() => { setInput(item.original); setOutput(null); window.scrollTo({ top: 0, behavior: "smooth" }); }} style={{ border: "none", background: "none", cursor: "pointer", fontSize: 14 }}>↺</button>
@@ -640,9 +669,9 @@ export default function BullShift() {
       </section>
 
       {/* FOOTER */}
-      <footer style={{ borderTop: "1.5px solid #1A1714", padding: "48px 40px", background: "#F5F0E8" }}>
+      <footer style={{ borderTop: "1.5px solid " + palette.border, padding: "48px 40px", background: palette.bg }}>
         <div style={{ maxWidth: "860px", margin: "0 auto", display: "flex", flexDirection: "column", alignItems: "center", gap: 24 }}>
-          <div style={{ ...mono, fontSize: 10, color: "#A8A39D", textAlign: "center" }}>
+          <div style={{ ...mono, fontSize: 10, color: palette.muted, textAlign: "center" }}>
             Not affiliated with LinkedIn® or Microsoft. BullShift is satire. · bullshift.app
           </div>
         </div>
