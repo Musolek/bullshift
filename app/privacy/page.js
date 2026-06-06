@@ -58,11 +58,10 @@ export default function PrivacyPage() {
       <nav style={{
         display:'flex', alignItems:'center', justifyContent:'space-between',
         padding:'16px 40px', borderBottom:'1.5px solid #1A1714',
-        background:'rgba(245,240,232,0.92)', backdropFilter:'blur(12px)',
-        position:'sticky', top:0, zIndex:100,
+        background:'#F5F0E8',
       }}>
         <Link href="/" style={{ ...syne, fontWeight:800, fontSize:22, letterSpacing:'-0.04em', color:'#1A1714', textDecoration:'none' }}>
-          Bull<span style={{ color:'#F0B429' }}>Shift</span>
+          Bull<em style={{ color:'#F0B429', fontStyle:'normal' }}>Shift</em>
         </Link>
         <div style={{ display:'flex', gap:24, alignItems:'center' }}>
           <Link href="/about" style={{ fontSize:13, color:'#3D3830', textDecoration:'none' }}>About</Link>
@@ -70,7 +69,7 @@ export default function PrivacyPage() {
           <Link href="/privacy" style={{ fontSize:13, color:'#1A1714', fontWeight:500, textDecoration:'underline', textUnderlineOffset:4 }}>Privacy</Link>
           <Link href="/" style={{
             ...mono, fontSize:11, background:'#1A1714',
-            color:'#F5F0E8', padding:'9px 16px', borderRadius:3, textDecoration:'none',
+            color:'#F5F0E8', padding:'9px 16px', borderRadius:3, textDecoration:'none', whiteSpace:'nowrap',
           }}>Expose something →</Link>
         </div>
       </nav>
@@ -95,11 +94,11 @@ export default function PrivacyPage() {
       <div style={{ maxWidth:860, margin:'0 auto', padding:'40px 40px 60px' }}>
 
         {/* THREE ZEROS */}
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', border:'1.5px solid #1A1714', borderRadius:6, overflow:'hidden', marginBottom:48 }}>
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:0, border:'1.5px solid #1A1714', borderRadius:6, overflow:'hidden', marginBottom:48 }}>
           {[
-            { n:'0', label:'Accounts needed' },
-            { n:'0', label:'Inputs stored' },
-            { n:'0', label:'Third parties sold to' },
+            { n:'0', label:'ACCOUNTS NEEDED' },
+            { n:'0', label:'INPUTS STORED' },
+            { n:'0', label:'THIRD PARTIES SOLD TO' },
           ].map(({ n, label }, i, arr) => (
             <div key={label} style={{
               padding:28, textAlign:'center',
@@ -136,8 +135,8 @@ export default function PrivacyPage() {
           </div>
         ))}
 
-        <div style={{ ...mono, fontSize:10, color:'#A8A39D', textAlign:'center', paddingTop:40 }}>
-          Questions? hello@bullshift.app · Not affiliated with LinkedIn® or Microsoft. Governing law: North Carolina, USA.
+        <div style={{ ...mono, fontSize:10, color:'#A8A39D', textAlign:'center', paddingTop:16 }}>
+          Questions? hello@bullshift.app · Not affiliated with LinkedIn® or Microsoft.
         </div>
       </div>
     </div>

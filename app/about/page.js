@@ -17,7 +17,6 @@ const TICKER_WORDS = [
   'TOUCH BASE','ALIGNMENT SYNC','ECOSYSTEM','BANDWIDTH',
 ];
 
-const TICKER_DOUBLED = [...TICKER_WORDS, ...TICKER_WORDS];
 
 const syne = { fontFamily: "'Syne', sans-serif" };
 const mono = { fontFamily: "'Space Mono', monospace" };
@@ -33,11 +32,10 @@ function Nav({ current }) {
     <nav style={{
       display:'flex', alignItems:'center', justifyContent:'space-between',
       padding:'16px 40px', borderBottom:'1.5px solid #1A1714',
-      background:'rgba(245,240,232,0.92)', backdropFilter:'blur(12px)',
-      position:'sticky', top:0, zIndex:100,
+      background:'#F5F0E8',
     }}>
       <Link href="/" style={{ ...syne, fontWeight:800, fontSize:22, letterSpacing:'-0.04em', color:'#1A1714', textDecoration:'none' }}>
-        Bull<span style={{ color:'#F0B429' }}>Shift</span>
+        Bull<em style={{ color:'#F0B429', fontStyle:'normal' }}>Shift</em>
       </Link>
       <div style={{ display:'flex', gap:24, alignItems:'center' }}>
         {links.map(({ href, label }) => (
@@ -50,7 +48,7 @@ function Nav({ current }) {
         ))}
         <Link href="/" style={{
           ...mono, fontSize:11, background:'#1A1714',
-          color:'#F5F0E8', padding:'9px 16px', borderRadius:3, textDecoration:'none',
+          color:'#F5F0E8', padding:'9px 16px', borderRadius:3, textDecoration:'none', whiteSpace:'nowrap',
         }}>Expose something →</Link>
       </div>
     </nav>
@@ -81,8 +79,8 @@ export default function AboutPage() {
 
       {/* TICKER */}
       <div style={{ margin:'48px 0', overflow:'hidden', borderTop:'1.5px solid #1A1714', borderBottom:'1.5px solid #1A1714' }}>
-        <div style={{ display:'flex', whiteSpace:'nowrap', animation:'ticker 30s linear infinite', padding:'12px 0' }}>
-          {TICKER_DOUBLED.map((word, i) => (
+        <div style={{ display:'flex', gap:0, whiteSpace:'nowrap', animation:'ticker 28s linear infinite', padding:'12px 0' }}>
+          {[...TICKER_WORDS, ...TICKER_WORDS].map((word, i) => (
             <span key={i} style={{ display:'inline-flex', alignItems:'center' }}>
               <span style={{ ...mono, fontSize:11, color:'#8A847A', padding:'0 16px' }}>{word}</span>
               <span style={{ color:'#D4CFC8' }}>·</span>
@@ -94,7 +92,7 @@ export default function AboutPage() {
       <div style={{ maxWidth:860, margin:'0 auto', padding:'0 40px' }}>
 
         {/* WHAT / ISN'T */}
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', border:'1.5px solid #1A1714', borderRadius:6, overflow:'hidden', marginBottom:48 }}>
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:0, border:'1.5px solid #1A1714', borderRadius:6, overflow:'hidden', marginBottom:48 }}>
           <div style={{ padding:32, borderRight:'1.5px solid #1A1714' }}>
             <div style={{ ...mono, fontSize:10, letterSpacing:'0.1em', textTransform:'uppercase', color:'#8A847A', marginBottom:12 }}>What it is</div>
             <p style={{ fontSize:15, lineHeight:1.75, color:'#3D3830', fontWeight:300 }}>
@@ -155,7 +153,6 @@ export default function AboutPage() {
 
       <style>{`
         @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-        @media (max-width: 640px) { nav { padding: 14px 20px; } }
       `}</style>
     </div>
   );
