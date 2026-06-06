@@ -172,17 +172,17 @@ export default function BullShift() {
           <div className="hero-tagline"><span>✦</span> System Sandbox v2.4 Online</div>
           <h1 className="hero-main-title">LinkedIn jargon decoded, <br /><span style={{ fontWeight: 400, fontStyle: "italic", color: "var(--text-muted)" }}>no mercy.</span></h1>
           <p className="hero-description">Paste a post down below. We strip away the corporate buzzwords, evaluate linguistic transparency metrics, and translate the true meaning instantly.</p>
-          <a href="#engine" className="btn-primary-studio" style={{ textDecoration: "none", display: "inline-flex", maxWidth: "240px" }}>Initialize Workbench</a>
+          <a href="#engine" className="btn-primary-studio pulse-glow" style={{ textDecoration: "none", display: "inline-flex", maxWidth: "240px" }}>Initialize Workbench</a>
         </div>
       </section>
 
       {/* ── RESTORED: Original Analytical Core Stats Row ── */}
-      <section className="stats-banner-container">
+      <section className="stats-banner-container scroll-reveal">
         <div className="stats-banner-inner">
-          <div><div className="stat-card-title">Buzzwords Flagged</div><div className="stat-card-value">142,804</div></div>
-          <div><div className="stat-card-title">System Precision</div><div className="stat-card-value">99.84%</div></div>
-          <div><div className="stat-card-title">Instance Postures</div><div className="stat-card-value">Active</div></div>
-          <div><div className="stat-card-title">Processing Velocity</div><div className="stat-card-value">14ms</div></div>
+          <div className="stat-card stagger-1"><div className="stat-card-title">Buzzwords Flagged</div><div className="stat-card-value">142,804</div></div>
+          <div className="stat-card stagger-2"><div className="stat-card-title">System Precision</div><div className="stat-card-value">99.84%</div></div>
+          <div className="stat-card stagger-3"><div className="stat-card-title">Instance Postures</div><div className="stat-card-value">Active</div></div>
+          <div className="stat-card stagger-4"><div className="stat-card-title">Processing Velocity</div><div className="stat-card-value">14ms</div></div>
         </div>
       </section>
 
@@ -197,7 +197,7 @@ export default function BullShift() {
       </div>
 
       <main id="engine" className="workspace-section scroll-reveal">
-        <div className="studio-panel-grid">
+        <div className="studio-panel-grid stagger-1">
           
           {/* Left Input Box */}
           <div className="interactive-panel">

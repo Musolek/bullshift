@@ -19,7 +19,6 @@
 
 *, *::before, *::after { 
   margin: 0; padding: 0; box-sizing: border-box; 
-  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 html { scroll-behavior: smooth; }
@@ -38,8 +37,8 @@ body {
 .premium-header {
   position: fixed; top: 0; left: 0; right: 0;
   background: rgba(252, 251, 250, 0.8);
-  backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border);
   padding: 24px 64px;
   display: flex; align-items: center; justify-content: space-between;
@@ -47,6 +46,24 @@ body {
   animation: header-shrink linear both;
   animation-timeline: scroll();
   animation-range: 0px 150px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.premium-header a {
+  position: relative;
+  transition: color 0.3s ease;
+}
+.premium-header a::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--primary);
+  transition: width 0.3s ease;
+}
+.premium-header a:hover::after {
+  width: 100%;
 }
 @keyframes header-shrink {
   to { padding: 16px 64px; background: rgba(252, 251, 250, 0.95); box-shadow: 0 10px 30px rgba(0,0,0,0.02); }
@@ -105,12 +122,27 @@ body {
   background: var(--surface); border: 1px solid var(--border);
   border-radius: 20px; padding: 32px; gap: 24px;
 }
+.stat-card {
+  padding: 16px;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: default;
+}
+.stat-card:hover {
+  background: var(--bg-color);
+  transform: translateY(-4px);
+}
 .stat-card-title {
   font-family: var(--font-mono); font-size: 11px; text-transform: uppercase;
   color: var(--text-muted); letter-spacing: 0.05em; margin-bottom: 6px;
 }
 .stat-card-value {
   font-size: 28px; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px;
+  transition: all 0.3s ease;
+}
+.stat-card:hover .stat-card-value {
+  color: var(--primary);
+  transform: scale(1.05);
 }
 
 /* ── Workspace ── */
@@ -121,6 +153,11 @@ body {
   border-radius: 24px; padding: 48px;
   box-shadow: 0 30px 60px -15px rgba(28, 26, 23, 0.03);
   display: flex; flex-direction: column; gap: 32px;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.interactive-panel:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 40px 80px -20px rgba(28, 26, 23, 0.08);
 }
 
 .studio-textarea {
@@ -137,10 +174,34 @@ body {
 .tone-selector-pill {
   padding: 12px 20px; border-radius: 12px; font-size: 14px; font-weight: 600;
   background: var(--bg-color); color: var(--text-muted); border: 1px solid var(--border);
-  cursor: pointer; transition: all 0.2s;
+  cursor: pointer; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+.tone-selector-pill::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: var(--text-main);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.4s ease, height 0.4s ease;
+}
+.tone-selector-pill:hover::after {
+  width: 300px;
+  height: 300px;
+  opacity: 0.1;
 }
 .tone-selector-pill.selected {
   background: var(--text-main); color: var(--surface); border-color: var(--text-main);
+  transform: scale(1.05);
+}
+.tone-selector-pill:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-active);
 }
 
 .btn-primary-studio {
@@ -148,6 +209,29 @@ body {
   color: var(--surface); font-size: 15px; font-weight: 700; letter-spacing: 0.04em;
   text-transform: uppercase; border: none; cursor: pointer;
   display: flex; align-items: center; justify-content: center; gap: 12px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-primary-studio::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s ease;
+}
+.btn-primary-studio:hover::before {
+  left: 100%;
+}
+.btn-primary-studio:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 40px -10px rgba(28, 26, 23, 0.3);
+}
+.btn-primary-studio:active {
+  transform: translateY(0);
 }
 
 /* ── Spatial Interactive Spotlight Reveal Card ── */
@@ -193,6 +277,20 @@ body {
   display: grid; grid-template-columns: 140px 1fr 1fr 120px; gap: 24px;
   padding: 20px 24px; background: var(--bg-color); border: 1px solid var(--border);
   border-radius: 14px; align-items: center;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+.bullpen-row:hover {
+  transform: translateX(8px);
+  border-color: var(--border-active);
+  box-shadow: 0 8px 24px -8px rgba(28, 26, 23, 0.1);
+}
+.bullpen-row button {
+  transition: all 0.3s ease;
+}
+.bullpen-row button:hover {
+  transform: rotate(180deg);
+  color: var(--primary);
 }
 
 .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: rot 0.8s linear infinite; }
@@ -205,6 +303,35 @@ body {
 @keyframes revealOnEnter {
   from { opacity: 0; transform: translateY(30px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Staggered Animations ── */
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+
+/* ── Magnetic Button Effect ── */
+.magnetic-btn {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── Floating Animation ── */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+.float-animation {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* ── Pulse Animation ── */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.4); }
+  50% { box-shadow: 0 0 0 10px rgba(79, 70, 229, 0); }
+}
+.pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
 }
 
 @media (max-width: 1100px) {
