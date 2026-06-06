@@ -291,7 +291,7 @@ export default function BullShift() {
 
   return (
     <>
-      <CBRSShareCard cbrs={cbrs} />
+      {cbrs && <CBRSShareCard cbrs={cbrs} />}
       <header className="premium-header">
         <div style={{ fontSize: "20px", fontWeight: 800, letterSpacing: "-0.5px" }}>
           Bull<span style={{ color: "var(--text-muted)", fontWeight: 400 }}>Shift</span>
