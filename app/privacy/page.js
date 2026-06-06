@@ -1,33 +1,145 @@
-export default function PrivacyPolicy() {
+import Link from 'next/link';
+
+export const metadata = {
+  title: 'Privacy Policy — BullShift',
+  description:
+    'BullShift does not store your inputs, does not require an account, and does not sell your data. Here is exactly what happens to your text.',
+  openGraph: {
+    title: 'Privacy Policy — BullShift',
+    description: 'We don\'t collect your stuff. Here\'s the proof.',
+    url: 'https://bullshift.app/privacy',
+  },
+};
+
+const privacySections = [
+  {
+    q: "What we collect",
+    a: "Anonymous aggregate request counts for rate-limiting only. No names, emails, IP addresses in any identifiable form, or anything that connects back to you as a person.",
+  },
+  {
+    q: "What we don't collect",
+    a: "Your name. Your email. The text you translate. The outputs you receive. Your device fingerprint. Your location. Your LinkedIn username. (Ironic as that last one would be.)",
+  },
+  {
+    q: "Your inputs",
+    a: "Text you submit goes to the Anthropic Claude API and is not stored by BullShift at any point. It passes through our server-side route solely to protect your API key from browser exposure. Not logged, not retained, not analyzed.",
+  },
+  {
+    q: "The Bullpen",
+    a: "Translation history in The Bullpen lives exclusively in your browser's localStorage. Never transmitted to our servers. Delete it anytime with 'Destroy the evidence'. We cannot access it. We cannot recover it if you clear your browser.",
+  },
+  {
+    q: "Cookies",
+    a: "No advertising cookies. No tracking pixels. No third-party analytics cookies. Basic session cookies may be set by Next.js or Vercel infrastructure. These don't identify you personally.",
+  },
+  {
+    q: "Third parties",
+    a: "The Anthropic Claude API processes translation requests. Vercel hosts the application. No other third parties receive your data. Neither of them sells it. Neither do we.",
+  },
+  {
+    q: "Changes",
+    a: "If we make material changes, we'll update the date above and note what changed. We built a jargon translator. We're not going to gaslight you with our own policy language.",
+  },
+  {
+    q: "Contact",
+    a: "Questions: hello@bullshift.app — We respond to humans. Automated outreach from synergy-focused alignment platforms will be translated and returned.",
+  },
+];
+
+export default function PrivacyPage() {
+  const syne = { fontFamily: "'Syne', sans-serif" };
+  const mono = { fontFamily: "'Space Mono', monospace" };
+  const sans = { fontFamily: "'DM Sans', sans-serif" };
+
   return (
-    <div style={{ maxWidth: 680, margin: "0 auto", padding: "40px 20px 60px", fontFamily: "'Source Sans 3', sans-serif", color: "#1a1a1a", lineHeight: 1.75 }}>
-      <a href="/" style={{ fontSize: 13, color: "#e65100", textDecoration: "none", fontWeight: 600 }}>&larr; Back to BullShift</a>
-      <h1 style={{ fontSize: 32, fontWeight: 700, marginTop: 24, marginBottom: 4 }}>Privacy Policy</h1>
-      <p style={{ fontSize: 14, color: "#8b8b8b", marginBottom: 32 }}>Last updated: March 20, 2025</p>
-      <p><strong>The short version:</strong> We don&apos;t track you, we don&apos;t store your translations, and we don&apos;t sell anything to anyone.</p>
-      <h2 style={h2}>Who we are</h2>
-      <p>BullShift is a free, web-based satire tool that translates plain English into LinkedIn-style posts (and vice versa). It is not affiliated with, endorsed by, or connected to LinkedIn Corporation or Microsoft Corporation in any way.</p>
-      <h2 style={h2}>What we collect</h2>
-      <p><strong>We don&apos;t collect personal information.</strong> No accounts, no sign-ups, no email addresses, no names, no passwords.</p>
-      <h2 style={h2}>What happens to the text you type</h2>
-      <p>When you hit translate, your text is sent to an AI language model (currently Anthropic&apos;s Claude) to generate the translation. We do not store, log, or save your inputs or outputs. We do not use your inputs to train any AI model. Once the translation appears on your screen, the transaction is complete.</p>
-      <p>The AI model provider (Anthropic) has its own data handling practices. See <a href="https://www.anthropic.com/privacy" style={{ color: "#e65100" }}>Anthropic&apos;s privacy policy</a>. Under their API terms, inputs are not used to train their models.</p>
-      <h2 style={h2}>Cookies and tracking</h2>
-      <p><strong>We don&apos;t use cookies for tracking.</strong> No analytics trackers, no pixel tags, no fingerprinting. We use localStorage in your browser solely to remember your walkthrough completion and community submissions — this data never leaves your device.</p>
-      <h2 style={h2}>Third-party hosting</h2>
-      <p>The site is hosted on Vercel, which may collect basic server logs. We don&apos;t access or use those logs. See <a href="https://vercel.com/legal/privacy-policy" style={{ color: "#e65100" }}>Vercel&apos;s privacy policy</a>.</p>
-      <h2 style={h2}>Children</h2>
-      <p>BullShift is not directed at children under 13. We don&apos;t collect information from anyone, including children.</p>
-      <h2 style={h2}>Your rights</h2>
-      <p>Under GDPR, CCPA, and similar laws, you have rights regarding your personal data. Since we don&apos;t collect or store any, there&apos;s nothing for us to provide, delete, or correct.</p>
-      <h2 style={h2}>Changes</h2>
-      <p>If we change how we handle data, we&apos;ll update this policy and note the date.</p>
-      <h2 style={h2}>Contact</h2>
-      <p>Questions? Reach us at: <strong>[your email here]</strong></p>
-      <div style={{ marginTop: 40, padding: "16px 20px", background: "#fff3e0", border: "1px solid #ffe0b2", borderRadius: 10, fontSize: 14 }}>
-        <strong>Plain-language summary:</strong> You type. The AI translates. It shows up on your screen. Nothing is saved on our end. Nobody is tracked.
+    <div style={{ background:'#F5F0E8', minHeight:'100vh', ...sans, color:'#1A1714' }}>
+
+      {/* NAV */}
+      <nav style={{
+        display:'flex', alignItems:'center', justifyContent:'space-between',
+        padding:'16px 40px', borderBottom:'1.5px solid #1A1714',
+        background:'rgba(245,240,232,0.92)', backdropFilter:'blur(12px)',
+        position:'sticky', top:0, zIndex:100,
+      }}>
+        <Link href="/" style={{ ...syne, fontWeight:800, fontSize:22, letterSpacing:'-0.04em', color:'#1A1714', textDecoration:'none' }}>
+          Bull<span style={{ color:'#F0B429' }}>Shift</span>
+        </Link>
+        <div style={{ display:'flex', gap:24, alignItems:'center' }}>
+          <Link href="/about" style={{ fontSize:13, color:'#3D3830', textDecoration:'none' }}>About</Link>
+          <Link href="/faq" style={{ fontSize:13, color:'#3D3830', textDecoration:'none' }}>FAQ</Link>
+          <Link href="/privacy" style={{ fontSize:13, color:'#1A1714', fontWeight:500, textDecoration:'underline', textUnderlineOffset:4 }}>Privacy</Link>
+          <Link href="/" style={{
+            ...mono, fontSize:11, background:'#1A1714',
+            color:'#F5F0E8', padding:'9px 16px', borderRadius:3, textDecoration:'none',
+          }}>Expose something →</Link>
+        </div>
+      </nav>
+
+      {/* HERO */}
+      <div style={{ padding:'64px 40px 0', maxWidth:860, margin:'0 auto' }}>
+        <div style={{ ...mono, fontSize:10, letterSpacing:'0.12em', color:'#F0B429', textTransform:'uppercase', marginBottom:14 }}>
+          Privacy Policy · Effective April 1, 2026
+        </div>
+        <h1 style={{ ...syne, fontWeight:800, fontSize:'clamp(48px,8vw,88px)', lineHeight:0.92, letterSpacing:'-0.04em', color:'#1A1714', marginBottom:28 }}>
+          We don't<br />
+          collect <span style={{ color:'#F0B429' }}>your</span><br />
+          <span style={{ textDecoration:'line-through', textDecorationThickness:3, color:'#8A847A' }}>data</span>
+        </h1>
+        <p style={{ fontSize:17, lineHeight:1.7, color:'#3D3830', fontWeight:300, maxWidth:580 }}>
+          This is the part where most privacy policies gaslight you with 4,000 words of legal fog.
+          This one won't. Here is exactly what happens to your data:{' '}
+          <strong style={{ fontWeight:500, color:'#1A1714' }}>almost nothing.</strong>
+        </p>
+      </div>
+
+      <div style={{ maxWidth:860, margin:'0 auto', padding:'40px 40px 60px' }}>
+
+        {/* THREE ZEROS */}
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', border:'1.5px solid #1A1714', borderRadius:6, overflow:'hidden', marginBottom:48 }}>
+          {[
+            { n:'0', label:'Accounts needed' },
+            { n:'0', label:'Inputs stored' },
+            { n:'0', label:'Third parties sold to' },
+          ].map(({ n, label }, i, arr) => (
+            <div key={label} style={{
+              padding:28, textAlign:'center',
+              ...(i < arr.length - 1 ? { borderRight:'1.5px solid #1A1714' } : {}),
+            }}>
+              <div style={{ ...syne, fontWeight:800, fontSize:56, color:'#1A1714', lineHeight:1 }}>{n}</div>
+              <div style={{ ...mono, fontSize:10, color:'#6B6560', letterSpacing:'0.08em', marginTop:6, textTransform:'uppercase' }}>{label}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* SHORT VERSION */}
+        <div style={{ padding:36, background:'#1A1714', borderRadius:6, marginBottom:32 }}>
+          <div style={{ ...mono, fontSize:10, color:'#6B6560', letterSpacing:'0.1em', textTransform:'uppercase', marginBottom:14 }}>
+            The short version
+          </div>
+          <p style={{ fontSize:17, lineHeight:1.75, color:'#EDE8DE', fontWeight:300 }}>
+            You paste text. We send it to the Claude API. It comes back translated.
+            We don't store the text. We don't know who you are.
+            The Bullpen history lives in your browser only and disappears when you clear it.{' '}
+            <strong style={{ color:'#F0B429', fontWeight:500 }}>That's the whole policy.</strong>
+          </p>
+        </div>
+
+        {/* SECTIONS */}
+        {privacySections.map(({ q, a }, i) => (
+          <div key={i} style={{
+            padding:'24px 0',
+            borderBottom:'1.5px solid #D4CFC8',
+            ...(i === 0 ? { borderTop:'1.5px solid #D4CFC8' } : {}),
+          }}>
+            <div style={{ ...syne, fontWeight:700, fontSize:15, color:'#1A1714', marginBottom:8 }}>{q}</div>
+            <div style={{ fontSize:14, lineHeight:1.75, color:'#3D3830', fontWeight:300, maxWidth:640 }}>{a}</div>
+          </div>
+        ))}
+
+        <div style={{ ...mono, fontSize:10, color:'#A8A39D', textAlign:'center', paddingTop:40 }}>
+          Questions? hello@bullshift.app · Not affiliated with LinkedIn® or Microsoft. Governing law: North Carolina, USA.
+        </div>
       </div>
     </div>
   );
 }
-var h2 = { fontSize: 20, fontWeight: 700, marginTop: 28, marginBottom: 8 };

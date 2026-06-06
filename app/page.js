@@ -323,6 +323,11 @@ export default function BullShift() {
       <footer style={{ borderTop: "1px solid var(--border)", padding: "80px 64px 60px 64px", background: "var(--surface)" }}>
         <div style={{ maxWidth: "1400px", margin: "0 auto", display: "flex", flexDirection: "column", alignItems: "center", gap: "40px" }}>
           <img src="/logo.png" alt="BullShift Logo" style={{ width: "64px", height: "64px", opacity: 0.9 }} />
+          <div style={{ display: "flex", gap: "32px", fontSize: "14px", fontWeight: 500 }}>
+            <a href="/about" style={{ color: "var(--text-muted)", textDecoration: "none", transition: "color 0.2s" }} onMouseEnter={e=>e.target.style.color="#fff"} onMouseLeave={e=>e.target.style.color="var(--text-muted)"}>About</a>
+            <a href="/faq" style={{ color: "var(--text-muted)", textDecoration: "none", transition: "color 0.2s" }} onMouseEnter={e=>e.target.style.color="#fff"} onMouseLeave={e=>e.target.style.color="var(--text-muted)"}>FAQ</a>
+            <a href="/privacy" style={{ color: "var(--text-muted)", textDecoration: "none", transition: "color 0.2s" }} onMouseEnter={e=>e.target.style.color="#fff"} onMouseLeave={e=>e.target.style.color="var(--text-muted)"}>Privacy</a>
+          </div>
         </div>
       </footer>
     </>
