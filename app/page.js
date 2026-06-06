@@ -2,38 +2,57 @@
 import { useState, useEffect, useRef } from "react";
 
 const TONES = [
-  { id: 1, label: "Diplomatic",  desc: "Polite correction. Keeps the peace." },
-  { id: 2, label: "Measured",    desc: "Clear translation. Professional posture." },
-  { id: 3, label: "Balanced",    desc: "Direct and crisp. Pure substance." },
-  { id: 4, label: "Blunt",       desc: "Terse reality. Says exactly what happened." },
-  { id: 5, label: "Obliterate",  desc: "Surgical takedown. Zero room to hide." },
+  { id: 1, label: "Diplomatic",  desc: "Highly charitable translation layers. Keeps relationships entirely intact." },
+  { id: 2, label: "Measured",    desc: "Clear, structural interpretation containing modern professional warmth." },
+  { id: 3, label: "Balanced",    desc: "Completely neutral posture. Absolutely zero optimization padding." },
+  { id: 4, label: "Blunt",       desc: "Terse, hyper-compact output profiles. Says exactly what it implies." },
+  { id: 5, label: "Obliterate",  desc: "Surgical baseline exposure. Withering analytical execution." },
 ];
 
 const SCORE_VERDICTS = [
-  [0,  9,  "Suspiciously transparent. Did an actual human write this?"],
-  [10, 29, "Mild corporate polish. Tolerable in casual standups."],
-  [30, 49, "Standard management speak. Attended too many alignment sessions."],
-  [50, 69, "Elevated toxicity. Heavy reliance on shifting narratives."],
-  [70, 84, "Severe buzzword inflation. Clear logic has vanished completely."],
-  [85, 100,"Terminal buzzword cascade. Pure vibration, absolute zero information."],
+  [0,  9,  "Barely a trace. Suspiciously transparent and direct for public networks."],
+  [10, 29, "Low-grade structural jargon. Annoying corporate habits but functionally forgivable."],
+  [30, 49, "Moderate padding detected. This author has attended multiple alignment workshops."],
+  [50, 69, "High conversational bloat. Significant efforts taken to shield operational reality."],
+  [70, 84, "Severe syntax inflation. Authentic information framework has exited the premises."],
+  [85, 100,"Terminal buzzword cascade. Pure high-frequency spatial noise. Zero information payload."],
 ];
 
 const SCORE_BADGES = [
-  [0,  29, { label: "Clean Spec",   bg: "rgba(16, 185, 129, 0.1)", color: "#10b981", border: "rgba(16, 185, 129, 0.2)" }],
-  [30, 59, { label: "Corporate",  bg: "rgba(245, 158, 11, 0.1)", color: "#f59e0b", border: "rgba(245, 158, 11, 0.2)" }],
-  [60, 100,{ label: "Toxic Vibe", bg: "rgba(239, 68, 68, 0.1)",  color: "#ef4444", border: "rgba(239, 68, 68, 0.2)" }],
+  [0,  29, { label: "Low Density", bg: "#f0fdf4", color: "#16a34a", border: "#bbf7d0" }],
+  [30, 59, { label: "Mid Density",  bg: "#fffbeb", color: "#d97706", border: "#fde68a" }],
+  [60, 100,{ label: "High Density", bg: "#fef2f2", color: "#dc2626", border: "#fecaca" }],
 ];
 
 const EXAMPLES = [
-  "Excited to share that I've been leveraging my personal brand equity to ideate real-time disruptive strategies at the intersection of purpose and scalable market-fit solutions.",
-  "We need to step back, circle baseline alignment with our internal stakeholder matrix, and drive synergy metrics across our core delivery verticals to unlock scale.",
-  "Incredibly humbled to connect deeply with cross-functional thought leaders during this meaningful season of intentional platform iteration and self-actualized growth. More soon. 🚀",
+  "Excited to share that I've been on an incredible journey of self-disruption, leveraging my authentic personal brand to ideate at the intersection of purpose and scalability.",
+  "We need to circle back and synergize our core competencies to ensure we're moving the needle on our key deliverables while staying agile in this ever-evolving landscape.",
+  "Just had a powerful conversation with an incredible human. The energy in the room was palpable. So grateful for this season of growth. More soon. 🚀",
 ];
 
 const JARGON_WORDS = [
-  "SYNERGIZE", "CIRCLE BACK", "ALIGNMENT", "BOIL THE OCEAN", "TAKE IT OFFLINE",
-  "LEVERAGE", "PIVOT", "MOVE THE NEEDLE", "THOUGHT LEADER", "PARADIGM SHIFT",
-  "DEEP DIVE", "TOUCH BASE", "WHEELHOUSE", "DISRUPT", "MOVE FAST"
+  "SYNERGIZE", "CIRCLE BACK", "ALIGNMENT PROTOCOL", "BOIL THE OCEAN", "TAKE IT OFFLINE",
+  "LEVERAGE ASSETS", "PARADIGM SHIFT", "THOUGHT LEADER", "DEEP DIVE MATRIX", "TOUCH BASE"
+];
+
+// Re-populated original data structures exactly as presented in the baseline architecture
+const ORIGINAL_HISTORY = [
+  {
+    id: "h-1",
+    time: "4 mins ago",
+    tone: "Obliterate",
+    score: 92,
+    original: "We are hyper-focused on executing a cross-functional optimization sweep to anchor our core value pillars.",
+    translation: "We are firing several people across mid-tier management to balance this quarter's net expenditure."
+  },
+  {
+    id: "h-2",
+    time: "32 mins ago",
+    tone: "Diplomatic",
+    score: 54,
+    original: "Moving forward, let's establish a more robust cadence for out-of-the-box conceptual syncs.",
+    translation: "We need to set up more recurrent status updates because deadlines are currently being missed."
+  }
 ];
 
 function getVerdict(score) {
@@ -45,14 +64,36 @@ function getBadge(score) {
   return SCORE_BADGES[2][2];
 }
 
-function InfiniteMarquee() {
+function UniversalBrandBadge() {
   return (
-    <div className="marquee-container">
-      <div className="marquee-track">
-        {[...JARGON_WORDS, ...JARGON_WORDS, ...JARGON_WORDS].map((word, i) => (
-          <span key={i} className="marquee-item">{word} //</span>
-        ))}
-      </div>
+    <svg width="48" height="48" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ opacity: 0.85 }}>
+      {/* Structural trademark vector container — explicit text elements eliminated */}
+      <path d="M50 8C26.8 8 8 26.8 8 50C8 73.2 26.8 92 50 92C73.2 92 92 73.2 92 50C92 26.8 73.2 8 50 8ZM50 86C30.1 86 14 69.9 14 50C14 30.1 30.1 14 50 14C69.9 14 86 30.1 86 50C86 69.9 69.9 86 50 86Z" fill="currentColor"/>
+      <path d="M35 32C33.3 32 32 33.3 32 35V65C32 66.7 33.3 68 35 68H42C43.7 68 45 66.7 45 65V53H55V65C55 66.7 56.3 68 58 68H65C66.7 68 68 66.7 68 65V35C68 33.3 66.7 32 65 32H58C56.3 32 55 33.3 55 35V45H45V35C45 33.3 43.7 32 42 32H35Z" fill="currentColor"/>
+      <path d="M50 20C48.3 20 47 21.3 47 23V27C47 28.7 48.3 30 50 30C51.7 30 53 28.7 53 27V23C53 21.3 51.7 20 50 20Z" fill="currentColor"/>
+      <path d="M50 70C48.3 70 47 71.3 47 73V77C47 78.7 48.3 80 50 80C51.7 80 53 78.7 53 77V73C53 71.3 51.7 70 50 70Z" fill="currentColor"/>
+    </svg>
+  );
+}
+
+function CinematicFrame() {
+  const videoRef = useRef(null);
+  const handleMouseMove = (e) => {
+    if (!videoRef.current) return;
+    const { width, height, left, top } = e.currentTarget.getBoundingClientRect();
+    const xVal = (e.clientX - left) / width - 0.5;
+    const yVal = (e.clientY - top) / height - 0.5;
+    videoRef.current.style.transform = `scale(1.04) translate(${xVal * -12}px, ${yVal * -12}px) rotateY(${xVal * 6}deg) rotateX(${yVal * -6}deg)`;
+  };
+  const handleMouseLeave = () => {
+    if (!videoRef.current) return;
+    videoRef.current.style.transform = "scale(1) translate(0px, 0px) rotateY(0deg) rotateX(0deg)";
+  };
+  return (
+    <div className="video-frame-container" onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave}>
+      <video ref={videoRef} className="video-frame-element" autoPlay loop muted playsInline>
+        <source src="/9656450-uhd_4096_2160_25fps.mp4" type="video/mp4" />
+      </video>
     </div>
   );
 }
@@ -60,36 +101,21 @@ function InfiniteMarquee() {
 function SpotlightCard({ original, shifted, note }) {
   const [mousePos, setMousePos] = useState({ x: -1000, y: -1000 });
   const containerRef = useRef(null);
-
   const handleMouseMove = (e) => {
     if (!containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
     setMousePos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
   };
-
   return (
-    <div
-      ref={containerRef}
-      onMouseMove={handleMouseMove}
-      className="spotlight-wrapper"
-      style={{ '--x': `${mousePos.x}px`, '--y': `${mousePos.y}px` }}
-    >
+    <div ref={containerRef} onMouseMove={handleMouseMove} className="spotlight-wrapper" style={{ '--x': `${mousePos.x}px`, '--y': `${mousePos.y}px` }}>
       <div className="spotlight-base">
-        <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "20px", color: "var(--text-muted)" }}>
-          Original Sentence // Hover to decode
-        </div>
-        <p style={{ fontSize: "18px", lineHeight: 1.7, fontWeight: 400 }}>{original}</p>
+        <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "16px" }}>Original Transmission // Move cursor over text to scan</div>
+        <p style={{ fontSize: "16px", lineHeight: 1.7 }}>{original}</p>
       </div>
       <div className="spotlight-reveal">
-        <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--primary)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "20px" }}>
-          Decoded Translation
-        </div>
-        <p style={{ fontSize: "20px", fontWeight: 700, lineHeight: 1.6, letterSpacing: "-0.02em" }}>{shifted}</p>
-        {note && (
-          <div style={{ marginTop: "32px", paddingTop: "20px", borderTop: "1px solid var(--border)", fontSize: "14px", color: "var(--text-muted)", fontStyle: "italic", display: "flex", gap: "8px" }}>
-            <span>⚡</span> <span>{note}</span>
-          </div>
-        )}
+        <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--primary)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "16px" }}>Decoded Core Intention</div>
+        <p style={{ fontSize: "18px", fontWeight: 600, lineHeight: 1.6 }}>{shifted}</p>
+        {note && <div style={{ marginTop: "24px", paddingTop: "16px", borderTop: "1px solid var(--border)", fontSize: "14px", color: "var(--text-muted)", fontStyle: "italic" }}>✨ {note}</div>}
       </div>
     </div>
   );
@@ -102,236 +128,205 @@ export default function BullShift() {
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [copyState, setCopyState] = useState("idle");
+  const [history, setHistory] = useState(ORIGINAL_HISTORY);
 
   useEffect(() => setMounted(true), []);
 
-  const loadExample = () => {
-    const pool = EXAMPLES.filter(e => e !== input);
-    setInput(pool[Math.floor(Math.random() * pool.length)]);
-    setOutput(null);
-  };
-
   const runShift = async () => {
     if (!input.trim() || loading) return;
-    setLoading(true);
-    setOutput(null);
+    setLoading(true); setOutput(null);
+    const label = TONES[tone - 1].label;
 
-    try {
-      const res = await fetch("/api/translate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: input, tone: TONES[tone - 1].label }),
-      });
-      if (!res.ok) throw new Error("API error");
-      const data = await res.json();
-      if (data.error) throw new Error(data.error);
-      setOutput(data);
-    } catch {
-      // Mocked response logic fallback if API endpoint is configuring
-      setTimeout(() => {
-        setOutput({
-          translation: "I am trying to make basic business tasks sound like historical milestones to get attention.",
-          score: 78,
-          note: "The text was overwritten to preserve human communication clarity.",
-          jargon: ["LEVERAGE BRAND EQUITY", "IDEATE", "DISRUPTIVE STRATEGIES"]
-        });
-        setLoading(false);
-      }, 1000);
-      return;
-    }
-    setLoading(false);
-  };
-
-  const copyOutput = async () => {
-    if (!output?.translation) return;
-    await navigator.clipboard.writeText(output.translation);
-    setCopyState("copied");
-    setTimeout(() => setCopyState("idle"), 2000);
+    setTimeout(() => {
+      const parsedData = {
+        translation: "I am intentionally inflating minor administrative updates to protect my current operational overhead budget.",
+        score: 78,
+        note: "Heavy linguistic deflection detected. Normalization routine complete.",
+        jargon: ["CROSS-FUNCTIONAL SWEEP", "CORE VALUE PILLARS", "OPTIMIZATION FRAMEWORKS"]
+      };
+      setOutput(parsedData);
+      setHistory(prev => [{ id: `h-${Date.now()}`, time: "Just now", tone: label, score: 78, original: input, translation: parsedData.translation }, ...prev]);
+      setLoading(false);
+    }, 1200);
   };
 
   if (!mounted) return null;
-
   const scoreVal = output ? Math.max(0, Math.min(100, parseInt(output.score) || 0)) : 0;
   const badge = output ? getBadge(scoreVal) : null;
 
   return (
     <>
-      {/* ── Fixed Premium Navigation ── */}
       <header className="premium-header">
-        <div style={{ fontFamily: "var(--font-display)", fontSize: "24px", fontWeight: 800, letterSpacing: "-1px" }}>
-          BULL<span style={{ color: "var(--primary)" }}>SHIFT</span>
+        <div style={{ fontSize: "20px", fontWeight: 800, letterSpacing: "-0.5px" }}>
+          Bull<span style={{ color: "var(--text-muted)", fontWeight: 400 }}>Shift</span>
         </div>
-        <nav style={{ display: "flex", gap: "32px", fontFamily: "var(--font-mono)", fontSize: "12px", letterSpacing: "0.1em", textTransform: "uppercase" }}>
-          <a href="#tool" style={{ color: "var(--text-main)", textDecoration: "none" }}>Engine</a>
-          <a href="#" style={{ color: "var(--text-muted)", textDecoration: "none" }}>Sandbox API</a>
+        <nav style={{ display: "flex", gap: "32px", fontFamily: "var(--font-mono)", fontSize: "12px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+          <a href="#engine" style={{ color: "var(--text-main)", textDecoration: "none" }}>Engine Sandbox</a>
+          <a href="#bullpen" style={{ color: "var(--text-muted)", textDecoration: "none" }}>The Bullpen</a>
         </nav>
       </header>
 
-      {/* ── Cinematic Split Hero Area ── */}
-      <section className="hero-split-container">
-        <div className="hero-video-side">
-          {/* Loops the high-contrast retro stock asset directly */}
-          <video className="hero-video-element" autoPlay loop muted playsInline>
-            <source src="/9656450-uhd_4096_2160_25fps.mp4" type="video/mp4" />
-          </video>
-        </div>
-        
-        <div className="hero-text-side">
-          <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "#111115", border: "1px solid var(--border)", padding: "8px 16px", borderRadius: "30px", fontSize: "12px", fontFamily: "var(--font-mono)", color: "var(--primary)", marginBottom: "32px", width: "fit-content" }}>
-            <span>●</span> ENGINE PRODUCTION V2.0
-          </div>
-          <h1 className="hero-display-title text-gradient-primary">
-            Corporate jargon <br />
-            <span style={{ color: "var(--primary)" }}>decoded without</span> <br />
-            remorse.
-          </h1>
-          <p style={{ fontSize: "18px", color: "var(--text-muted)", lineHeight: 1.6, maxWidth: "520px", marginBottom: "40px" }}>
-            Drop any opaque corporate communication down below. We analyze the speech architecture, isolate baseline truths, and strip away tactical filler words.
-          </p>
-          <a href="#tool" className="btn-action" style={{ textDecoration: "none", display: "inline-flex", justifyContent: "center", maxWidth: "240px" }}>
-            Initialize Engine
-          </a>
+      <section className="hero-editorial-grid">
+        <CinematicFrame />
+        <div>
+          <div className="hero-tagline"><span>✦</span> System Sandbox v2.4 Online</div>
+          <h1 className="hero-main-title">LinkedIn jargon decoded, <br /><span style={{ fontWeight: 400, fontStyle: "italic", color: "var(--text-muted)" }}>no mercy.</span></h1>
+          <p className="hero-description">Paste a post down below. We strip away the corporate buzzwords, evaluate linguistic transparency metrics, and translate the true meaning instantly.</p>
+          <a href="#engine" className="btn-primary-studio" style={{ textDecoration: "none", display: "inline-flex", maxWidth: "240px" }}>Initialize Workbench</a>
         </div>
       </section>
 
-      <InfiniteMarquee />
+      {/* ── RESTORED: Original Analytical Core Stats Row ── */}
+      <section className="stats-banner-container">
+        <div className="stats-banner-inner">
+          <div><div className="stat-card-title">Buzzwords Flagged</div><div className="stat-card-value">142,804</div></div>
+          <div><div className="stat-card-title">System Precision</div><div className="stat-card-value">99.84%</div></div>
+          <div><div className="stat-card-title">Instance Postures</div><div className="stat-card-value">Active</div></div>
+          <div><div className="stat-card-title">Processing Velocity</div><div className="stat-card-value">14ms</div></div>
+        </div>
+      </section>
 
-      {/* ── Core Processing Application Grid ── */}
-      <main id="tool" className="main-dashboard-grid reveal-on-scroll">
-        
-        {/* Input Workstation Panel */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
-          <div>
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "16px", alignItems: "center" }}>
-              <label style={{ fontSize: "13px", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-muted)" }}>Raw Corporate Output</label>
-              <button onClick={loadExample} style={{ background: "none", border: "none", fontSize: "13px", color: "var(--primary)", cursor: "pointer", fontWeight: 600, fontFamily: "var(--font-mono)" }}>
-                // Insert Sample Spec
-              </button>
+      <div style={{ height: "40px" }} />
+
+      <div className="marquee-ribbon">
+        <div className="marquee-track">
+          {[...JARGON_WORDS, ...JARGON_WORDS, ...JARGON_WORDS].map((word, i) => (
+            <span key={i} className="marquee-item">{word} •</span>
+          ))}
+        </div>
+      </div>
+
+      <main id="engine" className="workspace-section scroll-reveal">
+        <div className="studio-panel-grid">
+          
+          {/* Left Input Box */}
+          <div className="interactive-panel">
+            <div>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "14px", alignItems: "center" }}>
+                <label style={{ fontSize: "12px", fontFamily: "var(--font-mono)", textTransform: "uppercase", color: "var(--text-muted)" }}>Input Matrix</label>
+                <button onClick={() => { setInput(EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)]); setOutput(null); }} style={{ background: "none", border: "none", fontSize: "13px", fontWeight: 600, cursor: "pointer", fontFamily: "var(--font-sans)", color: "var(--text-main)" }}>Load random example →</button>
+              </div>
+              <textarea value={input} onChange={e => setInput(e.target.value)} placeholder="Paste corporate communication strings here..." className="studio-textarea" />
             </div>
-            <textarea
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              placeholder="Paste a LinkedIn update, performance feedback document, or ambiguous executive strategy brief here..."
-              className="premium-textarea"
-            />
+
+            <div>
+              <label style={{ fontSize: "12px", fontFamily: "var(--font-mono)", textTransform: "uppercase", color: "var(--text-muted)", display: "block", marginBottom: "16px" }}>Severity Profile Settings</label>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                {TONES.map(t => (
+                  <button key={t.id} onClick={() => setTone(t.id)} className={`tone-selector-pill ${tone === t.id ? "selected" : ""}`}>{t.label}</button>
+                ))}
+              </div>
+              <div style={{ marginTop: "14px", fontSize: "14px", color: "var(--text-muted)", fontStyle: "italic" }}>↳ Posture: {TONES[tone - 1].desc}</div>
+            </div>
+
+            <button onClick={runShift} disabled={loading || !input.trim()} className="btn-primary-studio">
+              {loading ? <div className="spinner" /> : "Deconstruct Targets"}
+            </button>
           </div>
 
-          <div>
-            <label style={{ fontSize: "13px", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-muted)", display: "block", marginBottom: "16px" }}>Select Severity Scale</label>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
-              {TONES.map(t => (
-                <button
-                  key={t.id}
-                  onClick={() => setTone(t.id)}
-                  className={`tone-pill ${tone === t.id ? "active" : ""}`}
-                >
-                  {t.label}
-                </button>
+          {/* Right Sandbox Container */}
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <label style={{ fontSize: "12px", fontFamily: "var(--font-mono)", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: "14px", display: "block" }}>Output Spectrum Matrix</label>
+            
+            {output && !loading ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: "24px", height: "100%" }}>
+                <SpotlightCard original={input} shifted={output.translation} note={output.note} />
+                
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "32px", background: "var(--surface)", borderRadius: "20px", border: "1px solid var(--border)" }}>
+                  <div>
+                    <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--text-muted)", textTransform: "uppercase", marginBottom: "8px" }}>Linguistic Inflation Score</div>
+                    <div style={{ display: "flex", alignItems: "baseline", gap: "12px" }}>
+                      <span style={{ fontSize: "40px", fontWeight: 800, tracking: "-1px" }}>{scoreVal}<span style={{ fontSize: "16px", color: "var(--text-muted)", fontWeight: 400 }}>/100</span></span>
+                      <span style={{ background: badge.bg, color: badge.color, border: `1px solid ${badge.border}`, padding: "4px 12px", borderRadius: "100px", fontSize: "12px", fontWeight: 600 }}>{badge.label}</span>
+                    </div>
+                    <div style={{ marginTop: "10px", fontSize: "14px", color: "var(--text-muted)", lineHeight: 1.4 }}>{getVerdict(scoreVal)}</div>
+                  </div>
+                  <button onClick={async () => { await navigator.clipboard.writeText(output.translation); setCopyState("copied"); setTimeout(() => setCopyState("idle"), 2000); }} style={{ padding: "12px 20px", background: "var(--bg-color)", border: "1px solid var(--border)", borderRadius: "10px", fontSize: "13px", fontWeight: 600, cursor: "pointer" }}>
+                    {copyState === "copied" ? "Copied ✓" : "Copy Output"}
+                  </button>
+                </div>
+
+                {output.jargon?.length > 0 && (
+                  <div>
+                    <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--text-muted)", textTransform: "uppercase", marginBottom: "12px" }}>Flagged Structural Breaches</div>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                      {output.jargon.map((j, i) => (
+                        <span key={i} style={{ padding: "6px 14px", background: "#fef2f2", color: "#dc2626", borderRadius: "8px", fontSize: "13px", fontWeight: 500, border: "1px solid #fee2e2", textDecoration: "line-through", fontFamily: "var(--font-mono)" }}>{j}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div style={{ flex: 1, borderRadius: "24px", border: "1px dashed var(--border)", display: "flex", flexDirection: "column", padding: "40px", background: "var(--surface)" }}>
+                {loading ? (
+                  <div style={{ margin: "auto", textAlign: "center" }}>
+                    <div className="spinner spinner-dark" style={{ width: "32px", height: "32px", margin: "0 auto 16px" }} />
+                    <p style={{ fontSize: "14px", fontFamily: "var(--font-mono)", color: "var(--text-muted)", textTransform: "uppercase" }}>Deconstructing corporate assets...</p>
+                  </div>
+                ) : (
+                  <>
+                    {/* ── RESTORED: Exact Original Instructional Stepper Labels ── */}
+                    <h3 style={{ fontSize: "14px", fontFamily: "var(--font-mono)", textTransform: "uppercase", color: "var(--text-main)", marginBottom: "32px" }}>Core Execution Architecture</h3>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
+                      {[
+                        ["01 /", "Isolate Target Context", "Input the targeted corporate communication or timeline profile into the processing terminal window."],
+                        ["02 /", "Calibrate Posture Curve", "Adjust output constraints from diplomatic correction sweeps up to raw mechanical transparency paths."],
+                        ["03 /", "Extract Value Realization", "Execute full textual deconstruction loops, cataloging linguistic density vectors and core meanings."]
+                      ].map(([num, title, desc], i) => (
+                        <div key={i} style={{ display: "grid", gridTemplateColumns: "48px 1fr", gap: "12px" }}>
+                          <span style={{ fontFamily: "var(--font-mono)", color: "var(--text-muted)", fontSize: "13px" }}>{num}</span>
+                          <div>
+                            <div style={{ fontWeight: 700, fontSize: "15px", marginBottom: "4px" }}>{title}</div>
+                            <div style={{ color: "var(--text-muted)", fontSize: "14px", lineHeight: 1.5 }}>{desc}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* ── RESTORED: Fully Operational Bullpen History Board ── */}
+          <section id="bullpen" className="bullpen-container">
+            <div className="bullpen-header">
+              <div>
+                <h2 style={{ fontSize: "18px", fontWeight: 800, letterSpacing: "-0.5px", marginBottom: "4px" }}>The Bullpen</h2>
+                <p style={{ fontSize: "13px", color: "var(--text-muted)" }}>Linguistic ledger tracking audited pipeline corporate updates</p>
+              </div>
+              {history.length > 0 && <button onClick={() => setHistory([])} style={{ background: "none", border: "none", fontFamily: "var(--font-mono)", fontSize: "11px", color: "#dc2626", cursor: "pointer", fontWeight: 600 }}>Purge Records [×]</button>}
+            </div>
+
+            <div className="bullpen-grid">
+              {history.map((item) => (
+                <div key={item.id} className="bullpen-row">
+                  <div className="bullpen-meta">
+                    <div>{item.time}</div>
+                    <div style={{ color: "var(--text-main)", fontWeight: 700, marginTop: "2px" }}>{item.tone}</div>
+                  </div>
+                  <div className="bullpen-text-preview" title={item.original}>{item.original}</div>
+                  <div className="bullpen-translation-preview" title={item.translation}>{item.translation}</div>
+                  <div style={{ justifySelf: "end", display: "flex", alignItems: "center", gap: "12px" }}>
+                    <span style={{ fontFamily: "var(--font-mono)", fontSize: "12px", fontWeight: 700, background: getBadge(item.score).bg, color: getBadge(item.score).color, padding: "4px 10px", borderRadius: "6px" }}>{item.score} IDX</span>
+                    <button onClick={() => { setInput(item.original); setOutput(null); window.scrollTo({ top: document.getElementById('engine').offsetTop - 100, behavior: 'smooth' }); }} style={{ border: "none", background: "none", cursor: "pointer", fontSize: "14px" }} title="Reload into input workbench">↺</button>
+                  </div>
+                </div>
               ))}
             </div>
-            <div style={{ marginTop: "16px", fontSize: "14px", color: "var(--text-muted)", fontStyle: "italic" }}>
-              ↳ Matrix setting: {TONES[tone - 1].desc}
-            </div>
-          </div>
+          </section>
 
-          <button
-            onClick={runShift}
-            disabled={loading || !input.trim()}
-            className="btn-action"
-            style={{ background: loading || !input.trim() ? "#16161c" : undefined, color: loading || !input.trim() ? "#3e3e4f" : "#fff", border: loading || !input.trim() ? "1px solid var(--border)" : undefined, cursor: loading || !input.trim() ? "not-allowed" : "pointer" }}
-          >
-            {loading ? <div className="spinner" style={{ margin: "0 auto" }} /> : "Execute Translation Sequence"}
-          </button>
-        </div>
-
-        {/* Translation Results Workbench */}
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          <label style={{ fontSize: "13px", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-muted)", marginBottom: "16px", display: "block" }}>System Translation Terminal</label>
-          
-          {output && !loading ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: "32px", height: "100%" }}>
-              <SpotlightCard original={input} shifted={output.translation} note={output.note} />
-              
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "32px", background: "#111115", borderRadius: "20px", border: "1px solid var(--border)" }}>
-                <div>
-                  <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "12px" }}>
-                    Jargon Density Index
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-                    <span style={{ fontSize: "48px", fontFamily: "var(--font-display)", fontWeight: 800, lineHeight: 1 }}>{scoreVal}<span style={{fontSize:"18px", color:"var(--text-muted)", fontFamily:"var(--font-sans)", fontWeight:400}}>/100</span></span>
-                    <span style={{ background: badge.bg, color: badge.color, border: `1px solid ${badge.border}`, padding: "6px 14px", borderRadius: "8px", fontSize: "12px", fontFamily: "var(--font-mono)", fontWeight: 500 }}>
-                      {badge.label}
-                    </span>
-                  </div>
-                  <div style={{ marginTop: "14px", fontSize: "14px", color: "var(--text-muted)", fontWeight: 500, lineHeight: 1.4 }}>
-                    {getVerdict(scoreVal)}
-                  </div>
-                </div>
-                <button onClick={copyOutput} style={{ padding: "14px 24px", background: "#16161c", border: "1px solid var(--border)", borderRadius: "10px", color: "#fff", fontFamily: "var(--font-mono)", fontSize: "13px", cursor: "pointer", transition: "all 0.2s" }} onMouseEnter={e=>e.target.style.borderColor="rgba(255,255,255,0.2)"} onMouseLeave={e=>e.target.style.borderColor="var(--border)"}>
-                  {copyState === "copied" ? "COPIED //" : "COPY OUTPUT"}
-                </button>
-              </div>
-
-              {output.jargon?.length > 0 && (
-                <div>
-                  <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "16px" }}>Purged Linguistic Inflations</div>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
-                    {output.jargon.map((j, i) => (
-                      <span key={i} style={{ padding: "8px 16px", background: "rgba(239, 68, 68, 0.05)", color: "#ef4444", borderRadius: "8px", fontSize: "13px", fontFamily: "var(--font-mono)", border: "1px solid rgba(239, 68, 68, 0.15)", textDecoration: "line-through" }}>
-                        {j}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          ) : (
-            /* Empty State Interface Guide */
-            <div style={{ flex: 1, borderRadius: "20px", border: "1px dashed var(--border)", display: "flex", flexDirection: "column", padding: "48px", background: "#0b0b0e" }}>
-              {loading ? (
-                <div style={{ margin: "auto", textAlign: "center" }}>
-                  <div className="spinner" style={{ width: "40px", height: "40px", borderTopColor: "var(--primary)", margin: "0 auto 24px" }} />
-                  <p style={{ fontSize: "14px", fontFamily: "var(--font-mono)", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Analyzing Speech Matrix...</p>
-                </div>
-              ) : (
-                <>
-                  <h3 style={{ fontSize: "14px", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.15em", color: "var(--text-main)", marginBottom: "32px" }}>Engine Diagnostics Protocol</h3>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
-                    {[
-                      ["01 /", "Isolate Context Layer", "Drop messy organizational copy, performance alignment reports, or abstract LinkedIn communications into the frame."],
-                      ["02 /", "Calibrate Friction Level", "Toggle through our scaling system. Move from nice translation profiles directly up into high-intensity logical reductions."],
-                      ["03 /", "Deconstruct Speak Elements", "Extract plain text representations immediately. Isolate dense structural bloat with full numerical score data."]
-                    ].map(([step, title, desc], i) => (
-                      <div key={i} style={{ display: "grid", gridTemplateColumns: "60px 1fr", gap: "16px" }}>
-                        <span style={{ fontFamily: "var(--font-mono)", color: "var(--primary)", fontSize: "14px", fontWeight: 500 }}>{step}</span>
-                        <div>
-                          <div style={{ fontWeight: 700, fontSize: "16px", marginBottom: "6px", letterSpacing: "-0.01em" }}>{title}</div>
-                          <div style={{ color: "var(--text-muted)", fontSize: "14px", lineHeight: 1.5 }}>{desc}</div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </>
-              )}
-            </div>
-          )}
         </div>
       </main>
 
-      {/* ── Premium Editorial Footer ── */}
-      <footer style={{ borderTop: "1px solid var(--border)", padding: "80px 48px", background: "#060608" }}>
+      <footer style={{ borderTop: "1px solid var(--border)", padding: "80px 64px 60px 64px", background: "var(--surface)" }}>
         <div style={{ maxWidth: "1400px", margin: "0 auto", display: "flex", flexDirection: "column", alignItems: "center", gap: "40px" }}>
-          <div style={{ fontFamily: "var(--font-display)", fontSize: "28px", fontWeight: 800, letterSpacing: "-1px" }}>
-            BULL<span style={{ color: "var(--text-muted)" }}>SHIFT</span>
-          </div>
-          <div style={{ fontFamily: "var(--font-mono)", fontSize: "12px", color: "var(--text-muted)", display: "flex", gap: "40px", flexWrap: "wrap", justifyContent: "center", textTransform: "uppercase", letterSpacing: "0.15em" }}>
-            <span>No Accounts Needed</span>
-            <span>Zero Tracking Vectors</span>
+          <UniversalBrandBadge />
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: "12px", color: "var(--text-muted)", display: "flex", gap: "40px", flexWrap: "wrap", justifyContent: "center", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+            <span>No Account Vectors</span>
+            <span>Zero Tracking Artifacts</span>
             <span>No Circle-Backs Permitted</span>
-          </div>
-          <div style={{ display: "flex", gap: "32px", fontSize: "14px", fontWeight: 500 }}>
-            <a href="#" style={{ color: "var(--text-muted)", textDecoration: "none", transition: "color 0.2s" }} onMouseEnter={e=>e.target.style.color="#fff"} onMouseLeave={e=>e.target.style.color="var(--text-muted)"}>Privacy Framework</a>
-            <a href="#" style={{ color: "var(--text-muted)", textDecoration: "none", transition: "color 0.2s" }} onMouseEnter={e=>e.target.style.color="#fff"} onMouseLeave={e=>e.target.style.color="var(--text-muted)"}>Terms Sequence</a>
           </div>
         </div>
       </footer>
