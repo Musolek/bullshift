@@ -325,30 +325,35 @@ export default function BullShift() {
       {/* NAV */}
       <nav style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "16px 40px", borderBottom: "1.5px solid " + palette.border,
+        padding: "16px 20px", borderBottom: "1.5px solid " + palette.border,
         background: palette.bg,
+        position: "sticky",
+        top: 0,
+        zIndex: 100,
       }}>
-        <Link href="/" style={{ ...syne, fontWeight: 800, fontSize: 22, letterSpacing: "-0.04em", color: palette.text, textDecoration: "none" }}>
+        <Link href="/" style={{ ...syne, fontWeight: 800, fontSize: 20, letterSpacing: "-0.04em", color: palette.text, textDecoration: "none" }}>
           Bull<em style={{ color: palette.accent, fontStyle: "normal" }}>Shift</em>
         </Link>
-        <div style={{ display: "flex", gap: 24, alignItems: "center" }}>
-          <Link href="/about" style={{ fontSize: 13, color: palette.muted, textDecoration: "none" }}>About</Link>
-          <Link href="/faq" style={{ fontSize: 13, color: palette.muted, textDecoration: "none" }}>FAQ</Link>
-          <Link href="/privacy" style={{ fontSize: 13, color: palette.muted, textDecoration: "none" }}>Privacy</Link>
+        <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
+          <Link href="/about" className="nav-link" style={{ fontSize: 13, color: palette.muted, textDecoration: "none" }}>About</Link>
+          <Link href="/faq" className="nav-link" style={{ fontSize: 13, color: palette.muted, textDecoration: "none" }}>FAQ</Link>
+          <Link href="/privacy" className="nav-link" style={{ fontSize: 13, color: palette.muted, textDecoration: "none" }}>Privacy</Link>
           {/* Palette Toggle */}
-          <div style={{ display: "flex", gap: 8, alignItems: "center", marginLeft: 16, paddingLeft: 16, borderLeft: "1px solid " + palette.border }}>
+          <div style={{ display: "flex", gap: 6, alignItems: "center", marginLeft: 12, paddingLeft: 12, borderLeft: "1px solid " + palette.border }}>
             {PALETTES.map((p) => (
               <button
                 key={p.id}
                 onClick={() => setPalette(p)}
                 style={{
-                  width: 24,
-                  height: 24,
-                  borderRadius: 4,
+                  width: 28,
+                  height: 28,
+                  borderRadius: 6,
                   border: palette.id === p.id ? "2px solid " + palette.text : "1px solid " + palette.border,
                   background: p.bg,
                   cursor: "pointer",
-                  transition: "all 0.2s"
+                  transition: "all 0.2s",
+                  minWidth: 44,
+                  minHeight: 44,
                 }}
                 title={p.name}
               />
@@ -357,55 +362,9 @@ export default function BullShift() {
         </div>
       </nav>
 
-      {/* HERO */}
-      <div style={{ padding: "64px 40px 0", maxWidth: 860, margin: "0 auto" }}>
-        <div style={{ ...mono, fontSize: "10px", letterSpacing: "0.12em", color: palette.accent, textTransform: "uppercase", marginBottom: 14 }}>
-          Translation Engine
-        </div>
-        <h1 style={{ ...syne, fontWeight: 800, fontSize: "clamp(48px,8vw,88px)", lineHeight: 0.92, letterSpacing: "-0.04em", color: palette.text, marginBottom: 28 }}>
-          LinkedIn jargon<br />
-          <span style={{ textDecoration: "line-through", textDecorationThickness: 3, color: palette.muted }}>decoded</span><br />
-          without <span style={{ color: palette.accent }}>mercy</span>
-        </h1>
-        <p style={{ fontSize: 17, lineHeight: 1.7, color: palette.muted, fontWeight: 300, maxWidth: 580 }}>
-          Paste any opaque corporate communication down below. We analyze the speech architecture, isolate baseline truths, and strip away tactical filler words.
-        </p>
-      </div>
-
-      {/* TICKER */}
-      <div style={{ margin: "48px 0", overflow: "hidden", borderTop: "1.5px solid " + palette.border, borderBottom: "1.5px solid " + palette.border }}>
-        <div style={{ display: "flex", gap: 0, whiteSpace: "nowrap", animation: "ticker 28s linear infinite", padding: "12px 0" }}>
-          {[...JARGON_WORDS, ...JARGON_WORDS].map((word, i) => (
-            <span key={i} style={{ display: "inline-flex", alignItems: "center" }}>
-              <span style={{ ...mono, fontSize: 11, color: palette.muted, padding: "0 16px" }}>{word}</span>
-              <span style={{ color: palette.border }}>·</span>
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {/* Red Thread: Dimension Explanations */}
-      <section style={{ maxWidth: "860px", margin: "0 auto", padding: "48px 40px" }}>
-        <div style={{ ...mono, fontSize: "10px", letterSpacing: "0.12em", textTransform: "uppercase", color: palette.accent, marginBottom: 20 }}>
-          Corporate Bullshit Receptivity Scale — Four Dimensions
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 24 }}>
-          {DIMENSIONS.map((dim) => (
-            <div key={dim.key} style={{ borderTop: `3px solid ${dim.color}`, paddingTop: 16 }}>
-              <div style={{ ...mono, fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.08em", color: palette.muted, marginBottom: 8 }}>
-                {dim.name}
-              </div>
-              <div style={{ fontSize: 13, color: palette.text, lineHeight: 1.5, fontWeight: 500 }}>
-                {dim.desc}
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* MAIN WORKSPACE */}
-      <main id="engine" style={{ maxWidth: "1400px", margin: "0 auto", padding: "48px 40px" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32 }}>
+      {/* MAIN WORKSPACE - MOVED TO TOP */}
+      <main id="engine" style={{ maxWidth: "1400px", margin: "0 auto", padding: "24px 20px" }}>
+        <div className="workspace-grid" style={{ display: "grid", gridTemplateColumns: "1fr", gap: 24 }}>
           {/* Left Input Panel */}
           <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
             <div>
@@ -590,24 +549,70 @@ export default function BullShift() {
         </div>
       </main>
 
+      {/* HERO - MOVED BELOW TRANSLATION ENGINE */}
+      <div style={{ padding: "48px 20px", maxWidth: 860, margin: "0 auto" }}>
+        <div style={{ ...mono, fontSize: "10px", letterSpacing: "0.12em", color: palette.accent, textTransform: "uppercase", marginBottom: 14 }}>
+          Translation Engine
+        </div>
+        <h1 style={{ ...syne, fontWeight: 800, fontSize: "clamp(32px,6vw,64px)", lineHeight: 0.92, letterSpacing: "-0.04em", color: palette.text, marginBottom: 28 }}>
+          LinkedIn jargon<br />
+          <span style={{ textDecoration: "line-through", textDecorationThickness: 3, color: palette.muted }}>decoded</span><br />
+          without <span style={{ color: palette.accent }}>mercy</span>
+        </h1>
+        <p style={{ fontSize: 16, lineHeight: 1.7, color: palette.muted, fontWeight: 300, maxWidth: 580 }}>
+          Paste any opaque corporate communication down below. We analyze the speech architecture, isolate baseline truths, and strip away tactical filler words.
+        </p>
+      </div>
+
+      {/* TICKER */}
+      <div style={{ margin: "32px 0", overflow: "hidden", borderTop: "1.5px solid " + palette.border, borderBottom: "1.5px solid " + palette.border }}>
+        <div style={{ display: "flex", gap: 0, whiteSpace: "nowrap", animation: "ticker 28s linear infinite", padding: "12px 0" }}>
+          {[...JARGON_WORDS, ...JARGON_WORDS].map((word, i) => (
+            <span key={i} style={{ display: "inline-flex", alignItems: "center" }}>
+              <span style={{ ...mono, fontSize: 11, color: palette.muted, padding: "0 16px" }}>{word}</span>
+              <span style={{ color: palette.border }}>·</span>
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* Red Thread: Dimension Explanations */}
+      <section style={{ maxWidth: "860px", margin: "0 auto", padding: "48px 20px" }}>
+        <div style={{ ...mono, fontSize: "10px", letterSpacing: "0.12em", textTransform: "uppercase", color: palette.accent, marginBottom: 20 }}>
+          Corporate Bullshit Receptivity Scale — Four Dimensions
+        </div>
+        <div className="dimensions-grid" style={{ display: "grid", gridTemplateColumns: "1fr", gap: 16 }}>
+          {DIMENSIONS.map((dim) => (
+            <div key={dim.key} style={{ borderTop: `3px solid ${dim.color}`, paddingTop: 16 }}>
+              <div style={{ ...mono, fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.08em", color: palette.muted, marginBottom: 8 }}>
+                {dim.name}
+              </div>
+              <div style={{ fontSize: 13, color: palette.text, lineHeight: 1.5, fontWeight: 500 }}>
+                {dim.desc}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* BULLPEN */}
-      <section id="bullpen" style={{ maxWidth: "1400px", margin: "0 auto", padding: "48px 40px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 24, alignItems: "center" }}>
+      <section id="bullpen" style={{ maxWidth: "1400px", margin: "0 auto", padding: "48px 20px" }}>
+        <div className="flex-row-mobile" style={{ display: "flex", justifyContent: "space-between", marginBottom: 24, alignItems: "center", flexDirection: "column", gap: 16 }}>
           <div>
             <h2 style={{ ...syne, fontSize: 18, fontWeight: 800, letterSpacing: "-0.5px", marginBottom: 4 }}>The Bullpen</h2>
             <p style={{ fontSize: 13, color: palette.muted }}>Linguistic ledger tracking audited pipeline corporate updates</p>
           </div>
-          {history.length > 0 && <button onClick={() => setHistory([])} style={{ background: "none", border: "none", ...mono, fontSize: 11, color: "#C0392B", cursor: "pointer", fontWeight: 600 }}>Purge Records [×]</button>}
+          {history.length > 0 && <button onClick={() => setHistory([])} style={{ background: "none", border: "none", ...mono, fontSize: 11, color: "#C0392B", cursor: "pointer", fontWeight: 600, padding: 12, minWidth: 44, minHeight: 44 }}>Purge Records [×]</button>}
         </div>
 
         {/* CBRS Diagnostic - Shows after 5 translations */}
         {showCBRS && cbrs && (
-          <div style={{ marginBottom: 32, padding: 32, background: "rgba(255,255,255,0.3)", backdropFilter: "blur(12px)", borderRadius: 16, border: "1.5px solid " + palette.border }}>
+          <div style={{ marginBottom: 32, padding: 24, background: "rgba(255,255,255,0.3)", backdropFilter: "blur(12px)", borderRadius: 16, border: "1.5px solid " + palette.border }}>
             <div style={{ marginBottom: 24, paddingBottom: 16, borderBottom: "1px solid rgba(0,0,0,0.1)" }}>
               <div style={{ ...mono, fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: palette.accent, marginBottom: 8 }}>
                 Corporate Bullshit Receptivity Scale
               </div>
-              <div style={{ fontSize: 32, ...syne, fontWeight: 800, color: palette.text, lineHeight: 1, marginBottom: 8 }}>
+              <div style={{ fontSize: 28, ...syne, fontWeight: 800, color: palette.text, lineHeight: 1, marginBottom: 8 }}>
                 {cbrs.archetype}
               </div>
               <div style={{ fontSize: 14, color: palette.muted, lineHeight: 1.5 }}>
@@ -615,7 +620,7 @@ export default function BullShift() {
               </div>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
+            <div className="cbrs-grid" style={{ display: "grid", gridTemplateColumns: "1fr", gap: 16 }}>
               {DIMENSIONS.map((dim) => (
                 <div key={dim.key} style={{ padding: 16, background: "rgba(255,255,255,0.3)", borderRadius: 8 }}>
                   <div style={{ fontSize: 28, ...syne, fontWeight: 800, color: dim.color, lineHeight: 1, marginBottom: 4 }}>
@@ -631,7 +636,7 @@ export default function BullShift() {
               ))}
             </div>
 
-            <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid rgba(0,0,0,0.1)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div className="flex-row-mobile" style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid rgba(0,0,0,0.1)", display: "flex", justifyContent: "space-between", alignItems: "center", flexDirection: "column", gap: 16 }}>
               <div style={{ fontSize: 13, color: palette.muted }}>
                 Composite Score: <span style={{ color: palette.text, fontWeight: 700 }}>{cbrs.composite}/100</span>
               </div>
@@ -641,7 +646,7 @@ export default function BullShift() {
                   navigator.clipboard.writeText(text);
                   alert('Archetype copied to clipboard! Share it on LinkedIn for maximum irony.');
                 }}
-                style={{ padding: "10px 20px", background: palette.accent, color: palette.text, border: "none", borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: "pointer", ...mono }}
+                style={{ padding: "12px 20px", background: palette.accent, color: palette.text, border: "none", borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: "pointer", ...mono, minWidth: 44, minHeight: 44 }}
               >
                 Share Archetype
               </button>
@@ -652,7 +657,7 @@ export default function BullShift() {
         {/* History Grid */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 0, border: "1.5px solid " + palette.border, borderRadius: 8, overflow: "hidden" }}>
           {history.map((item) => (
-            <div key={item.id} style={{ display: "grid", gridTemplateColumns: "100px 1fr 1fr 120px", gap: 0, padding: 20, borderBottom: "1.5px solid " + palette.border, ...(item === history[history.length - 1] ? { borderBottom: "none" } : {}) }}>
+            <div key={item.id} className="history-row" style={{ display: "grid", gridTemplateColumns: "1fr", gap: 16, padding: 20, borderBottom: "1.5px solid " + palette.border, ...(item === history[history.length - 1] ? { borderBottom: "none" } : {}) }}>
               <div>
                 <div style={{ fontSize: 12, color: palette.muted }}>{item.time}</div>
                 <div style={{ color: palette.text, fontWeight: 700, marginTop: 2, fontSize: 13 }}>{item.tone}</div>
@@ -661,7 +666,7 @@ export default function BullShift() {
               <div style={{ fontSize: 14, color: palette.text, fontWeight: 500, lineHeight: 1.5, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.translation}</div>
               <div style={{ display: "flex", alignItems: "center", gap: 12, justifyContent: "flex-end" }}>
                 <span style={{ ...mono, fontSize: 12, fontWeight: 700, background: getBadge(item.score).bg, color: getBadge(item.score).color, padding: "4px 10px", borderRadius: 6 }}>{item.score} IDX</span>
-                <button onClick={() => { setInput(item.original); setOutput(null); window.scrollTo({ top: 0, behavior: "smooth" }); }} style={{ border: "none", background: "none", cursor: "pointer", fontSize: 14 }}>↺</button>
+                <button onClick={() => { setInput(item.original); setOutput(null); window.scrollTo({ top: 0, behavior: "smooth" }); }} style={{ border: "none", background: "none", cursor: "pointer", fontSize: 14, padding: 12, minWidth: 44, minHeight: 44 }}>↺</button>
               </div>
             </div>
           ))}
@@ -669,7 +674,7 @@ export default function BullShift() {
       </section>
 
       {/* FOOTER */}
-      <footer style={{ borderTop: "1.5px solid " + palette.border, padding: "48px 40px", background: palette.bg }}>
+      <footer style={{ borderTop: "1.5px solid " + palette.border, padding: "32px 20px", background: palette.bg }}>
         <div style={{ maxWidth: "860px", margin: "0 auto", display: "flex", flexDirection: "column", alignItems: "center", gap: 24 }}>
           <div style={{ ...mono, fontSize: 10, color: palette.muted, textAlign: "center" }}>
             Not affiliated with LinkedIn® or Microsoft. BullShift is satire. · bullshift.app
@@ -680,6 +685,24 @@ export default function BullShift() {
       <style>{`
         @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        
+        @media (max-width: 767px) {
+          .nav-link { display: none !important; }
+          .workspace-grid { grid-template-columns: 1fr !important; }
+          .dimensions-grid { grid-template-columns: 1fr !important; }
+          .cbrs-grid { grid-template-columns: 1fr !important; }
+          .history-row { grid-template-columns: 1fr !important; }
+          .flex-row-mobile { flex-direction: column !important; }
+        }
+        
+        @media (min-width: 768px) {
+          .nav-link { display: block !important; }
+          .workspace-grid { grid-template-columns: 1fr 1fr !important; gap: 32px !important; }
+          .dimensions-grid { grid-template-columns: repeat(4, 1fr) !important; gap: 24px !important; }
+          .cbrs-grid { grid-template-columns: repeat(4, 1fr) !important; }
+          .history-row { grid-template-columns: 100px 1fr 1fr 120px !important; gap: 0 !important; }
+          .flex-row-mobile { flex-direction: row !important; }
+        }
       `}</style>
     </div>
   );
