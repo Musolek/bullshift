@@ -1,6 +1,8 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 
 const TONES = [
   { id: 1, label: "Diplomatic",  desc: "Highly charitable translation layers. Keeps relationships entirely intact." },
@@ -322,45 +324,7 @@ export default function BullShift() {
     <div style={{ background: palette.bg, minHeight: "100vh", ...sans, color: palette.text }}>
       {cbrs && <CBRSShareCard cbrs={cbrs} />}
       
-      {/* NAV */}
-      <nav style={{
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "16px 20px", borderBottom: "1.5px solid " + palette.border,
-        background: palette.bg,
-        position: "sticky",
-        top: 0,
-        zIndex: 100,
-      }}>
-        <Link href="/" style={{ ...syne, fontWeight: 800, fontSize: 20, letterSpacing: "-0.04em", color: palette.text, textDecoration: "none" }}>
-          Bull<em style={{ color: palette.accent, fontStyle: "normal" }}>Shift</em>
-        </Link>
-        <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
-          <Link href="/about" className="nav-link" style={{ fontSize: 13, color: palette.muted, textDecoration: "none" }}>About</Link>
-          <Link href="/faq" className="nav-link" style={{ fontSize: 13, color: palette.muted, textDecoration: "none" }}>FAQ</Link>
-          <Link href="/privacy" className="nav-link" style={{ fontSize: 13, color: palette.muted, textDecoration: "none" }}>Privacy</Link>
-          {/* Palette Toggle */}
-          <div style={{ display: "flex", gap: 6, alignItems: "center", marginLeft: 12, paddingLeft: 12, borderLeft: "1px solid " + palette.border }}>
-            {PALETTES.map((p) => (
-              <button
-                key={p.id}
-                onClick={() => setPalette(p)}
-                style={{
-                  width: 28,
-                  height: 28,
-                  borderRadius: 6,
-                  border: palette.id === p.id ? "2px solid " + palette.text : "1px solid " + palette.border,
-                  background: p.bg,
-                  cursor: "pointer",
-                  transition: "all 0.2s",
-                  minWidth: 44,
-                  minHeight: 44,
-                }}
-                title={p.name}
-              />
-            ))}
-          </div>
-        </div>
-      </nav>
+      <Header isTyping={isTranslating} jargonDensity={scoreVal} palette={palette} setPalette={setPalette} />
 
       {/* MAIN WORKSPACE - MOVED TO TOP */}
       <main id="engine" style={{ maxWidth: "1400px", margin: "0 auto", padding: "24px 20px" }}>
@@ -689,32 +653,7 @@ export default function BullShift() {
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer style={{ borderTop: "1.5px solid " + palette.border, padding: "48px 20px", background: palette.bg }}>
-        <div style={{ maxWidth: "860px", margin: "0 auto", display: "flex", flexDirection: "column", alignItems: "center", gap: 32 }}>
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
-            <img src="/logo.png" alt="BullShift Logo" style={{ height: 48, width: "auto" }} />
-            <div style={{ ...syne, fontSize: 24, fontWeight: 800, color: palette.text, letterSpacing: "-0.04em" }}>
-              Bull<em style={{ color: palette.accent, fontStyle: "normal" }}>Shift</em>
-            </div>
-          </div>
-          
-          <div style={{ display: "flex", gap: 32, flexWrap: "wrap", justifyContent: "center" }}>
-            <Link href="/" style={{ fontSize: 13, color: palette.muted, textDecoration: "none", ...sans }}>Home</Link>
-            <Link href="/about" style={{ fontSize: 13, color: palette.muted, textDecoration: "none", ...sans }}>About</Link>
-            <Link href="/faq" style={{ fontSize: 13, color: palette.muted, textDecoration: "none", ...sans }}>FAQ</Link>
-            <Link href="/privacy" style={{ fontSize: 13, color: palette.muted, textDecoration: "none", ...sans }}>Privacy</Link>
-          </div>
-          
-          <div style={{ ...mono, fontSize: 11, color: palette.muted, textAlign: "center", lineHeight: 1.6 }}>
-            Not affiliated with LinkedIn® or Microsoft. BullShift is satire. · bullshift.app
-          </div>
-          
-          <div style={{ ...mono, fontSize: 10, color: palette.muted, textAlign: "center" }}>
-            © 2024 BullShift. All rights reserved.
-          </div>
-        </div>
-      </footer>
+      <Footer />
 
       <style>{`
         @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }

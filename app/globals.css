@@ -1,4 +1,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  /* Infinite ticker helper */
+  .ticker-wrap {
+    overflow: hidden;
+    white-space: nowrap;
+    display: flex;
+  }
+  
+  .ticker-content {
+    display: inline-block;
+    padding-right: 2rem;
+  }
+}
 
 :root {
   --bg-color: #fcfbfa; /* Light, warm, premium minimalist editorial canvas */
