@@ -19,7 +19,7 @@ const Footer = () => {
         {/* Col 1: Identity Card */}
         <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
           <span style={{ fontFamily: "monospace", fontSize: "0.75rem", letterSpacing: "0.1em", color: "#525252" }}>// DE-BOTTING FRAMEWORK</span>
-          <img src="/logo.png" alt="BullShift Logo" style={{ height: 48, width: "auto" }} />
+          <img src="/logo.png" alt="BullShift Logo" style={{ height: "auto", width: "auto", maxHeight: 48 }} />
           <p style={{ fontFamily: "sans-serif", fontSize: "0.875rem", color: "#737373", maxWidth: "20rem", lineHeight: "1.625" }}>
             Bullshift handles the strategic translation of corporate dialect into raw human utility. No algorithms were rented to produce your copy.
           </p>
