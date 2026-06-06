@@ -559,9 +559,25 @@ export default function BullShift() {
           <span style={{ textDecoration: "line-through", textDecorationThickness: 3, color: palette.muted }}>decoded</span><br />
           without <span style={{ color: palette.accent }}>mercy</span>
         </h1>
-        <p style={{ fontSize: 16, lineHeight: 1.7, color: palette.muted, fontWeight: 300, maxWidth: 580 }}>
+        <p style={{ fontSize: 16, lineHeight: 1.7, color: palette.muted, fontWeight: 300, maxWidth: 580, marginBottom: 24 }}>
           Paste any opaque corporate communication down below. We analyze the speech architecture, isolate baseline truths, and strip away tactical filler words.
         </p>
+        
+        {/* Fun Stats */}
+        <div style={{ display: "flex", gap: 32, flexWrap: "wrap", marginTop: 32 }}>
+          <div style={{ ...mono, fontSize: 12, color: palette.muted }}>
+            <span style={{ ...syne, fontSize: 24, fontWeight: 800, color: palette.text, display: "block", marginBottom: 4 }}>142K+</span>
+            buzzwords autopsied
+          </div>
+          <div style={{ ...mono, fontSize: 12, color: palette.muted }}>
+            <span style={{ ...syne, fontSize: 24, fontWeight: 800, color: palette.text, display: "block", marginBottom: 4 }}>0</span>
+            circle-backs tolerated
+          </div>
+          <div style={{ ...mono, fontSize: 12, color: palette.muted }}>
+            <span style={{ ...syne, fontSize: 24, fontWeight: 800, color: palette.text, display: "block", marginBottom: 4 }}>100%</span>
+            bullshit-free
+          </div>
+        </div>
       </div>
 
       {/* TICKER */}
@@ -675,10 +691,27 @@ export default function BullShift() {
 
       {/* FOOTER */}
       <footer style={{ borderTop: "1.5px solid " + palette.border, padding: "48px 20px", background: palette.bg }}>
-        <div style={{ maxWidth: "860px", margin: "0 auto", display: "flex", flexDirection: "column", alignItems: "center", gap: 24 }}>
-          <img src="/logo.png" alt="BullShift Logo" style={{ height: 40, width: "auto" }} />
-          <div style={{ ...mono, fontSize: 10, color: palette.muted, textAlign: "center" }}>
+        <div style={{ maxWidth: "860px", margin: "0 auto", display: "flex", flexDirection: "column", alignItems: "center", gap: 32 }}>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
+            <img src="/logo.png" alt="BullShift Logo" style={{ height: 48, width: "auto" }} />
+            <div style={{ ...syne, fontSize: 24, fontWeight: 800, color: palette.text, letterSpacing: "-0.04em" }}>
+              Bull<em style={{ color: palette.accent, fontStyle: "normal" }}>Shift</em>
+            </div>
+          </div>
+          
+          <div style={{ display: "flex", gap: 32, flexWrap: "wrap", justifyContent: "center" }}>
+            <Link href="/" style={{ fontSize: 13, color: palette.muted, textDecoration: "none", ...sans }}>Home</Link>
+            <Link href="/about" style={{ fontSize: 13, color: palette.muted, textDecoration: "none", ...sans }}>About</Link>
+            <Link href="/faq" style={{ fontSize: 13, color: palette.muted, textDecoration: "none", ...sans }}>FAQ</Link>
+            <Link href="/privacy" style={{ fontSize: 13, color: palette.muted, textDecoration: "none", ...sans }}>Privacy</Link>
+          </div>
+          
+          <div style={{ ...mono, fontSize: 11, color: palette.muted, textAlign: "center", lineHeight: 1.6 }}>
             Not affiliated with LinkedIn® or Microsoft. BullShift is satire. · bullshift.app
+          </div>
+          
+          <div style={{ ...mono, fontSize: 10, color: palette.muted, textAlign: "center" }}>
+            © 2024 BullShift. All rights reserved.
           </div>
         </div>
       </footer>
