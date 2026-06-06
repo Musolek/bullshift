@@ -2,8 +2,7 @@ import "./globals.css";
 
 export const metadata = {
   title: "BullShift — LinkedIn jargon, decoded",
-  description:
-    "Paste a LinkedIn post. Get what they actually meant. No sign-up, no tracking, no circle-backs.",
+  description: "Paste a LinkedIn post. Get what they actually meant. No sign-up, no tracking, no circle-backs.",
   metadataBase: new URL("https://www.bullshift.app"),
   openGraph: {
     title: "BullShift",

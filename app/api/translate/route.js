@@ -1,9 +1,8 @@
 import Anthropic from "@anthropic-ai/sdk";
 
-// ─── In-memory rate limiter (resets on cold start, good enough for serverless) ───
 const rateLimitMap = new Map();
-const RATE_LIMIT    = 20;   // max requests per window per IP
-const RATE_WINDOW   = 60_000; // 1 minute window
+const RATE_LIMIT    = 20; 
+const RATE_WINDOW   = 60_000; 
 
 function checkRateLimit(ip) {
   const now = Date.now();
@@ -20,7 +19,6 @@ function checkRateLimit(ip) {
   return true;
 }
 
-// Clean up old entries periodically (prevents unbounded memory growth)
 setInterval(() => {
   const cutoff = Date.now() - RATE_WINDOW;
   for (const [ip, record] of rateLimitMap.entries()) {
@@ -28,7 +26,6 @@ setInterval(() => {
   }
 }, 5 * 60_000);
 
-// ─── Tone prompts ─────────────────────────────────────────────────────────────
 const TONE_GUIDES = {
   Diplomatic:  "Charitable and gentle, but unflinchingly honest. Give the author reasonable benefit of the doubt.",
   Measured:    "Clear and direct. Some warmth. No snark.",
@@ -58,9 +55,7 @@ Rules:
 - note: illuminates, doesn't mock. Omit the field entirely if there's nothing worth saying.
 - Return ONLY the JSON object.`;
 
-// ─── Handler ─────────────────────────────────────────────────────────────────
 export async function POST(req) {
-  // Rate limit check
   const ip =
     req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
     req.headers.get("x-real-ip") ||
@@ -73,7 +68,6 @@ export async function POST(req) {
     );
   }
 
-  // Parse + validate body
   let body;
   try {
     body = await req.json();
@@ -93,7 +87,6 @@ export async function POST(req) {
     return Response.json({ error: "Invalid tone." }, { status: 400 });
   }
 
-  // Anthropic call
   if (!process.env.ANTHROPIC_API_KEY) {
     console.error("ANTHROPIC_API_KEY not set");
     return Response.json({ error: "Service misconfigured." }, { status: 500 });
@@ -103,7 +96,7 @@ export async function POST(req) {
 
   try {
     const response = await client.messages.create({
-      model: "claude-sonnet-4-20250514",
+      model: "claude-3-sonnet-20240229",
       max_tokens: 700,
       system: SYSTEM_PROMPT(tone),
       messages: [{ role: "user", content: text.trim() }],
@@ -115,11 +108,9 @@ export async function POST(req) {
     try {
       parsed = JSON.parse(raw.replace(/```json|```/g, "").trim());
     } catch {
-      // Graceful fallback if model doesn't return clean JSON
       parsed = { translation: raw, score: 50, jargon: [], note: "" };
     }
 
-    // Sanitize output
     return Response.json({
       translation: String(parsed.translation || "").slice(0, 2000),
       score:       Math.max(0, Math.min(100, parseInt(parsed.score) || 50)),
