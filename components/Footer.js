@@ -11,30 +11,30 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="w-full bg-black border-t-2 border-neutral-900 mt-auto select-none">
+    <footer style={{ width: "100%", backgroundColor: "#000000", borderTop: "2px solid #262626", marginTop: "auto", userSelect: "none" }}>
       {/* Upper Layout Columns */}
-      <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div style={{ maxWidth: "80rem", margin: "0 auto", padding: "0 1.5rem 3rem", display: "grid", gridTemplateColumns: "repeat(1, minmax(0, 1fr))", gap: "2rem" }} className="md:grid-cols-3">
         
         {/* Col 1: Identity Card */}
-        <div className="flex flex-col gap-3">
-          <span className="font-mono text-xs tracking-widest text-neutral-600">// DE-BOTTING FRAMEWORK</span>
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+          <span style={{ fontFamily: "monospace", fontSize: "0.75rem", letterSpacing: "0.1em", color: "#525252" }}>// DE-BOTTING FRAMEWORK</span>
           <img src="/logo.png" alt="BullShift Logo" style={{ height: 48, width: "auto" }} />
-          <p className="font-sans text-sm text-neutral-400 max-w-sm leading-relaxed">
+          <p style={{ fontFamily: "sans-serif", fontSize: "0.875rem", color: "#737373", maxWidth: "20rem", lineHeight: "1.625" }}>
             Bullshift handles the strategic translation of corporate dialect into raw human utility. No algorithms were rented to produce your copy.
           </p>
         </div>
 
         {/* Col 2: High-Fidelity Nav Ledgers */}
-        <div className="flex flex-col gap-3">
-          <span className="font-mono text-xs tracking-widest text-neutral-600">// PROTOCOLS</span>
-          <ul className="flex flex-col gap-1.5 font-mono text-xs">
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+          <span style={{ fontFamily: "monospace", fontSize: "0.75rem", letterSpacing: "0.1em", color: "#525252" }}>// PROTOCOLS</span>
+          <ul style={{ display: "flex", flexDirection: "column", gap: "0.375rem", fontFamily: "monospace", fontSize: "0.75rem", listStyle: "none", margin: 0, padding: 0 }}>
             {links.map((link, i) => (
-              <li key={i} className="group flex items-center justify-between border-b border-neutral-950 py-1 max-w-xs hover:border-neutral-900 transition-colors duration-150">
-                <Link href={`/${link.label.toLowerCase()}`} className="text-neutral-400 group-hover:text-white transition-colors duration-150 flex items-center gap-2">
-                  <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-150 ease-cinematic text-accent-crimson">█</span>
+              <li key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid #171717", paddingTop: "0.25rem", paddingBottom: "0.25rem", maxWidth: "20rem", transition: "borderColor 0.15s" }} className="hover:border-neutral-900">
+                <Link href={`/${link.label.toLowerCase()}`} style={{ color: "#737373", textDecoration: "none", display: "flex", alignItems: "center", gap: "0.5rem", transition: "color 0.15s" }} className="hover:text-white">
+                  <span style={{ opacity: 0, transition: "opacity 0.15s", color: "#ff1e43" }} className="hover:opacity-100">█</span>
                   {link.label}
                 </Link>
-                <span className="text-neutral-700 font-normal group-hover:text-neutral-500 transition-colors duration-150 text-[10px]">
+                <span style={{ color: "#404040", fontSize: "0.625rem", transition: "color 0.15s" }} className="hover:text-neutral-500">
                   {link.size}
                 </span>
               </li>
@@ -43,9 +43,9 @@ const Footer = () => {
         </div>
 
         {/* Col 3: System Specifications */}
-        <div className="flex flex-col gap-3 font-mono text-[11px] text-neutral-500">
-          <span className="text-xs tracking-widest text-neutral-600">// CORE MANIFEST</span>
-          <div className="space-y-1 bg-panel p-3 border border-neutral-900 shadow-inner">
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", fontFamily: "monospace", fontSize: "0.6875rem", color: "#737373" }}>
+          <span style={{ fontSize: "0.75rem", letterSpacing: "0.1em", color: "#525252" }}>// CORE MANIFEST</span>
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", backgroundColor: "#0a0a0a", padding: "0.75rem", border: "1px solid #262626", boxShadow: "inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)" }}>
             <div>ENGINE: BULLSHIFT_CORE_V2.0.26</div>
             <div>INFRASTRUCTURE: OFFLINE_FIRST_CAPABLE</div>
             <div>DATA RETENTION: ZERO_STORAGES_RECORDED</div>
@@ -55,9 +55,9 @@ const Footer = () => {
       </div>
 
       {/* Infinite Hardware-Accelerated Marquee Base */}
-      <div className="w-full bg-neutral-950 border-t border-neutral-900 py-2.5 overflow-hidden relative flex items-center">
-        <div className="ticker-wrap w-full flex text-[10px] font-mono tracking-[0.2em] text-neutral-600 uppercase">
-          <div className="animate-ticker ticker-content flex gap-8 shrink-0">
+      <div style={{ width: "100%", backgroundColor: "#0a0a0a", borderTop: "1px solid #262626", padding: "0.625rem 0", overflow: "hidden", position: "relative", display: "flex", alignItems: "center" }}>
+        <div className="ticker-wrap" style={{ width: "100%", display: "flex", fontSize: "0.625rem", fontFamily: "monospace", letterSpacing: "0.2em", color: "#525252", textTransform: "uppercase" }}>
+          <div className="animate-ticker ticker-content" style={{ display: "inline-flex", gap: "2rem", flexShrink: 0, paddingRight: "2rem" }}>
             <span>• BULLSHIFT CORE SYSTEM LOG ACTIVE</span>
             <span>• OWN YOUR WORDS OVER THE ALGORITHM</span>
             <span>• HUMANITY METRIC LEVEL 100% SECURE</span>
@@ -65,7 +65,7 @@ const Footer = () => {
             <span>• COPYRIGHT {currentYear} ALL RIGHTS RESERVED</span>
           </div>
           {/* Duplicated instance to maintain visual loop consistency */}
-          <div className="animate-ticker ticker-content flex gap-8 shrink-0" aria-hidden="true">
+          <div className="animate-ticker ticker-content" style={{ display: "inline-flex", gap: "2rem", flexShrink: 0, paddingRight: "2rem" }} aria-hidden="true">
             <span>• BULLSHIFT CORE SYSTEM LOG ACTIVE</span>
             <span>• OWN YOUR WORDS OVER THE ALGORITHM</span>
             <span>• HUMANITY METRIC LEVEL 100% SECURE</span>

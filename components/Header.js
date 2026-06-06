@@ -24,12 +24,11 @@ const Header = ({ isTyping = false, jargonDensity = 0, palette, setPalette }) =>
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full h-[60px] bg-black border-b border-neutral-900 px-6 flex items-center justify-between select-none shadow-cinematic-low">
+    <header style={{ position: "sticky", top: 0, zIndex: 50, width: "100%", height: "60px", backgroundColor: "#000000", borderBottom: "1px solid #262626", padding: "0 1.5rem", display: "flex", alignItems: "center", justifyContent: "space-between", userSelect: "none", boxShadow: "0 4px 30px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.05)" }}>
       {/* Left: Branding with hover state */}
       <Link 
         href="/"
-        className="font-sans font-black tracking-tighter text-xl cursor-pointer transition-colors duration-150 ease-cinematic select-none"
-        style={{ color: isAlert ? '#ff1e43' : '#ffffff' }}
+        style={{ fontFamily: "sans-serif", fontWeight: 900, letterSpacing: "-0.05em", fontSize: "1.25rem", cursor: "pointer", transition: "color 0.15s", userSelect: "none", textDecoration: "none", color: isAlert ? '#ff1e43' : '#ffffff' }}
         onMouseEnter={() => triggerScramble(true)}
         onMouseLeave={() => triggerScramble(false)}
       >
@@ -37,15 +36,15 @@ const Header = ({ isTyping = false, jargonDensity = 0, palette, setPalette }) =>
       </Link>
 
       {/* Right: Navigation & Global Reactive Status Pill */}
-      <div className="flex items-center gap-6">
-        <nav className="hidden md:flex items-center gap-6 font-mono text-xs uppercase tracking-widest text-neutral-500">
-          <Link href="/about" className="hover:text-white transition-colors duration-150">About</Link>
-          <Link href="/faq" className="hover:text-white transition-colors duration-150">FAQ</Link>
-          <Link href="/privacy" className="hover:text-white transition-colors duration-150">Privacy</Link>
+      <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
+        <nav style={{ display: "none" }} className="md:flex md:items-center md:gap-6">
+          <Link href="/about" style={{ fontFamily: "monospace", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "#737373", textDecoration: "none", transition: "color 0.15s" }} className="hover:text-white">About</Link>
+          <Link href="/faq" style={{ fontFamily: "monospace", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "#737373", textDecoration: "none", transition: "color 0.15s" }} className="hover:text-white">FAQ</Link>
+          <Link href="/privacy" style={{ fontFamily: "monospace", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "#737373", textDecoration: "none", transition: "color 0.15s" }} className="hover:text-white">Privacy</Link>
         </nav>
 
         {/* Palette Toggle */}
-        <div style={{ display: "flex", gap: 6, alignItems: "center", marginLeft: 12, paddingLeft: 12, borderLeft: "1px solid #262626" }}>
+        <div style={{ display: "flex", gap: "6px", alignItems: "center", marginLeft: "12px", paddingLeft: "12px", borderLeft: "1px solid #262626" }}>
           {PALETTES.map((p) => (
             <button
               key={p.id}
@@ -68,13 +67,23 @@ const Header = ({ isTyping = false, jargonDensity = 0, palette, setPalette }) =>
 
         {/* System Status Indicator Box */}
         <div 
-          className={`font-mono text-[10px] tracking-wider px-3 py-1 border transition-all duration-200 ease-cinematic flex items-center gap-2 rounded-none
-            ${isAlert 
-              ? 'bg-accent-crimson/10 border-accent-crimson text-accent-crimson shadow-glow-crimson' 
-              : 'bg-neutral-950 border-neutral-800 text-accent-emerald shadow-glow-emerald'
-            }`}
+          style={{
+            fontFamily: "monospace",
+            fontSize: "0.625rem",
+            letterSpacing: "0.05em",
+            padding: "0.25rem 0.75rem",
+            border: "1px solid",
+            transition: "all 0.2s",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem",
+            backgroundColor: isAlert ? "rgba(255, 30, 67, 0.1)" : "#0a0a0a",
+            borderColor: isAlert ? "#ff1e43" : "#262626",
+            color: isAlert ? "#ff1e43" : "#00ff66",
+            boxShadow: isAlert ? "0 0 15px rgba(255, 30, 67, 0.35), 0 0 30px rgba(255, 30, 67, 0.1)" : "0 0 15px rgba(0, 255, 102, 0.25)"
+          }}
         >
-          <span className={`w-1.5 h-1.5 rounded-full ${isAlert ? 'bg-accent-crimson animate-pulse-fast' : 'bg-accent-emerald'}`} />
+          <span style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: isAlert ? "#ff1e43" : "#00ff66", animation: isAlert ? "pulse 1.5s cubic-bezier(0.16, 1, 0.3, 1) infinite" : "none" }} />
           <span>
             {isAlert 
               ? `SYS_STATUS: SCRUBBING // METRIC_${jargonDensity}%` 
