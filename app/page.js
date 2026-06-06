@@ -9,6 +9,63 @@ const TONES = [
   { id: 5, label: "Obliterate",  desc: "Surgical baseline exposure. Withering analytical execution." },
 ];
 
+// CBRS Archetypes
+const ARCHETYPES = [
+  { min: 0, max: 20, name: "The Innocent", desc: "You barely encounter corporate speak. Either you work in a very honest place or you're very new here." },
+  { min: 21, max: 40, name: "The Observer", desc: "You see the jargon but don't engage. Smart. You're watching from a safe distance." },
+  { min: 41, max: 60, name: "The Skeptic", desc: "You know it's nonsense and you call it out. You're the person everyone wants on their team." },
+  { min: 61, max: 80, name: "The Translator", desc: "You can speak both languages fluently. Useful, but be careful not to lose your soul." },
+  { min: 81, max: 100, name: "The Carrier", desc: "You might be the problem. High receptivity to corporate bullshit detected." },
+];
+
+// CBRS Dimension definitions
+const DIMENSIONS = [
+  { key: "exposure", name: "Exposure Index", desc: "How much high-inflation content you're translating. High = you're swimming in it.", color: "#C0392B" },
+  { key: "tolerance", name: "Tolerance Quotient", desc: "How often you accept gentle translations vs. demanding harder ones. High = you're easy on jargon.", color: "#F0B429" },
+  { key: "production", name: "Production Risk", desc: "How frequently you use Human→LinkedIn mode. High = you might be generating the problem.", color: "#3B6D11" },
+  { key: "clarity", name: "Clarity Seeking", desc: "Whether your translation requests trend toward more honesty over time. High = you're improving.", color: "#185FA5" },
+];
+
+function calculateCBRS(history) {
+  if (history.length < 5) return null;
+
+  const translations = history.slice(0, 20); // Use last 20 translations max
+
+  // Exposure Index: Average score of translated content (0-25)
+  const avgScore = translations.reduce((sum, t) => sum + t.score, 0) / translations.length;
+  const exposure = Math.min(25, (avgScore / 100) * 25);
+
+  // Tolerance Quotient: How often you choose gentle tones (0-25)
+  const gentleCount = translations.filter(t => t.tone === "Diplomatic" || t.tone === "Measured").length;
+  const tolerance = Math.min(25, (gentleCount / translations.length) * 25);
+
+  // Production Risk: How often you use Human→LinkedIn mode (0-25)
+  const productionCount = translations.filter(t => t.mode === "human-to-linkedin").length;
+  const production = Math.min(25, (productionCount / translations.length) * 25);
+
+  // Clarity Seeking: Are you choosing harsher tones over time? (0-25)
+  const firstHalf = translations.slice(0, Math.floor(translations.length / 2));
+  const secondHalf = translations.slice(Math.floor(translations.length / 2));
+  const firstAvgTone = firstHalf.reduce((sum, t) => sum + t.toneId, 0) / firstHalf.length;
+  const secondAvgTone = secondHalf.reduce((sum, t) => sum + t.toneId, 0) / secondHalf.length;
+  const clarity = Math.min(25, Math.max(0, (secondAvgTone - firstAvgTone) * 5));
+
+  const composite = Math.round(exposure + tolerance + production + clarity);
+
+  // Find archetype
+  const archetype = ARCHETYPES.find(a => composite >= a.min && composite <= a.max) || ARCHETYPES[4];
+
+  return {
+    exposure: Math.round(exposure),
+    tolerance: Math.round(tolerance),
+    production: Math.round(production),
+    clarity: Math.round(clarity),
+    composite,
+    archetype: archetype.name,
+    archetypeDesc: archetype.desc,
+  };
+}
+
 const SCORE_VERDICTS = [
   [0,  9,  "Barely a trace. Suspiciously transparent and direct for public networks."],
   [10, 29, "Low-grade structural jargon. Annoying corporate habits but functionally forgivable."],
@@ -41,7 +98,9 @@ const ORIGINAL_HISTORY = [
     id: "h-1",
     time: "4 mins ago",
     tone: "Obliterate",
+    toneId: 5,
     score: 92,
+    mode: "linkedin-to-human",
     original: "We are hyper-focused on executing a cross-functional optimization sweep to anchor our core value pillars.",
     translation: "We are firing several people across mid-tier management to balance this quarter's net expenditure."
   },
@@ -49,7 +108,9 @@ const ORIGINAL_HISTORY = [
     id: "h-2",
     time: "32 mins ago",
     tone: "Diplomatic",
+    toneId: 1,
     score: 54,
+    mode: "linkedin-to-human",
     original: "Moving forward, let's establish a more robust cadence for out-of-the-box conceptual syncs.",
     translation: "We need to set up more recurrent status updates because deadlines are currently being missed."
   }
@@ -125,12 +186,19 @@ export default function BullShift() {
   const [input, setInput] = useState("");
   const [output, setOutput] = useState(null);
   const [tone, setTone] = useState(3);
+  const [mode, setMode] = useState("linkedin-to-human"); // "linkedin-to-human" or "human-to-linkedin"
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [copyState, setCopyState] = useState("idle");
   const [history, setHistory] = useState(ORIGINAL_HISTORY);
+  const [showCBRS, setShowCBRS] = useState(false);
 
   useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    if (history.length >= 5) {
+      setShowCBRS(true);
+    }
+  }, [history]);
 
   const runShift = async () => {
     if (!input.trim() || loading) return;
@@ -139,13 +207,24 @@ export default function BullShift() {
 
     setTimeout(() => {
       const parsedData = {
-        translation: "I am intentionally inflating minor administrative updates to protect my current operational overhead budget.",
-        score: 78,
-        note: "Heavy linguistic deflection detected. Normalization routine complete.",
+        translation: mode === "linkedin-to-human" 
+          ? "I am intentionally inflating minor administrative updates to protect my current operational overhead budget."
+          : "We need to leverage our core competencies to drive synergistic outcomes across the value chain.",
+        score: mode === "linkedin-to-human" ? 78 : 65,
+        note: mode === "linkedin-to-human" ? "Heavy linguistic deflection detected. Normalization routine complete." : "Corporate speak successfully synthesized.",
         jargon: ["CROSS-FUNCTIONAL SWEEP", "CORE VALUE PILLARS", "OPTIMIZATION FRAMEWORKS"]
       };
       setOutput(parsedData);
-      setHistory(prev => [{ id: `h-${Date.now()}`, time: "Just now", tone: label, score: 78, original: input, translation: parsedData.translation }, ...prev]);
+      setHistory(prev => [{ 
+        id: `h-${Date.now()}`, 
+        time: "Just now", 
+        tone: label, 
+        toneId: tone,
+        mode: mode,
+        score: parsedData.score, 
+        original: input, 
+        translation: parsedData.translation 
+      }, ...prev]);
       setLoading(false);
     }, 1200);
   };
@@ -153,6 +232,7 @@ export default function BullShift() {
   if (!mounted) return null;
   const scoreVal = output ? Math.max(0, Math.min(100, parseInt(output.score) || 0)) : 0;
   const badge = output ? getBadge(scoreVal) : null;
+  const cbrs = calculateCBRS(history);
 
   return (
     <>
@@ -196,6 +276,25 @@ export default function BullShift() {
         </div>
       </div>
 
+      {/* Red Thread: Dimension Explanations */}
+      <section style={{ maxWidth: "1400px", margin: "0 auto", padding: "48px 64px" }} className="scroll-reveal">
+        <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: "20px" }}>
+          Corporate Bullshit Receptivity Scale — Four Dimensions
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "24px" }}>
+          {DIMENSIONS.map((dim) => (
+            <div key={dim.key} style={{ borderTop: `3px solid ${dim.color}`, paddingTop: "16px" }}>
+              <div style={{ fontSize: "11px", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-muted)", marginBottom: "8px" }}>
+                {dim.name}
+              </div>
+              <div style={{ fontSize: "13px", color: "var(--text-main)", lineHeight: 1.5, fontWeight: 500 }}>
+                {dim.desc}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <main id="engine" className="workspace-section scroll-reveal">
         <div className="studio-panel-grid stagger-1">
           
@@ -210,6 +309,46 @@ export default function BullShift() {
             </div>
 
             <div>
+              <label style={{ fontSize: "12px", fontFamily: "var(--font-mono)", textTransform: "uppercase", color: "var(--text-muted)", display: "block", marginBottom: "16px" }}>Translation Mode</label>
+              <div style={{ display: "flex", gap: "8px", marginBottom: "16px" }}>
+                <button 
+                  onClick={() => setMode("linkedin-to-human")}
+                  style={{
+                    flex: 1,
+                    padding: "12px 16px",
+                    background: mode === "linkedin-to-human" ? "var(--text-main)" : "var(--bg-color)",
+                    color: mode === "linkedin-to-human" ? "var(--surface)" : "var(--text-muted)",
+                    border: "1px solid var(--border)",
+                    borderRadius: "8px",
+                    fontSize: "13px",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    transition: "all 0.2s"
+                  }}
+                >
+                  LinkedIn → Human
+                </button>
+                <button 
+                  onClick={() => setMode("human-to-linkedin")}
+                  style={{
+                    flex: 1,
+                    padding: "12px 16px",
+                    background: mode === "human-to-linkedin" ? "var(--text-main)" : "var(--bg-color)",
+                    color: mode === "human-to-linkedin" ? "var(--surface)" : "var(--text-muted)",
+                    border: "1px solid var(--border)",
+                    borderRadius: "8px",
+                    fontSize: "13px",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    transition: "all 0.2s"
+                  }}
+                >
+                  Human → LinkedIn
+                </button>
+              </div>
+            </div>
+
+            <div>
               <label style={{ fontSize: "12px", fontFamily: "var(--font-mono)", textTransform: "uppercase", color: "var(--text-muted)", display: "block", marginBottom: "16px" }}>Severity Profile Settings</label>
               <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
                 {TONES.map(t => (
@@ -220,7 +359,7 @@ export default function BullShift() {
             </div>
 
             <button onClick={runShift} disabled={loading || !input.trim()} className="btn-primary-studio">
-              {loading ? <div className="spinner" /> : "Deconstruct Targets"}
+              {loading ? <div className="spinner" /> : mode === "linkedin-to-human" ? "Deconstruct Targets" : "Generate Corporate Speak"}
             </button>
           </div>
 
@@ -298,6 +437,48 @@ export default function BullShift() {
               </div>
               {history.length > 0 && <button onClick={() => setHistory([])} style={{ background: "none", border: "none", fontFamily: "var(--font-mono)", fontSize: "11px", color: "#dc2626", cursor: "pointer", fontWeight: 600 }}>Purge Records [×]</button>}
             </div>
+
+            {/* CBRS Diagnostic - Shows after 5 translations */}
+            {showCBRS && cbrs && (
+              <div style={{ marginBottom: "32px", padding: "32px", background: "rgba(28, 26, 23, 0.95)", borderRadius: "16px", border: "1.5px solid #1A1714" }}>
+                <div style={{ marginBottom: "24px", paddingBottom: "16px", borderBottom: "1px solid rgba(255,255,255,0.1)" }}>
+                  <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.12em", textTransform: "uppercase", color: "#F0B429", marginBottom: "8px" }}>
+                    Corporate Bullshit Receptivity Scale
+                  </div>
+                  <div style={{ fontSize: "32px", fontWeight: 800, color: "#EDE8DE", letterSpacing: "-0.02em", marginBottom: "8px" }}>
+                    {cbrs.archetype}
+                  </div>
+                  <div style={{ fontSize: "14px", color: "#A8A39D", lineHeight: 1.5 }}>
+                    {cbrs.archetypeDesc}
+                  </div>
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "16px" }}>
+                  {DIMENSIONS.map((dim) => (
+                    <div key={dim.key} style={{ padding: "16px", background: "rgba(255,255,255,0.05)", borderRadius: "8px" }}>
+                      <div style={{ fontSize: "28px", fontWeight: 800, color: dim.color, lineHeight: 1, marginBottom: "4px" }}>
+                        {cbrs[dim.key]}
+                      </div>
+                      <div style={{ fontSize: "10px", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.08em", color: "#6B6560", marginBottom: "6px" }}>
+                        {dim.name}
+                      </div>
+                      <div style={{ fontSize: "11px", color: "#A8A39D", lineHeight: 1.4 }}>
+                        {dim.desc}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div style={{ marginTop: "20px", paddingTop: "16px", borderTop: "1px solid rgba(255,255,255,0.1)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div style={{ fontSize: "13px", color: "#6B6560" }}>
+                    Composite Score: <span style={{ color: "#EDE8DE", fontWeight: 700 }}>{cbrs.composite}/100</span>
+                  </div>
+                  <button style={{ padding: "10px 20px", background: "#F0B429", color: "#1A1714", border: "none", borderRadius: "6px", fontSize: "12px", fontWeight: 700, cursor: "pointer", fontFamily: "var(--font-mono)" }}>
+                    Share Archetype
+                  </button>
+                </div>
+              </div>
+            )}
 
             <div className="bullpen-grid">
               {history.map((item) => (
