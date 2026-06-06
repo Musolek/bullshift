@@ -322,12 +322,7 @@ export default function BullShift() {
 
       <footer style={{ borderTop: "1px solid var(--border)", padding: "80px 64px 60px 64px", background: "var(--surface)" }}>
         <div style={{ maxWidth: "1400px", margin: "0 auto", display: "flex", flexDirection: "column", alignItems: "center", gap: "40px" }}>
-          <UniversalBrandBadge />
-          <div style={{ fontFamily: "var(--font-mono)", fontSize: "12px", color: "var(--text-muted)", display: "flex", gap: "40px", flexWrap: "wrap", justifyContent: "center", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-            <span>No Account Vectors</span>
-            <span>Zero Tracking Artifacts</span>
-            <span>No Circle-Backs Permitted</span>
-          </div>
+          <img src="/logo.png" alt="BullShift Logo" style={{ width: "64px", height: "64px", opacity: 0.9 }} />
         </div>
       </footer>
     </>
