@@ -674,8 +674,9 @@ export default function BullShift() {
       </section>
 
       {/* FOOTER */}
-      <footer style={{ borderTop: "1.5px solid " + palette.border, padding: "32px 20px", background: palette.bg }}>
+      <footer style={{ borderTop: "1.5px solid " + palette.border, padding: "48px 20px", background: palette.bg }}>
         <div style={{ maxWidth: "860px", margin: "0 auto", display: "flex", flexDirection: "column", alignItems: "center", gap: 24 }}>
+          <img src="/logo.png" alt="BullShift Logo" style={{ height: 40, width: "auto" }} />
           <div style={{ ...mono, fontSize: 10, color: palette.muted, textAlign: "center" }}>
             Not affiliated with LinkedIn® or Microsoft. BullShift is satire. · bullshift.app
           </div>
