@@ -182,6 +182,61 @@ function SpotlightCard({ original, shifted, note }) {
   );
 }
 
+function CBRSShareCard({ cbrs }) {
+  return (
+    <div id="cbrs-share-card" style={{
+      position: "fixed",
+      top: "-9999px",
+      left: "-9999px",
+      width: "600px",
+      height: "400px",
+      background: "#1A1714",
+      padding: "40px",
+      borderRadius: "16px",
+      display: "flex",
+      flexDirection: "column",
+      gap: "24px"
+    }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+        <img src="/logo.png" alt="BullShift" style={{ width: "48px", height: "48px" }} />
+        <div>
+          <div style={{ fontSize: "24px", fontWeight: 800, color: "#EDE8DE", letterSpacing: "-0.5px" }}>BullShift</div>
+          <div style={{ fontSize: "11px", fontFamily: "var(--font-mono)", color: "#6B6560", letterSpacing: "0.08em", textTransform: "uppercase" }}>Corporate Bullshit Receptivity Scale</div>
+        </div>
+      </div>
+      
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+        <div style={{ fontSize: "48px", fontWeight: 800, color: "#F0B429", lineHeight: 1, marginBottom: "12px" }}>
+          {cbrs.archetype}
+        </div>
+        <div style={{ fontSize: "16px", color: "#A8A39D", lineHeight: 1.5, marginBottom: "24px" }}>
+          {cbrs.archetypeDesc}
+        </div>
+        
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px" }}>
+          {DIMENSIONS.map((dim) => (
+            <div key={dim.key} style={{ textAlign: "center" }}>
+              <div style={{ fontSize: "24px", fontWeight: 800, color: dim.color, lineHeight: 1 }}>{cbrs[dim.key]}</div>
+              <div style={{ fontSize: "9px", fontFamily: "var(--font-mono)", textTransform: "uppercase", color: "#6B6560", marginTop: "4px" }}>
+                {dim.name}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: "16px", borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+        <div style={{ fontSize: "13px", color: "#6B6560" }}>
+          Composite: <span style={{ color: "#EDE8DE", fontWeight: 700 }}>{cbrs.composite}/100</span>
+        </div>
+        <div style={{ fontSize: "11px", color: "#6B6560", fontFamily: "var(--font-mono)" }}>
+          bullshift.app
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function BullShift() {
   const [input, setInput] = useState("");
   const [output, setOutput] = useState(null);
@@ -236,6 +291,7 @@ export default function BullShift() {
 
   return (
     <>
+      <CBRSShareCard cbrs={cbrs} />
       <header className="premium-header">
         <div style={{ fontSize: "20px", fontWeight: 800, letterSpacing: "-0.5px" }}>
           Bull<span style={{ color: "var(--text-muted)", fontWeight: 400 }}>Shift</span>
@@ -473,7 +529,17 @@ export default function BullShift() {
                   <div style={{ fontSize: "13px", color: "#6B6560" }}>
                     Composite Score: <span style={{ color: "#EDE8DE", fontWeight: 700 }}>{cbrs.composite}/100</span>
                   </div>
-                  <button style={{ padding: "10px 20px", background: "#F0B429", color: "#1A1714", border: "none", borderRadius: "6px", fontSize: "12px", fontWeight: 700, cursor: "pointer", fontFamily: "var(--font-mono)" }}>
+                  <button 
+                    onClick={() => {
+                      const card = document.getElementById('cbrs-share-card');
+                      if (card) {
+                        const text = `I took the BullShift Corporate Bullshit Receptivity Test and scored ${cbrs.composite}/100. I'm a ${cbrs.archetype}. ${cbrs.archetypeDesc}`;
+                        navigator.clipboard.writeText(text);
+                        alert('Archetype copied to clipboard! Share it on LinkedIn for maximum irony.');
+                      }
+                    }}
+                    style={{ padding: "10px 20px", background: "#F0B429", color: "#1A1714", border: "none", borderRadius: "6px", fontSize: "12px", fontWeight: 700, cursor: "pointer", fontFamily: "var(--font-mono)" }}
+                  >
                     Share Archetype
                   </button>
                 </div>
