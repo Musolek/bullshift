@@ -324,7 +324,7 @@ export default function BullShift() {
     <div style={{ background: palette.bg, minHeight: "100vh", ...sans, color: palette.text }}>
       {cbrs && <CBRSShareCard cbrs={cbrs} />}
       
-      <Header isTyping={isTranslating} jargonDensity={scoreVal} palette={palette} setPalette={setPalette} />
+      <Header isTyping={loading} jargonDensity={scoreVal} palette={palette} setPalette={setPalette} />
 
       {/* MAIN WORKSPACE - MOVED TO TOP */}
       <main id="engine" style={{ maxWidth: "1400px", margin: "0 auto", padding: "24px 20px" }}>
