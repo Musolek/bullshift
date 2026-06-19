@@ -335,7 +335,50 @@ export default function BullShift() {
       
       <Header isTyping={loading} jargonDensity={scoreVal} palette={palette} setPalette={setPalette} />
 
-      {/* MAIN WORKSPACE - MOVED TO TOP */}
+      {/* HERO */}
+      <div style={{ padding: "48px 20px 0", maxWidth: 860, margin: "0 auto" }}>
+        <div style={{ ...mono, fontSize: "10px", letterSpacing: "0.12em", color: palette.accent, textTransform: "uppercase", marginBottom: 14 }}>
+          Translation Engine
+        </div>
+        <h1 style={{ ...syne, fontWeight: 800, fontSize: "clamp(32px,6vw,64px)", lineHeight: 0.92, letterSpacing: "-0.04em", color: palette.text, marginBottom: 28 }}>
+          LinkedIn jargon<br />
+          <span style={{ textDecoration: "line-through", textDecorationThickness: 3, color: palette.muted }}>decoded</span><br />
+          without <span style={{ color: palette.accent }}>mercy</span>
+        </h1>
+        <p style={{ fontSize: 16, lineHeight: 1.7, color: palette.muted, fontWeight: 300, maxWidth: 580, marginBottom: 24 }}>
+          Paste any opaque corporate communication down below. We analyze the speech architecture, isolate baseline truths, and strip away tactical filler words.
+        </p>
+
+        {/* Fun Stats */}
+        <div style={{ display: "flex", gap: 32, flexWrap: "wrap", marginTop: 32, marginBottom: 8 }}>
+          <div style={{ ...mono, fontSize: 12, color: palette.muted }}>
+            <span style={{ ...syne, fontSize: 24, fontWeight: 800, color: palette.text, display: "block", marginBottom: 4 }}>142K+</span>
+            buzzwords autopsied
+          </div>
+          <div style={{ ...mono, fontSize: 12, color: palette.muted }}>
+            <span style={{ ...syne, fontSize: 24, fontWeight: 800, color: palette.text, display: "block", marginBottom: 4 }}>0</span>
+            circle-backs tolerated
+          </div>
+          <div style={{ ...mono, fontSize: 12, color: palette.muted }}>
+            <span style={{ ...syne, fontSize: 24, fontWeight: 800, color: palette.text, display: "block", marginBottom: 4 }}>100%</span>
+            bullshit-free
+          </div>
+        </div>
+      </div>
+
+      {/* TICKER */}
+      <div style={{ margin: "32px 0", overflow: "hidden", borderTop: "1.5px solid " + palette.border, borderBottom: "1.5px solid " + palette.border }}>
+        <div style={{ display: "flex", gap: 0, whiteSpace: "nowrap", animation: "ticker 28s linear infinite", padding: "12px 0" }}>
+          {[...JARGON_WORDS, ...JARGON_WORDS].map((word, i) => (
+            <span key={i} style={{ display: "inline-flex", alignItems: "center" }}>
+              <span style={{ ...mono, fontSize: 11, color: palette.muted, padding: "0 16px" }}>{word}</span>
+              <span style={{ color: palette.border }}>·</span>
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* MAIN WORKSPACE */}
       <main id="engine" style={{ maxWidth: "1400px", margin: "0 auto", padding: "24px 20px" }}>
         <div className="workspace-grid" style={{ display: "grid", gridTemplateColumns: "1fr", gap: 24 }}>
           {/* Left Input Panel */}
@@ -521,49 +564,6 @@ export default function BullShift() {
           </div>
         </div>
       </main>
-
-      {/* HERO - MOVED BELOW TRANSLATION ENGINE */}
-      <div style={{ padding: "48px 20px", maxWidth: 860, margin: "0 auto" }}>
-        <div style={{ ...mono, fontSize: "10px", letterSpacing: "0.12em", color: palette.accent, textTransform: "uppercase", marginBottom: 14 }}>
-          Translation Engine
-        </div>
-        <h1 style={{ ...syne, fontWeight: 800, fontSize: "clamp(32px,6vw,64px)", lineHeight: 0.92, letterSpacing: "-0.04em", color: palette.text, marginBottom: 28 }}>
-          LinkedIn jargon<br />
-          <span style={{ textDecoration: "line-through", textDecorationThickness: 3, color: palette.muted }}>decoded</span><br />
-          without <span style={{ color: palette.accent }}>mercy</span>
-        </h1>
-        <p style={{ fontSize: 16, lineHeight: 1.7, color: palette.muted, fontWeight: 300, maxWidth: 580, marginBottom: 24 }}>
-          Paste any opaque corporate communication down below. We analyze the speech architecture, isolate baseline truths, and strip away tactical filler words.
-        </p>
-        
-        {/* Fun Stats */}
-        <div style={{ display: "flex", gap: 32, flexWrap: "wrap", marginTop: 32 }}>
-          <div style={{ ...mono, fontSize: 12, color: palette.muted }}>
-            <span style={{ ...syne, fontSize: 24, fontWeight: 800, color: palette.text, display: "block", marginBottom: 4 }}>142K+</span>
-            buzzwords autopsied
-          </div>
-          <div style={{ ...mono, fontSize: 12, color: palette.muted }}>
-            <span style={{ ...syne, fontSize: 24, fontWeight: 800, color: palette.text, display: "block", marginBottom: 4 }}>0</span>
-            circle-backs tolerated
-          </div>
-          <div style={{ ...mono, fontSize: 12, color: palette.muted }}>
-            <span style={{ ...syne, fontSize: 24, fontWeight: 800, color: palette.text, display: "block", marginBottom: 4 }}>100%</span>
-            bullshit-free
-          </div>
-        </div>
-      </div>
-
-      {/* TICKER */}
-      <div style={{ margin: "32px 0", overflow: "hidden", borderTop: "1.5px solid " + palette.border, borderBottom: "1.5px solid " + palette.border }}>
-        <div style={{ display: "flex", gap: 0, whiteSpace: "nowrap", animation: "ticker 28s linear infinite", padding: "12px 0" }}>
-          {[...JARGON_WORDS, ...JARGON_WORDS].map((word, i) => (
-            <span key={i} style={{ display: "inline-flex", alignItems: "center" }}>
-              <span style={{ ...mono, fontSize: 11, color: palette.muted, padding: "0 16px" }}>{word}</span>
-              <span style={{ color: palette.border }}>·</span>
-            </span>
-          ))}
-        </div>
-      </div>
 
       {/* Red Thread: Dimension Explanations */}
       <section style={{ maxWidth: "860px", margin: "0 auto", padding: "48px 20px" }}>
