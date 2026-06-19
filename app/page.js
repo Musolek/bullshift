@@ -284,28 +284,37 @@ export default function BullShift() {
     setLoading(true); setOutput(null);
     const label = TONES[tone - 1].label;
 
-    setTimeout(() => {
+    try {
+      const res = await fetch("/api/translate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: input, tone: label }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || "Translation failed.");
+
       const parsedData = {
-        translation: mode === "linkedin-to-human" 
-          ? "I am intentionally inflating minor administrative updates to protect my current operational overhead budget."
-          : "We need to leverage our core competencies to drive synergistic outcomes across the value chain.",
-        score: mode === "linkedin-to-human" ? 78 : 65,
-        note: mode === "linkedin-to-human" ? "Heavy linguistic deflection detected. Normalization routine complete." : "Corporate speak successfully synthesized.",
-        jargon: ["CROSS-FUNCTIONAL SWEEP", "CORE VALUE PILLARS", "OPTIMIZATION FRAMEWORKS"]
+        translation: data.translation,
+        score: data.score,
+        note: data.note,
+        jargon: data.jargon,
       };
       setOutput(parsedData);
-      setHistory(prev => [{ 
-        id: `h-${Date.now()}`, 
-        time: "Just now", 
-        tone: label, 
+      setHistory(prev => [{
+        id: `h-${Date.now()}`,
+        time: "Just now",
+        tone: label,
         toneId: tone,
         mode: mode,
-        score: parsedData.score, 
-        original: input, 
-        translation: parsedData.translation 
+        score: parsedData.score,
+        original: input,
+        translation: parsedData.translation
       }, ...prev]);
+    } catch (err) {
+      setOutput({ translation: err.message || "Translation failed. Please try again.", score: 0, note: "", jargon: [] });
+    } finally {
       setLoading(false);
-    }, 1200);
+    }
   };
 
   const copyOutput = async () => {
