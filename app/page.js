@@ -361,9 +361,9 @@ export default function BullShift() {
         </div>
         <h1 ref={heroRef} style={{ ...syne, fontWeight: 800, fontSize: "clamp(32px,6vw,64px)", lineHeight: 0.92, letterSpacing: "-0.04em", color: palette.text, marginBottom: 28 }}>
           LinkedIn jargon<br />
-          <span className="strike-wrap" style={{ color: palette.accent }}>
+          <span className="strike-wrap" style={{ color: palette.muted }}>
             decoded
-            <span key={decodedKey} className="strike-line" />
+            <span key={decodedKey} className="strike-line" style={{ background: palette.accent }} />
           </span><br />
           without <span style={{ color: palette.accent }}>mercy</span>
         </h1>
