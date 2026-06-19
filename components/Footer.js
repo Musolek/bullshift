@@ -18,17 +18,17 @@ const Footer = () => {
         
         {/* Col 1: Identity Card */}
         <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-          <span style={{ fontFamily: "monospace", fontSize: "0.75rem", letterSpacing: "0.1em", color: "#525252" }}>// DE-BOTTING FRAMEWORK</span>
+          <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontStyle: "normal", fontSize: "0.75rem", letterSpacing: "0.1em", color: "#525252" }}>// DE-BOTTING FRAMEWORK</span>
           <img src="/logo.png" alt="BullShift Logo" style={{ height: "auto", width: "auto", maxWidth: 120, maxHeight: 48 }} />
-          <p style={{ fontFamily: "sans-serif", fontSize: "0.875rem", color: "#737373", maxWidth: "20rem", lineHeight: "1.625" }}>
+          <p style={{ fontFamily: "'Cormorant Garamond', 'Iowan Old Style', Georgia, serif", fontStyle: "italic", fontSize: "0.875rem", color: "#737373", maxWidth: "20rem", lineHeight: "1.625" }}>
             Bullshift handles the strategic translation of corporate dialect into raw human utility. No algorithms were rented to produce your copy.
           </p>
         </div>
 
         {/* Col 2: High-Fidelity Nav Ledgers */}
         <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-          <span style={{ fontFamily: "monospace", fontSize: "0.75rem", letterSpacing: "0.1em", color: "#525252" }}>// PROTOCOLS</span>
-          <ul style={{ display: "flex", flexDirection: "column", gap: "0.375rem", fontFamily: "monospace", fontSize: "0.75rem", listStyle: "none", margin: 0, padding: 0 }}>
+          <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontStyle: "normal", fontSize: "0.75rem", letterSpacing: "0.1em", color: "#525252" }}>// PROTOCOLS</span>
+          <ul style={{ display: "flex", flexDirection: "column", gap: "0.375rem", fontFamily: "'IBM Plex Mono', monospace", fontStyle: "normal", fontSize: "0.75rem", listStyle: "none", margin: 0, padding: 0 }}>
             {links.map((link, i) => (
               <li key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid #171717", paddingTop: "0.25rem", paddingBottom: "0.25rem", maxWidth: "20rem", transition: "borderColor 0.15s" }} className="hover:border-neutral-900">
                 <Link href={`/${link.label.toLowerCase()}`} style={{ color: "#737373", textDecoration: "none", display: "flex", alignItems: "center", gap: "0.5rem", transition: "color 0.15s" }} className="hover:text-white">
@@ -44,7 +44,7 @@ const Footer = () => {
         </div>
 
         {/* Col 3: System Specifications */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", fontFamily: "monospace", fontSize: "0.6875rem", color: "#737373" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", fontFamily: "'IBM Plex Mono', monospace", fontStyle: "normal", fontSize: "0.6875rem", color: "#737373" }}>
           <span style={{ fontSize: "0.75rem", letterSpacing: "0.1em", color: "#525252" }}>// CORE MANIFEST</span>
           <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", backgroundColor: "#0a0a0a", padding: "0.75rem", border: "1px solid #262626", boxShadow: "inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)" }}>
             <div>ENGINE: BULLSHIFT_CORE_V2.0.26</div>
@@ -57,7 +57,7 @@ const Footer = () => {
 
       {/* Infinite Hardware-Accelerated Marquee Base */}
       <div style={{ width: "100%", backgroundColor: "#0a0a0a", borderTop: "1px solid #262626", padding: "0.625rem 0", overflow: "hidden", position: "relative", display: "flex", alignItems: "center" }}>
-        <div className="ticker-wrap" style={{ width: "100%", display: "flex", fontSize: "0.625rem", fontFamily: "monospace", letterSpacing: "0.2em", color: "#525252", textTransform: "uppercase" }}>
+        <div className="ticker-wrap" style={{ width: "100%", display: "flex", fontSize: "0.625rem", fontFamily: "'IBM Plex Mono', monospace", fontStyle: "normal", letterSpacing: "0.2em", color: "#525252", textTransform: "uppercase" }}>
           <div className="animate-ticker ticker-content" style={{ display: "inline-flex", gap: "2rem", flexShrink: 0, paddingRight: "2rem" }}>
             <span>• BULLSHIFT CORE SYSTEM LOG ACTIVE</span>
             <span>• OWN YOUR WORDS OVER THE ALGORITHM</span>

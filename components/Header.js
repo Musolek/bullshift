@@ -29,7 +29,7 @@ const Header = ({ isTyping = false, jargonDensity = 0, palette, setPalette }) =>
       {/* Left: Branding with hover state */}
       <Link 
         href="/"
-        style={{ fontFamily: "'Clash Display', Inter, system-ui, sans-serif", fontWeight: 600, fontSize: "24px", lineHeight: "32px", letterSpacing: "-0.02em", cursor: "pointer", transition: "color 0.15s", userSelect: "none", textDecoration: "none", color: isAlert ? '#ff1e43' : '#ffffff' }}
+        style={{ fontFamily: "'Clash Display', Inter, system-ui, sans-serif", fontStyle: "normal", fontWeight: 600, fontSize: "24px", lineHeight: "32px", letterSpacing: "-0.02em", cursor: "pointer", transition: "color 0.15s", userSelect: "none", textDecoration: "none", color: isAlert ? '#ff1e43' : '#ffffff' }}
         onMouseEnter={() => triggerScramble(true)}
         onMouseLeave={() => triggerScramble(false)}
       >
@@ -39,9 +39,9 @@ const Header = ({ isTyping = false, jargonDensity = 0, palette, setPalette }) =>
       {/* Right: Navigation & Global Reactive Status Pill */}
       <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
         <nav style={{ display: "none" }} className="md:flex md:items-center md:gap-6">
-          <Link href="/about" style={{ fontFamily: "monospace", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "#737373", textDecoration: "none", transition: "color 0.15s" }} className="hover:text-white">About</Link>
-          <Link href="/faq" style={{ fontFamily: "monospace", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "#737373", textDecoration: "none", transition: "color 0.15s" }} className="hover:text-white">FAQ</Link>
-          <Link href="/privacy" style={{ fontFamily: "monospace", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "#737373", textDecoration: "none", transition: "color 0.15s" }} className="hover:text-white">Privacy</Link>
+          <Link href="/about" style={{ fontFamily: "'IBM Plex Mono', monospace", fontStyle: "normal", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "#737373", textDecoration: "none", transition: "color 0.15s" }} className="hover:text-white">About</Link>
+          <Link href="/faq" style={{ fontFamily: "'IBM Plex Mono', monospace", fontStyle: "normal", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "#737373", textDecoration: "none", transition: "color 0.15s" }} className="hover:text-white">FAQ</Link>
+          <Link href="/privacy" style={{ fontFamily: "'IBM Plex Mono', monospace", fontStyle: "normal", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "#737373", textDecoration: "none", transition: "color 0.15s" }} className="hover:text-white">Privacy</Link>
         </nav>
 
         {/* Palette Toggle */}
@@ -69,7 +69,7 @@ const Header = ({ isTyping = false, jargonDensity = 0, palette, setPalette }) =>
         {/* System Status Indicator Box */}
         <div 
           style={{
-            fontFamily: "monospace",
+            fontFamily: "'IBM Plex Mono', monospace", fontStyle: "normal",
             fontSize: "0.625rem",
             letterSpacing: "0.05em",
             padding: "0.25rem 0.75rem",

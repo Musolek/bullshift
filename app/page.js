@@ -21,9 +21,9 @@ const PALETTES = [
   { id: "dark", name: "Dark", bg: "#1B1F3B", text: "#F0E2E7", muted: "#B8A8C8", accent: "#F7B801", border: "#F0E2E7" },
 ];
 
-const syne = { fontFamily: "'Clash Display', Inter, system-ui, sans-serif" };
-const mono = { fontFamily: "'Space Mono', monospace" };
-const sans = { fontFamily: "'DM Sans', sans-serif" };
+const syne = { fontFamily: "'Clash Display', Inter, system-ui, sans-serif", fontStyle: "normal" };
+const mono = { fontFamily: "'IBM Plex Mono', monospace", fontStyle: "normal" };
+const sans = { fontFamily: "'Cormorant Garamond', 'Iowan Old Style', Georgia, serif", fontStyle: "italic", fontWeight: 400 };
 
 // CBRS Archetypes
 const ARCHETYPES = [
