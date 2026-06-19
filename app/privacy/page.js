@@ -47,7 +47,7 @@ const privacySections = [
 ];
 
 export default function PrivacyPage() {
-  const syne = { fontFamily: "'Syne', sans-serif" };
+  const syne = { fontFamily: "'Clash Display', Inter, system-ui, sans-serif" };
   const mono = { fontFamily: "'Space Mono', monospace" };
   const sans = { fontFamily: "'DM Sans', sans-serif" };
 

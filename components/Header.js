@@ -29,7 +29,7 @@ const Header = ({ isTyping = false, jargonDensity = 0, palette, setPalette }) =>
       {/* Left: Branding with hover state */}
       <Link 
         href="/"
-        style={{ fontFamily: "sans-serif", fontWeight: 900, letterSpacing: "-0.05em", fontSize: "1.25rem", cursor: "pointer", transition: "color 0.15s", userSelect: "none", textDecoration: "none", color: isAlert ? '#ff1e43' : '#ffffff' }}
+        style={{ fontFamily: "'Clash Display', Inter, system-ui, sans-serif", fontWeight: 600, fontSize: "24px", lineHeight: "32px", letterSpacing: "-0.02em", cursor: "pointer", transition: "color 0.15s", userSelect: "none", textDecoration: "none", color: isAlert ? '#ff1e43' : '#ffffff' }}
         onMouseEnter={() => triggerScramble(true)}
         onMouseLeave={() => triggerScramble(false)}
       >
