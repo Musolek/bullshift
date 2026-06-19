@@ -23,7 +23,7 @@ const PALETTES = [
 
 const syne = { fontFamily: "'Clash Display', Inter, system-ui, sans-serif", fontStyle: "normal" };
 const mono = { fontFamily: "'IBM Plex Mono', monospace", fontStyle: "normal" };
-const sans = { fontFamily: "'Cormorant Garamond', 'Iowan Old Style', Georgia, serif", fontStyle: "italic", fontWeight: 400 };
+const sans = { fontFamily: "'Cormorant Garamond', 'Iowan Old Style', Georgia, serif", fontStyle: "italic", fontWeight: 600 };
 
 // CBRS Archetypes
 const ARCHETYPES = [
@@ -367,7 +367,7 @@ export default function BullShift() {
           </span><br />
           without <span style={{ color: palette.accent }}>mercy</span>
         </h1>
-        <p style={{ fontSize: 18, lineHeight: 1.7, color: palette.text, fontWeight: 500, maxWidth: 580, marginBottom: 24 }}>
+        <p style={{ fontSize: 18, lineHeight: 1.7, color: palette.text, fontWeight: 600, maxWidth: 580, marginBottom: 24 }}>
           Paste any opaque corporate communication down below. We analyze the speech architecture, isolate baseline truths, and strip away tactical filler words.
         </p>
 

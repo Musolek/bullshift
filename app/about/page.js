@@ -20,7 +20,7 @@ const TICKER_WORDS = [
 
 const syne = { fontFamily: "'Clash Display', Inter, system-ui, sans-serif", fontStyle: "normal" };
 const mono = { fontFamily: "'IBM Plex Mono', monospace", fontStyle: "normal" };
-const sans = { fontFamily: "'Cormorant Garamond', 'Iowan Old Style', Georgia, serif", fontStyle: "italic", fontWeight: 400 };
+const sans = { fontFamily: "'Cormorant Garamond', 'Iowan Old Style', Georgia, serif", fontStyle: "italic", fontWeight: 600 };
 
 function Nav({ current }) {
   const links = [

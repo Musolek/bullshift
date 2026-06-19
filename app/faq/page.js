@@ -52,7 +52,7 @@ export default function FaqPage() {
 
   const syne = { fontFamily: "'Clash Display', Inter, system-ui, sans-serif", fontStyle: "normal" };
   const mono = { fontFamily: "'IBM Plex Mono', monospace", fontStyle: "normal" };
-  const sans = { fontFamily: "'Cormorant Garamond', 'Iowan Old Style', Georgia, serif", fontStyle: "italic", fontWeight: 400 };
+  const sans = { fontFamily: "'Cormorant Garamond', 'Iowan Old Style', Georgia, serif", fontStyle: "italic", fontWeight: 600 };
 
   return (
     <div style={{ background:'#F5F0E8', minHeight:'100vh', ...sans, color:'#1A1714' }}>
