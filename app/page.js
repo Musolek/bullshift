@@ -14,10 +14,10 @@ const TONES = [
 
 const PALETTES = [
   { id: "tan", name: "Tan", bg: "#F5F0E8", text: "#1A1714", muted: "#6B6560", accent: "#F0B429", border: "#1A1714" },
-  { id: "purple", name: "Purple", bg: "#3D348B", text: "#F0E2E7", muted: "#B8A8C8", accent: "#F7B801", border: "#F0E2E7" },
+  { id: "purple", name: "Purple", bg: "#3D348B", text: "#F0E2E7", muted: "#C7BAD6", accent: "#F7B801", border: "#F0E2E7" },
   { id: "yellow", name: "Gold", bg: "#F7B801", text: "#1B1F3B", muted: "#4A4A2A", accent: "#F35B04", border: "#1B1F3B" },
-  { id: "orange", name: "Orange", bg: "#F35B04", text: "#F0E2E7", muted: "#D4A8A8", accent: "#F7B801", border: "#1B1F3B" },
-  { id: "pink", name: "Pink", bg: "#F0E2E7", text: "#1B1F3B", muted: "#6B6560", accent: "#F35B04", border: "#3D348B" },
+  { id: "orange", name: "Orange", bg: "#8A2F02", text: "#F5EAE5", muted: "#DDBBAE", accent: "#FFC23A", border: "#F5EAE5" },
+  { id: "pink", name: "Pink", bg: "#F0E2E7", text: "#1B1F3B", muted: "#5E5853", accent: "#F35B04", border: "#3D348B" },
   { id: "dark", name: "Dark", bg: "#1B1F3B", text: "#F0E2E7", muted: "#B8A8C8", accent: "#F7B801", border: "#F0E2E7" },
 ];
 
@@ -367,7 +367,7 @@ export default function BullShift() {
           </span><br />
           without <span style={{ color: palette.accent }}>mercy</span>
         </h1>
-        <p style={{ fontSize: 16, lineHeight: 1.7, color: palette.muted, fontWeight: 300, maxWidth: 580, marginBottom: 24 }}>
+        <p style={{ fontSize: 18, lineHeight: 1.7, color: palette.text, fontWeight: 500, maxWidth: 580, marginBottom: 24 }}>
           Paste any opaque corporate communication down below. We analyze the speech architecture, isolate baseline truths, and strip away tactical filler words.
         </p>
 
