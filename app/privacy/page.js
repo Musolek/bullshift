@@ -64,8 +64,8 @@ export default function PrivacyPage() {
           Bull<em style={{ color:'#F0B429', fontStyle:'normal' }}>Shift</em>
         </Link>
         <div style={{ display:'flex', gap:24, alignItems:'center' }}>
-          <Link href="/about" style={{ fontSize:13, color:'#3D3830', textDecoration:'none' }}>About</Link>
-          <Link href="/faq" style={{ fontSize:13, color:'#3D3830', textDecoration:'none' }}>FAQ</Link>
+          <Link href="/about" style={{ fontSize:13, color:'#1A1714', textDecoration:'none' }}>About</Link>
+          <Link href="/faq" style={{ fontSize:13, color:'#1A1714', textDecoration:'none' }}>FAQ</Link>
           <Link href="/privacy" style={{ fontSize:13, color:'#1A1714', fontWeight:500, textDecoration:'underline', textUnderlineOffset:4 }}>Privacy</Link>
           <Link href="/" style={{
             ...mono, fontSize:11, background:'#1A1714',
@@ -84,7 +84,7 @@ export default function PrivacyPage() {
           collect <span style={{ color:'#F0B429' }}>your</span><br />
           <span style={{ textDecoration:'line-through', textDecorationThickness:3, color:'#8A847A' }}>data</span>
         </h1>
-        <p style={{ fontSize:17, lineHeight:1.7, color:'#3D3830', fontWeight:300, maxWidth:580 }}>
+        <p style={{ fontSize:17, lineHeight:1.7, color:'#1A1714', fontWeight:600, maxWidth:580 }}>
           This is the part where most privacy policies gaslight you with 4,000 words of legal fog.
           This one won't. Here is exactly what happens to your data:{' '}
           <strong style={{ fontWeight:500, color:'#1A1714' }}>almost nothing.</strong>
@@ -115,7 +115,7 @@ export default function PrivacyPage() {
           <div style={{ ...mono, fontSize:10, color:'#6B6560', letterSpacing:'0.1em', textTransform:'uppercase', marginBottom:14 }}>
             The short version
           </div>
-          <p style={{ fontSize:17, lineHeight:1.75, color:'#EDE8DE', fontWeight:300 }}>
+          <p style={{ fontSize:17, lineHeight:1.75, color:'#EDE8DE', fontWeight:600 }}>
             You paste text. We send it to the Claude API. It comes back translated.
             We don't store the text. We don't know who you are.
             The Bullpen history lives in your browser only and disappears when you clear it.{' '}
@@ -131,7 +131,7 @@ export default function PrivacyPage() {
             ...(i === 0 ? { borderTop:'1.5px solid #D4CFC8' } : {}),
           }}>
             <div style={{ ...syne, fontWeight:700, fontSize:15, color:'#1A1714', marginBottom:8 }}>{q}</div>
-            <div style={{ fontSize:14, lineHeight:1.75, color:'#3D3830', fontWeight:300, maxWidth:640 }}>{a}</div>
+            <div style={{ fontSize:14, lineHeight:1.75, color:'#1A1714', fontWeight:600, maxWidth:640 }}>{a}</div>
           </div>
         ))}
 

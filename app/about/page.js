@@ -70,7 +70,7 @@ export default function AboutPage() {
           <span style={{ textDecoration:'line-through', textDecorationThickness:3, color:'#8A847A' }}>synergy</span><br />
           into <span style={{ color:'#F0B429' }}>English</span>
         </h1>
-        <p style={{ fontSize:17, lineHeight:1.7, color:'#3D3830', fontWeight:300, maxWidth:580 }}>
+        <p style={{ fontSize:17, lineHeight:1.7, color:'#1A1714', fontWeight:600, maxWidth:580 }}>
           LinkedIn invented a language nobody asked for. BullShift decodes it.
           Free, no login, no circle-backs, no{' '}
           <strong style={{ fontWeight:500, color:'#1A1714' }}>"stakeholder alignment"</strong> required.
@@ -95,7 +95,7 @@ export default function AboutPage() {
         <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:0, border:'1.5px solid #1A1714', borderRadius:6, overflow:'hidden', marginBottom:48 }}>
           <div style={{ padding:32, borderRight:'1.5px solid #1A1714' }}>
             <div style={{ ...mono, fontSize:10, letterSpacing:'0.1em', textTransform:'uppercase', color:'#8A847A', marginBottom:12 }}>What it is</div>
-            <p style={{ fontSize:15, lineHeight:1.75, color:'#3D3830', fontWeight:300 }}>
+            <p style={{ fontSize:15, lineHeight:1.75, color:'#1A1714', fontWeight:600 }}>
               A satirical AI tool that decodes corporate jargon and generates LinkedIn-speak from plain English.
               Built for entertainment, commentary, and the specific catharsis of watching{' '}
               <strong style={{ color:'#1A1714', fontWeight:500 }}>"synergy"</strong> get called out in public.
@@ -103,7 +103,7 @@ export default function AboutPage() {
           </div>
           <div style={{ padding:32, background:'#1A1714' }}>
             <div style={{ ...mono, fontSize:10, letterSpacing:'0.1em', textTransform:'uppercase', color:'#8A847A', marginBottom:12 }}>What it isn't</div>
-            <p style={{ fontSize:15, lineHeight:1.75, color:'#EDE8DE', fontWeight:300 }}>
+            <p style={{ fontSize:15, lineHeight:1.75, color:'#EDE8DE', fontWeight:600 }}>
               Career advice. Affiliated with LinkedIn. A reason to use the word "ecosystem" in a sentence.
               The outputs are jokes. Post them at your own risk.
               We accept no liability for your professional reputation.
@@ -123,7 +123,7 @@ export default function AboutPage() {
               <div key={n} style={{ borderTop:`3px solid ${accent}`, paddingTop:16 }}>
                 <div style={{ ...syne, fontWeight:800, fontSize:40, color:'#1A1714', lineHeight:1, marginBottom:10 }}>{n}</div>
                 <div style={{ fontSize:14, fontWeight:500, color:'#1A1714', marginBottom:6 }}>{title}</div>
-                <div style={{ fontSize:13, color:'#6B6560', lineHeight:1.65, fontWeight:300 }}>{body}</div>
+                <div style={{ fontSize:13, color:'#6B6560', lineHeight:1.65, fontWeight:600 }}>{body}</div>
               </div>
             ))}
           </div>
@@ -138,7 +138,7 @@ export default function AboutPage() {
         }}>
           <div>
             <div style={{ ...syne, fontWeight:800, fontSize:26, color:'#1A1714', letterSpacing:'-0.03em', marginBottom:4 }}>Ready to expose something?</div>
-            <div style={{ fontSize:14, color:'#3D3830', fontWeight:300 }}>142,804 buzzwords autopsied and counting.</div>
+            <div style={{ fontSize:14, color:'#1A1714', fontWeight:600 }}>142,804 buzzwords autopsied and counting.</div>
           </div>
           <Link href="/" style={{
             ...mono, fontSize:12, background:'#1A1714', color:'#F5F0E8',

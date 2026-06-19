@@ -67,9 +67,9 @@ export default function FaqPage() {
           Bull<em style={{ color:'#F0B429', fontStyle:'normal' }}>Shift</em>
         </Link>
         <div style={{ display:'flex', gap:24, alignItems:'center' }}>
-          <Link href="/about" style={{ fontSize:13, color:'#3D3830', textDecoration:'none' }}>About</Link>
+          <Link href="/about" style={{ fontSize:13, color:'#1A1714', textDecoration:'none' }}>About</Link>
           <Link href="/faq" style={{ fontSize:13, color:'#1A1714', fontWeight:500, textDecoration:'underline', textUnderlineOffset:4 }}>FAQ</Link>
-          <Link href="/privacy" style={{ fontSize:13, color:'#3D3830', textDecoration:'none' }}>Privacy</Link>
+          <Link href="/privacy" style={{ fontSize:13, color:'#1A1714', textDecoration:'none' }}>Privacy</Link>
           <Link href="/" style={{
             ...mono, fontSize:11, background:'#1A1714',
             color:'#F5F0E8', padding:'9px 16px', borderRadius:3, textDecoration:'none', whiteSpace:'nowrap',
@@ -87,7 +87,7 @@ export default function FaqPage() {
           we <span style={{ color:'#F0B429' }}>expected</span><br />
           you'd ask
         </h1>
-        <p style={{ fontSize:17, lineHeight:1.7, color:'#3D3830', fontWeight:300, maxWidth:580 }}>
+        <p style={{ fontSize:17, lineHeight:1.7, color:'#1A1714', fontWeight:600, maxWidth:580 }}>
           Addressed with the precision and transparency this tool was designed to demand of others.
         </p>
       </div>
@@ -117,7 +117,7 @@ export default function FaqPage() {
               overflow:'hidden',
               transition:'max-height 0.3s ease',
             }}>
-              <p style={{ fontSize:14, lineHeight:1.8, color:'#3D3830', fontWeight:300, paddingBottom:20, maxWidth:620 }}>
+              <p style={{ fontSize:14, lineHeight:1.8, color:'#1A1714', fontWeight:600, paddingBottom:20, maxWidth:620 }}>
                 {item.a}
               </p>
             </div>
