@@ -17,6 +17,28 @@
   }
 }
 
+@keyframes strike-reveal {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+.strike-wrap {
+  position: relative;
+  display: inline-block;
+}
+.strike-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 52%;
+  height: 3px;
+  background: currentColor;
+  transform-origin: left center;
+  animation: strike-reveal 0.7s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .strike-line { animation: none; transform: scaleX(1); }
+}
+
 :root {
   --bg-color: #fcfbfa; /* Light, warm, premium minimalist editorial canvas */
   --surface: #ffffff;

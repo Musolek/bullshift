@@ -271,6 +271,9 @@ export default function BullShift() {
   const [history, setHistory] = useState(ORIGINAL_HISTORY);
   const [showCBRS, setShowCBRS] = useState(false);
   const [palette, setPalette] = useState(PALETTES[0]); // Default to tan palette
+  const [decodedKey, setDecodedKey] = useState(0);
+  const heroRef = useRef(null);
+  const heroWasVisible = useRef(false);
 
   useEffect(() => setMounted(true), []);
   useEffect(() => {
@@ -278,6 +281,22 @@ export default function BullShift() {
       setShowCBRS(true);
     }
   }, [history]);
+
+  // Replay the "decoded" strike-through whenever the hero scrolls back into view
+  useEffect(() => {
+    const el = heroRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting && !heroWasVisible.current) {
+        heroWasVisible.current = true;
+        setDecodedKey(k => k + 1);
+      } else if (!entry.isIntersecting) {
+        heroWasVisible.current = false;
+      }
+    }, { threshold: 0.6 });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   const runShift = async () => {
     if (!input.trim() || loading) return;
@@ -340,9 +359,12 @@ export default function BullShift() {
         <div style={{ ...mono, fontSize: "10px", letterSpacing: "0.12em", color: palette.accent, textTransform: "uppercase", marginBottom: 14 }}>
           Translation Engine
         </div>
-        <h1 style={{ ...syne, fontWeight: 800, fontSize: "clamp(32px,6vw,64px)", lineHeight: 0.92, letterSpacing: "-0.04em", color: palette.text, marginBottom: 28 }}>
+        <h1 ref={heroRef} style={{ ...syne, fontWeight: 800, fontSize: "clamp(32px,6vw,64px)", lineHeight: 0.92, letterSpacing: "-0.04em", color: palette.text, marginBottom: 28 }}>
           LinkedIn jargon<br />
-          <span style={{ textDecoration: "line-through", textDecorationThickness: 3, color: palette.muted }}>decoded</span><br />
+          <span className="strike-wrap" style={{ color: palette.accent }}>
+            decoded
+            <span key={decodedKey} className="strike-line" />
+          </span><br />
           without <span style={{ color: palette.accent }}>mercy</span>
         </h1>
         <p style={{ fontSize: 16, lineHeight: 1.7, color: palette.muted, fontWeight: 300, maxWidth: 580, marginBottom: 24 }}>
