@@ -1,63 +1,56 @@
 "use client";
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 
 const PALETTES = [
-  { id: "tan", name: "Tan", bg: "#F5F0E8", text: "#1A1714", muted: "#6B6560", accent: "#F0B429", border: "#1A1714" },
-  { id: "purple", name: "Purple", bg: "#3D348B", text: "#F0E2E7", muted: "#C7BAD6", accent: "#F7B801", border: "#F0E2E7" },
-  { id: "yellow", name: "Gold", bg: "#F7B801", text: "#1B1F3B", muted: "#4A4A2A", accent: "#F35B04", border: "#1B1F3B" },
-  { id: "orange", name: "Orange", bg: "#8A2F02", text: "#F5EAE5", muted: "#DDBBAE", accent: "#FFC23A", border: "#F5EAE5" },
-  { id: "pink", name: "Pink", bg: "#F0E2E7", text: "#1B1F3B", muted: "#5E5853", accent: "#F35B04", border: "#3D348B" },
-  { id: "dark", name: "Dark", bg: "#1B1F3B", text: "#F0E2E7", muted: "#B8A8C8", accent: "#F7B801", border: "#F0E2E7" },
+  { id: "cream", name: "Cream", bg: "#FFF4E0", text: "#1A1330", muted: "#5B5078", accent: "#A8311A", accentBright: "#FF6B6B", border: "#1A1330" },
+  { id: "teal", name: "Teal", bg: "#E3FBF7", text: "#0B3D38", muted: "#3A6F68", accent: "#0B6E64", accentBright: "#4ECDC4", border: "#0B3D38" },
+  { id: "sun", name: "Sun", bg: "#FFF1B8", text: "#3D2B00", muted: "#7A5C12", accent: "#A8311A", accentBright: "#FFD93D", border: "#3D2B00" },
+  { id: "bubblegum", name: "Bubblegum", bg: "#FFE3F0", text: "#3D0C24", muted: "#7A3358", accent: "#0B6E64", accentBright: "#4ECDC4", border: "#3D0C24" },
+  { id: "dark", name: "Dark", bg: "#1A1330", text: "#FFF4E0", muted: "#C9C2E0", accent: "#FFD93D", accentBright: "#FF6B6B", border: "#FFF4E0" },
 ];
 
 const Header = ({ isTyping = false, jargonDensity = 0, palette, setPalette }) => {
-  const [logoText, setLogoText] = useState('BULLSHIFT');
   const isAlert = isTyping || jargonDensity > 30;
 
-  // Simple, instant text scramble simulator for brutalist styling
-  const triggerScramble = (hovering) => {
-    if (hovering) {
-      setLogoText('BS//01');
-    } else {
-      setLogoText('BULLSHIFT');
-    }
-  };
-
   return (
-    <header style={{ position: "sticky", top: 0, zIndex: 50, width: "100%", height: "60px", backgroundColor: "#000000", borderBottom: "1px solid #262626", padding: "0 1.5rem", display: "flex", alignItems: "center", justifyContent: "space-between", userSelect: "none", boxShadow: "0 4px 30px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.05)" }}>
-      {/* Left: Branding with hover state */}
-      <Link 
+    <header style={{ position: "sticky", top: 0, zIndex: 50, width: "100%", backgroundColor: palette.bg, borderBottom: `4px solid ${palette.border}`, padding: "16px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", userSelect: "none" }}>
+      <Link
         href="/"
-        style={{ fontFamily: "'Clash Display', Inter, system-ui, sans-serif", fontStyle: "normal", fontWeight: 600, fontSize: "24px", lineHeight: "32px", letterSpacing: "-0.02em", cursor: "pointer", transition: "color 0.15s", userSelect: "none", textDecoration: "none", color: isAlert ? '#ff1e43' : '#ffffff' }}
-        onMouseEnter={() => triggerScramble(true)}
-        onMouseLeave={() => triggerScramble(false)}
+        style={{ fontFamily: "'Archivo Black', sans-serif", fontSize: "20px", letterSpacing: "-0.01em", cursor: "pointer", textDecoration: "none", color: palette.text }}
       >
-        {logoText}
+        BullShift!
       </Link>
 
-      {/* Right: Navigation & Global Reactive Status Pill */}
-      <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
-        <nav style={{ display: "none" }} className="md:flex md:items-center md:gap-6">
-          <Link href="/about" style={{ fontFamily: "'IBM Plex Mono', monospace", fontStyle: "normal", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "#737373", textDecoration: "none", transition: "color 0.15s" }} className="hover:text-white">About</Link>
-          <Link href="/faq" style={{ fontFamily: "'IBM Plex Mono', monospace", fontStyle: "normal", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "#737373", textDecoration: "none", transition: "color 0.15s" }} className="hover:text-white">FAQ</Link>
-          <Link href="/privacy" style={{ fontFamily: "'IBM Plex Mono', monospace", fontStyle: "normal", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "#737373", textDecoration: "none", transition: "color 0.15s" }} className="hover:text-white">Privacy</Link>
+      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <nav style={{ display: "none", gap: "10px" }} className="md:flex md:items-center">
+          {[["About", "/about"], ["FAQ", "/faq"]].map(([label, href]) => (
+            <Link
+              key={href}
+              href={href}
+              style={{ padding: "8px 16px", borderRadius: 999, background: palette.text, color: palette.bg, fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 13, textDecoration: "none" }}
+            >
+              {label}
+            </Link>
+          ))}
         </nav>
 
-        {/* Palette Toggle */}
-        <div style={{ display: "flex", gap: "6px", alignItems: "center", marginLeft: "12px", paddingLeft: "12px", borderLeft: "1px solid #262626" }}>
+        <div style={{ display: "flex", gap: "6px", alignItems: "center", marginLeft: "8px", paddingLeft: "12px", borderLeft: `2px solid ${palette.border}` }}>
           {PALETTES.map((p) => (
-            <button
+            <motion.button
               key={p.id}
+              whileHover={{ scale: 1.15, rotate: -6 }}
+              whileTap={{ scale: 0.9 }}
+              transition={{ type: "spring", stiffness: 400, damping: 15 }}
               onClick={() => setPalette(p)}
               style={{
-                width: 28,
-                height: 28,
-                borderRadius: 6,
-                border: palette.id === p.id ? "2px solid #ffffff" : "1px solid #262626",
+                width: 26,
+                height: 26,
+                borderRadius: "50%",
+                border: palette.id === p.id ? `3px solid ${palette.text}` : `2px solid ${palette.border}`,
                 background: p.bg,
                 cursor: "pointer",
-                transition: "all 0.2s",
                 minWidth: 44,
                 minHeight: 44,
               }}
@@ -66,32 +59,23 @@ const Header = ({ isTyping = false, jargonDensity = 0, palette, setPalette }) =>
           ))}
         </div>
 
-        {/* System Status Indicator Box */}
-        <div 
+        <motion.div
+          animate={isAlert ? { rotate: [0, -4, 4, -4, 0] } : {}}
+          transition={{ duration: 0.4, repeat: isAlert ? Infinity : 0, repeatDelay: 0.6 }}
           style={{
-            fontFamily: "'IBM Plex Mono', monospace", fontStyle: "normal",
-            fontSize: "0.625rem",
-            letterSpacing: "0.05em",
-            padding: "0.25rem 0.75rem",
-            border: "1px solid",
-            transition: "all 0.2s",
-            display: "flex",
-            alignItems: "center",
-            gap: "0.5rem",
-            backgroundColor: isAlert ? "rgba(255, 30, 67, 0.1)" : "#0a0a0a",
-            borderColor: isAlert ? "#ff1e43" : "#262626",
-            color: isAlert ? "#ff1e43" : "#00ff66",
-            boxShadow: isAlert ? "0 0 15px rgba(255, 30, 67, 0.35), 0 0 30px rgba(255, 30, 67, 0.1)" : "0 0 15px rgba(0, 255, 102, 0.25)"
+            fontFamily: "'IBM Plex Mono', monospace",
+            fontSize: "11px",
+            fontWeight: 600,
+            letterSpacing: "0.03em",
+            padding: "8px 14px",
+            borderRadius: 999,
+            border: `2px solid ${palette.border}`,
+            background: isAlert ? palette.accentBright : palette.bg,
+            color: isAlert ? palette.border : palette.text,
           }}
         >
-          <span style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: isAlert ? "#ff1e43" : "#00ff66", animation: isAlert ? "pulse 1.5s cubic-bezier(0.16, 1, 0.3, 1) infinite" : "none" }} />
-          <span>
-            {isAlert 
-              ? `SYS_STATUS: SCRUBBING // METRIC_${jargonDensity}%` 
-              : 'SYS_STATUS: READY // NOISE_0%'
-            }
-          </span>
-        </div>
+          {isAlert ? `🔥 ${jargonDensity}% jargon` : '✓ ready'}
+        </motion.div>
       </div>
     </header>
   );

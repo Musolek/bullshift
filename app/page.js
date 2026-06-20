@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion, useMotionValue, useSpring, useTransform, useScroll, useVelocity } from "framer-motion";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import Blob3D from "../components/Blob3D";
 
 // Scroll-driven reveal: fades/slides an element up once it enters the viewport
 const Reveal = ({ children, delay = 0, y = 24, x = 0, ...props }) => (
@@ -62,18 +63,22 @@ const TONES = [
   { id: 5, label: "Obliterate",  desc: "Surgical baseline exposure. Withering analytical execution." },
 ];
 
+const hexToInt = (hex) => parseInt(hex.replace("#", ""), 16);
+
+// Playful-maximalist mood palettes. `accent` is a contrast-safe darker tone used
+// for accent TEXT (labels, "mercy", stat numbers); `accentBright` is the vivid
+// sticker/blob/button-fill color, never used as text-on-bg (it fails AA there).
 const PALETTES = [
-  { id: "tan", name: "Tan", bg: "#F5F0E8", text: "#1A1714", muted: "#6B6560", accent: "#F0B429", border: "#1A1714" },
-  { id: "purple", name: "Purple", bg: "#3D348B", text: "#F0E2E7", muted: "#C7BAD6", accent: "#F7B801", border: "#F0E2E7" },
-  { id: "yellow", name: "Gold", bg: "#F7B801", text: "#1B1F3B", muted: "#4A4A2A", accent: "#F35B04", border: "#1B1F3B" },
-  { id: "orange", name: "Orange", bg: "#8A2F02", text: "#F5EAE5", muted: "#DDBBAE", accent: "#FFC23A", border: "#F5EAE5" },
-  { id: "pink", name: "Pink", bg: "#F0E2E7", text: "#1B1F3B", muted: "#5E5853", accent: "#F35B04", border: "#3D348B" },
-  { id: "dark", name: "Dark", bg: "#1B1F3B", text: "#F0E2E7", muted: "#B8A8C8", accent: "#F7B801", border: "#F0E2E7" },
+  { id: "cream", name: "Cream", bg: "#FFF4E0", text: "#1A1330", muted: "#5B5078", accent: "#A8311A", accentBright: "#FF6B6B", border: "#1A1330" },
+  { id: "teal", name: "Teal", bg: "#E3FBF7", text: "#0B3D38", muted: "#3A6F68", accent: "#0B6E64", accentBright: "#4ECDC4", border: "#0B3D38" },
+  { id: "sun", name: "Sun", bg: "#FFF1B8", text: "#3D2B00", muted: "#7A5C12", accent: "#A8311A", accentBright: "#FFD93D", border: "#3D2B00" },
+  { id: "bubblegum", name: "Bubblegum", bg: "#FFE3F0", text: "#3D0C24", muted: "#7A3358", accent: "#0B6E64", accentBright: "#4ECDC4", border: "#3D0C24" },
+  { id: "dark", name: "Dark", bg: "#1A1330", text: "#FFF4E0", muted: "#C9C2E0", accent: "#FFD93D", accentBright: "#FF6B6B", border: "#FFF4E0" },
 ];
 
-const syne = { fontFamily: "'Clash Display', Inter, system-ui, sans-serif", fontStyle: "normal" };
+const syne = { fontFamily: "'Archivo Black', sans-serif", fontStyle: "normal" };
 const mono = { fontFamily: "'IBM Plex Mono', monospace", fontStyle: "normal" };
-const sans = { fontFamily: "'Cormorant Garamond', 'Iowan Old Style', Georgia, serif", fontStyle: "italic", fontWeight: 600 };
+const sans = { fontFamily: "'Plus Jakarta Sans', sans-serif", fontStyle: "normal", fontWeight: 500 };
 
 // CBRS Archetypes
 const ARCHETYPES = [
@@ -429,60 +434,66 @@ export default function BullShift() {
       
       <Header isTyping={loading} jargonDensity={scoreVal} palette={palette} setPalette={setPalette} />
 
-      {/* HERO — cinematic entrance: label, headline, paragraph, and stats stagger in on load */}
-      <motion.div
-        initial="hidden"
-        animate="visible"
-        variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.12, delayChildren: 0.05 } } }}
-        style={{ padding: "48px 20px 0", maxWidth: 860, margin: "0 auto" }}
-      >
+      {/* HERO — cinematic entrance + WebGL blob field + cinematic tilt, restyled playful-maximalist */}
+      <div style={{ position: "relative", overflow: "hidden" }}>
+        <div style={{ position: "absolute", inset: 0, zIndex: 0 }}>
+          <Blob3D colors={[hexToInt(palette.accentBright), hexToInt(palette.accent), hexToInt(palette.border)]} />
+        </div>
         <motion.div
-          variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } } }}
-          style={{ ...mono, fontSize: "10px", letterSpacing: "0.12em", color: palette.accent, textTransform: "uppercase", marginBottom: 14 }}
+          initial="hidden"
+          animate="visible"
+          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.12, delayChildren: 0.05 } } }}
+          style={{ position: "relative", zIndex: 1, padding: "64px 20px 32px", maxWidth: 900, margin: "0 auto" }}
         >
-          Translation Engine
-        </motion.div>
-        <motion.h1
-          ref={heroRef}
-          onMouseMove={handleHeroMouseMove}
-          onMouseLeave={handleHeroMouseLeave}
-          variants={{ hidden: { opacity: 0, y: 40, scale: 0.96, filter: "blur(8px)" }, visible: { opacity: 1, y: 0, scale: 1, filter: "blur(0px)", transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } } }}
-          style={{ ...syne, fontWeight: 800, fontSize: "clamp(32px,6vw,64px)", lineHeight: 0.92, letterSpacing: "-0.04em", color: palette.text, marginBottom: 28, rotateX: heroRotateX, rotateY: heroRotateY, transformPerspective: 800, willChange: "transform" }}
-        >
-          LinkedIn jargon<br />
-          <span className="strike-wrap" style={{ color: palette.muted }}>
-            decoded
-            <span key={decodedKey} className="strike-line" style={{ background: palette.accent }} />
-          </span><br />
-          without{" "}
-          <motion.span style={{ color: palette.accent, display: "inline-block", x: mercyX, y: mercyY }}>
-            mercy
-          </motion.span>
-        </motion.h1>
-        <motion.p
-          variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } } }}
-          style={{ fontSize: 18, lineHeight: 1.7, color: palette.text, fontWeight: 600, maxWidth: 580, marginBottom: 24 }}
-        >
-          Paste any opaque corporate communication down below. We analyze the speech architecture, isolate baseline truths, and strip away tactical filler words.
-        </motion.p>
+          <motion.div
+            variants={{ hidden: { opacity: 0, y: 16, rotate: 0 }, visible: { opacity: 1, y: 0, rotate: -2, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } } }}
+            style={{ ...mono, display: "inline-flex", alignItems: "center", gap: 8, fontSize: "12px", fontWeight: 700, letterSpacing: "0.04em", color: palette.bg, background: palette.text, padding: "10px 20px", borderRadius: 999, marginBottom: 22 }}
+          >
+            ✦ ZERO CIRCLE-BACKS GUARANTEED
+          </motion.div>
+          <motion.h1
+            ref={heroRef}
+            onMouseMove={handleHeroMouseMove}
+            onMouseLeave={handleHeroMouseLeave}
+            variants={{ hidden: { opacity: 0, y: 40, scale: 0.96, filter: "blur(8px)" }, visible: { opacity: 1, y: 0, scale: 1, filter: "blur(0px)", transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } } }}
+            style={{ ...syne, fontSize: "clamp(38px,7.5vw,92px)", lineHeight: 0.96, letterSpacing: "-0.01em", color: palette.text, marginBottom: 28, rotateX: heroRotateX, rotateY: heroRotateY, transformPerspective: 800, willChange: "transform" }}
+          >
+            LinkedIn jargon<br />
+            <span className="strike-wrap" style={{ color: palette.muted }}>
+              decoded
+              <span key={decodedKey} className="strike-line" style={{ background: palette.accentBright }} />
+            </span><br />
+            without{" "}
+            <motion.span style={{ display: "inline-block", background: palette.text, color: palette.accentBright, padding: "0 16px", borderRadius: 16, x: mercyX, y: mercyY }}>
+              mercy
+            </motion.span>
+          </motion.h1>
+          <motion.p
+            variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } } }}
+            style={{ fontSize: 19, lineHeight: 1.65, color: palette.muted, fontWeight: 600, maxWidth: 520, marginBottom: 24 }}
+          >
+            Paste the jargon. Get the truth. It's honestly kind of fun to watch.
+          </motion.p>
 
-        {/* Fun Stats */}
-        <motion.div
-          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.08 } } }}
-          style={{ display: "flex", gap: 32, flexWrap: "wrap", marginTop: 32, marginBottom: 8 }}
-        >
-          {[["142K+", "buzzwords autopsied"], ["0", "circle-backs tolerated"], ["100%", "bullshit-free"]].map(([value, label]) => (
-            <motion.div
-              key={label}
-              variants={{ hidden: { opacity: 0, y: 14 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } } }}
-              style={{ ...mono, fontSize: 12, color: palette.muted }}
-            >
-              <span style={{ ...syne, fontSize: 24, fontWeight: 800, color: palette.text, display: "block", marginBottom: 4 }}>{value}</span>
-              {label}
-            </motion.div>
-          ))}
+          {/* Fun Stats — sticker cards */}
+          <motion.div
+            variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.08 } } }}
+            style={{ display: "flex", gap: 16, flexWrap: "wrap", marginTop: 36 }}
+          >
+            {[["142K+", "buzzwords autopsied", -2], ["0", "circle-backs tolerated", 1.5], ["100%", "bullshit-free", -1.5]].map(([value, label, rot]) => (
+              <motion.div
+                key={label}
+                variants={{ hidden: { opacity: 0, y: 14, rotate: 0 }, visible: { opacity: 1, y: 0, rotate: rot, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } } }}
+                whileHover={{ rotate: 0, scale: 1.04 }}
+                style={{ ...mono, fontSize: 12, color: palette.text, background: palette.bg, border: `3px solid ${palette.border}`, borderRadius: 16, padding: "14px 20px", boxShadow: `4px 4px 0 ${palette.border}` }}
+              >
+                <span style={{ ...syne, fontSize: 26, color: palette.text, display: "block", marginBottom: 4 }}>{value}</span>
+                {label}
+              </motion.div>
+            ))}
+          </motion.div>
         </motion.div>
-      </motion.div>
+      </div>
 
       {/* TICKER — speeds up with scroll velocity */}
       <div style={{ margin: "32px 0", overflow: "hidden", borderTop: "1.5px solid " + palette.border, borderBottom: "1.5px solid " + palette.border }}>
@@ -513,7 +524,7 @@ export default function BullShift() {
                 <label style={{ ...mono, fontSize: 12, textTransform: "uppercase", color: palette.muted }}>Input Matrix</label>
                 <button onClick={() => { setInput(EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)]); setOutput(null); }} style={{ background: "none", border: "none", fontSize: 13, fontWeight: 600, cursor: "pointer", ...sans, color: palette.text }}>Load random example →</button>
               </div>
-              <textarea value={input} onChange={e => setInput(e.target.value)} placeholder="Paste corporate communication strings here..." style={{ width: "100%", minHeight: 200, padding: 16, borderRadius: 8, border: "1.5px solid " + palette.border, background: "rgba(255,255,255,0.3)", backdropFilter: "blur(12px)", fontFamily: sans, fontSize: 15, color: palette.text, resize: "vertical" }} />
+              <textarea value={input} onChange={e => setInput(e.target.value)} placeholder="Paste corporate communication strings here..." style={{ width: "100%", minHeight: 200, padding: 18, borderRadius: 20, border: `3px solid ${palette.border}`, background: palette.bg, fontFamily: sans, fontSize: 15, color: palette.text, resize: "vertical" }} />
             </div>
 
             <div>
@@ -527,12 +538,12 @@ export default function BullShift() {
                   style={{
                     flex: 1,
                     padding: "12px 16px",
-                    background: mode === "linkedin-to-human" ? palette.text : "rgba(255,255,255,0.3)",
+                    background: mode === "linkedin-to-human" ? palette.text : palette.bg,
                     color: mode === "linkedin-to-human" ? palette.bg : palette.text,
-                    border: "1.5px solid " + palette.border,
-                    borderRadius: 8,
+                    border: `3px solid ${palette.border}`,
+                    borderRadius: 999,
                     fontSize: 13,
-                    fontWeight: 600,
+                    fontWeight: 700,
                     cursor: "pointer",
                     transition: "background 0.2s, color 0.2s"
                   }}
@@ -547,12 +558,12 @@ export default function BullShift() {
                   style={{
                     flex: 1,
                     padding: "12px 16px",
-                    background: mode === "human-to-linkedin" ? palette.text : "rgba(255,255,255,0.3)",
+                    background: mode === "human-to-linkedin" ? palette.text : palette.bg,
                     color: mode === "human-to-linkedin" ? palette.bg : palette.text,
-                    border: "1.5px solid " + palette.border,
-                    borderRadius: 8,
+                    border: `3px solid ${palette.border}`,
+                    borderRadius: 999,
                     fontSize: 13,
-                    fontWeight: 600,
+                    fontWeight: 700,
                     cursor: "pointer",
                     transition: "background 0.2s, color 0.2s"
                   }}
@@ -573,13 +584,13 @@ export default function BullShift() {
                     transition={{ type: "spring", stiffness: 400, damping: 17 }}
                     onClick={() => setTone(t.id)}
                     style={{
-                      padding: "8px 16px",
-                      background: tone === t.id ? palette.text : "rgba(255,255,255,0.3)",
-                      color: tone === t.id ? palette.bg : palette.text,
-                      border: "1.5px solid " + palette.border,
-                      borderRadius: 6,
+                      padding: "8px 18px",
+                      background: tone === t.id ? palette.accentBright : palette.bg,
+                      color: palette.text,
+                      border: `2px solid ${palette.border}`,
+                      borderRadius: 999,
                       fontSize: 12,
-                      fontWeight: 600,
+                      fontWeight: 700,
                       cursor: "pointer",
                       transition: "background 0.2s, color 0.2s"
                     }}
@@ -588,29 +599,30 @@ export default function BullShift() {
                   </motion.button>
                 ))}
               </div>
-              <div style={{ marginTop: 14, fontSize: 14, color: palette.muted, fontStyle: "italic" }}>↳ Posture: {TONES[tone - 1].desc}</div>
+              <div style={{ marginTop: 14, fontSize: 14, color: palette.muted, fontWeight: 600 }}>↳ Posture: {TONES[tone - 1].desc}</div>
             </div>
 
             <Magnetic strength={10}>
               <motion.button
                 onClick={runShift}
                 disabled={loading || !input.trim()}
-                whileHover={loading || !input.trim() ? {} : { scale: 1.03 }}
-                whileTap={loading || !input.trim() ? {} : { scale: 0.95 }}
+                whileHover={loading || !input.trim() ? {} : { scale: 1.03, y: -2 }}
+                whileTap={loading || !input.trim() ? {} : { scale: 0.96, y: 0 }}
                 transition={{ type: "spring", stiffness: 400, damping: 17 }}
                 style={{
-                  padding: "14px 24px",
-                  background: loading || !input.trim() ? palette.border : palette.text,
-                  color: loading || !input.trim() ? palette.muted : palette.bg,
-                  border: "none",
-                  borderRadius: 6,
-                  fontSize: 13,
-                  fontWeight: 700,
+                  padding: "16px 28px",
+                  background: loading || !input.trim() ? palette.bg : palette.accentBright,
+                  color: palette.text,
+                  border: `4px solid ${palette.border}`,
+                  borderRadius: 999,
+                  fontSize: 14,
+                  fontWeight: 800,
                   cursor: loading || !input.trim() ? "not-allowed" : "pointer",
-                  ...mono,
+                  boxShadow: loading || !input.trim() ? "none" : `5px 5px 0 ${palette.border}`,
+                  ...sans,
                 }}
               >
-                {loading ? "Processing..." : mode === "linkedin-to-human" ? "Deconstruct Targets" : "Generate Corporate Speak"}
+                {loading ? "Processing..." : mode === "linkedin-to-human" ? "Deconstruct Targets →" : "Generate Corporate Speak →"}
               </motion.button>
             </Magnetic>
           </div>
@@ -817,7 +829,7 @@ export default function BullShift() {
         </div>
       </section>
 
-      <Footer />
+      <Footer palette={palette} />
 
       <style>{`
         @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
