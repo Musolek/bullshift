@@ -1,17 +1,17 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { motion, useMotionValue, useSpring, useTransform, useScroll, useVelocity } from "framer-motion";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 
 // Scroll-driven reveal: fades/slides an element up once it enters the viewport
-const Reveal = ({ children, delay = 0, y = 24, ...props }) => (
+const Reveal = ({ children, delay = 0, y = 24, x = 0, ...props }) => (
   <motion.div
-    initial={{ opacity: 0, y }}
-    whileInView={{ opacity: 1, y: 0 }}
+    initial={{ opacity: 0, y, x }}
+    whileInView={{ opacity: 1, y: 0, x: 0 }}
     viewport={{ once: true, margin: "-60px" }}
-    transition={{ duration: 0.5, delay, ease: [0.16, 1, 0.3, 1] }}
+    transition={{ duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] }}
     {...props}
   >
     {children}
@@ -348,11 +348,14 @@ export default function BullShift() {
     return () => observer.disconnect();
   }, []);
 
-  // Kinetic typography: hero headline tilts subtly toward the cursor
+  // Kinetic typography: hero headline tilts toward the cursor with real depth,
+  // "mercy" pops forward on its own layer for a physical, layered feel.
   const heroMouseX = useMotionValue(0);
   const heroMouseY = useMotionValue(0);
-  const heroRotateX = useSpring(useTransform(heroMouseY, [-0.5, 0.5], [4, -4]), { stiffness: 150, damping: 20 });
-  const heroRotateY = useSpring(useTransform(heroMouseX, [-0.5, 0.5], [-4, 4]), { stiffness: 150, damping: 20 });
+  const heroRotateX = useSpring(useTransform(heroMouseY, [-0.5, 0.5], [14, -14]), { stiffness: 120, damping: 14 });
+  const heroRotateY = useSpring(useTransform(heroMouseX, [-0.5, 0.5], [-14, 14]), { stiffness: 120, damping: 14 });
+  const mercyX = useSpring(useTransform(heroMouseX, [-0.5, 0.5], [-18, 18]), { stiffness: 150, damping: 15 });
+  const mercyY = useSpring(useTransform(heroMouseY, [-0.5, 0.5], [-10, 10]), { stiffness: 150, damping: 15 });
   const handleHeroMouseMove = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
     heroMouseX.set((e.clientX - rect.left) / rect.width - 0.5);
@@ -362,6 +365,13 @@ export default function BullShift() {
     heroMouseX.set(0);
     heroMouseY.set(0);
   };
+
+  // Scroll velocity drives the jargon ticker's playback speed — fast scroll, fast ticker
+  const { scrollY } = useScroll();
+  const scrollVelocity = useVelocity(scrollY);
+  const tickerSpeed = useTransform(scrollVelocity, [-3000, 0, 3000], [0.35, 1, 0.35], { clamp: true });
+  const tickerSpeedSpring = useSpring(tickerSpeed, { stiffness: 80, damping: 20 });
+  const tickerDuration = useTransform(tickerSpeedSpring, v => `${28 * v}s`);
 
   const runShift = async () => {
     if (!input.trim() || loading) return;
@@ -419,15 +429,24 @@ export default function BullShift() {
       
       <Header isTyping={loading} jargonDensity={scoreVal} palette={palette} setPalette={setPalette} />
 
-      {/* HERO */}
-      <div style={{ padding: "48px 20px 0", maxWidth: 860, margin: "0 auto" }}>
-        <div style={{ ...mono, fontSize: "10px", letterSpacing: "0.12em", color: palette.accent, textTransform: "uppercase", marginBottom: 14 }}>
+      {/* HERO — cinematic entrance: label, headline, paragraph, and stats stagger in on load */}
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.12, delayChildren: 0.05 } } }}
+        style={{ padding: "48px 20px 0", maxWidth: 860, margin: "0 auto" }}
+      >
+        <motion.div
+          variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } } }}
+          style={{ ...mono, fontSize: "10px", letterSpacing: "0.12em", color: palette.accent, textTransform: "uppercase", marginBottom: 14 }}
+        >
           Translation Engine
-        </div>
+        </motion.div>
         <motion.h1
           ref={heroRef}
           onMouseMove={handleHeroMouseMove}
           onMouseLeave={handleHeroMouseLeave}
+          variants={{ hidden: { opacity: 0, y: 40, scale: 0.96, filter: "blur(8px)" }, visible: { opacity: 1, y: 0, scale: 1, filter: "blur(0px)", transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } } }}
           style={{ ...syne, fontWeight: 800, fontSize: "clamp(32px,6vw,64px)", lineHeight: 0.92, letterSpacing: "-0.04em", color: palette.text, marginBottom: 28, rotateX: heroRotateX, rotateY: heroRotateY, transformPerspective: 800, willChange: "transform" }}
         >
           LinkedIn jargon<br />
@@ -435,41 +454,59 @@ export default function BullShift() {
             decoded
             <span key={decodedKey} className="strike-line" style={{ background: palette.accent }} />
           </span><br />
-          without <span style={{ color: palette.accent }}>mercy</span>
+          without{" "}
+          <motion.span style={{ color: palette.accent, display: "inline-block", x: mercyX, y: mercyY }}>
+            mercy
+          </motion.span>
         </motion.h1>
-        <p style={{ fontSize: 18, lineHeight: 1.7, color: palette.text, fontWeight: 600, maxWidth: 580, marginBottom: 24 }}>
+        <motion.p
+          variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } } }}
+          style={{ fontSize: 18, lineHeight: 1.7, color: palette.text, fontWeight: 600, maxWidth: 580, marginBottom: 24 }}
+        >
           Paste any opaque corporate communication down below. We analyze the speech architecture, isolate baseline truths, and strip away tactical filler words.
-        </p>
+        </motion.p>
 
         {/* Fun Stats */}
-        <div style={{ display: "flex", gap: 32, flexWrap: "wrap", marginTop: 32, marginBottom: 8 }}>
-          {[["142K+", "buzzwords autopsied"], ["0", "circle-backs tolerated"], ["100%", "bullshit-free"]].map(([value, label], i) => (
-            <Reveal key={label} delay={i * 0.08} y={14}>
-              <div style={{ ...mono, fontSize: 12, color: palette.muted }}>
-                <span style={{ ...syne, fontSize: 24, fontWeight: 800, color: palette.text, display: "block", marginBottom: 4 }}>{value}</span>
-                {label}
-              </div>
-            </Reveal>
+        <motion.div
+          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.08 } } }}
+          style={{ display: "flex", gap: 32, flexWrap: "wrap", marginTop: 32, marginBottom: 8 }}
+        >
+          {[["142K+", "buzzwords autopsied"], ["0", "circle-backs tolerated"], ["100%", "bullshit-free"]].map(([value, label]) => (
+            <motion.div
+              key={label}
+              variants={{ hidden: { opacity: 0, y: 14 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } } }}
+              style={{ ...mono, fontSize: 12, color: palette.muted }}
+            >
+              <span style={{ ...syne, fontSize: 24, fontWeight: 800, color: palette.text, display: "block", marginBottom: 4 }}>{value}</span>
+              {label}
+            </motion.div>
           ))}
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
-      {/* TICKER */}
+      {/* TICKER — speeds up with scroll velocity */}
       <div style={{ margin: "32px 0", overflow: "hidden", borderTop: "1.5px solid " + palette.border, borderBottom: "1.5px solid " + palette.border }}>
-        <div style={{ display: "flex", gap: 0, whiteSpace: "nowrap", animation: "ticker 28s linear infinite", padding: "12px 0" }}>
+        <motion.div
+          style={{
+            display: "flex", gap: 0, whiteSpace: "nowrap", padding: "12px 0",
+            animationName: "ticker", animationTimingFunction: "linear", animationIterationCount: "infinite",
+            animationDuration: tickerDuration,
+          }}
+        >
           {[...JARGON_WORDS, ...JARGON_WORDS].map((word, i) => (
             <span key={i} style={{ display: "inline-flex", alignItems: "center" }}>
               <span style={{ ...mono, fontSize: 11, color: palette.muted, padding: "0 16px" }}>{word}</span>
               <span style={{ color: palette.border }}>·</span>
             </span>
           ))}
-        </div>
+        </motion.div>
       </div>
 
       {/* MAIN WORKSPACE */}
       <main id="engine" style={{ maxWidth: "1400px", margin: "0 auto", padding: "24px 20px" }}>
         <div className="workspace-grid" style={{ display: "grid", gridTemplateColumns: "1fr", gap: 24 }}>
           {/* Left Input Panel */}
+          <Reveal y={0} x={-50}>
           <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
             <div>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 14, alignItems: "center" }}>
@@ -577,8 +614,10 @@ export default function BullShift() {
               </motion.button>
             </Magnetic>
           </div>
+          </Reveal>
 
           {/* Right Output Panel */}
+          <Reveal y={0} x={50} delay={0.1}>
           <div style={{ display: "flex", flexDirection: "column" }}>
             <label style={{ ...mono, fontSize: 12, textTransform: "uppercase", color: palette.muted, marginBottom: 14, display: "block" }}>Output Spectrum Matrix</label>
             
@@ -649,13 +688,15 @@ export default function BullShift() {
                         ["02 /", "Calibrate Friction Level", "Toggle through our scaling system. Move from nice translation profiles directly up into high-intensity logical reductions."],
                         ["03 /", "Deconstruct Speak Elements", "Extract plain text representations immediately. Isolate dense structural bloat with full numerical score data."]
                       ].map(([step, title, desc], i) => (
-                        <div key={i} style={{ display: "grid", gridTemplateColumns: "60px 1fr", gap: 16 }}>
-                          <span style={{ ...mono, color: palette.accent, fontSize: 14, fontWeight: 500 }}>{step}</span>
-                          <div>
-                            <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 6, letterSpacing: "-0.01em" }}>{title}</div>
-                            <div style={{ color: palette.muted, fontSize: 14, lineHeight: 1.5 }}>{desc}</div>
+                        <Reveal key={i} delay={i * 0.12} y={18}>
+                          <div style={{ display: "grid", gridTemplateColumns: "60px 1fr", gap: 16 }}>
+                            <span style={{ ...mono, color: palette.accent, fontSize: 14, fontWeight: 500 }}>{step}</span>
+                            <div>
+                              <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 6, letterSpacing: "-0.01em" }}>{title}</div>
+                              <div style={{ color: palette.muted, fontSize: 14, lineHeight: 1.5 }}>{desc}</div>
+                            </div>
                           </div>
-                        </div>
+                        </Reveal>
                       ))}
                     </div>
                   </>
@@ -663,6 +704,7 @@ export default function BullShift() {
               </div>
             )}
           </div>
+          </Reveal>
         </div>
       </main>
 
@@ -689,6 +731,7 @@ export default function BullShift() {
 
       {/* BULLPEN */}
       <section id="bullpen" style={{ maxWidth: "1400px", margin: "0 auto", padding: "48px 20px" }}>
+        <Reveal>
         <div className="flex-row-mobile" style={{ display: "flex", justifyContent: "space-between", marginBottom: 24, alignItems: "center", flexDirection: "column", gap: 16 }}>
           <div>
             <h2 style={{ ...syne, fontSize: 18, fontWeight: 800, letterSpacing: "-0.5px", marginBottom: 4 }}>The Bullpen</h2>
@@ -696,6 +739,7 @@ export default function BullShift() {
           </div>
           {history.length > 0 && <button onClick={() => setHistory([])} style={{ background: "none", border: "none", ...mono, fontSize: 11, color: "#C0392B", cursor: "pointer", fontWeight: 600, padding: 12, minWidth: 44, minHeight: 44 }}>Purge Records [×]</button>}
         </div>
+        </Reveal>
 
         {/* CBRS Diagnostic - Shows after 5 translations */}
         {showCBRS && cbrs && (
