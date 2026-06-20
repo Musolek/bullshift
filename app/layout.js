@@ -14,14 +14,14 @@ export const metadata = {
     images: [
       {
         url: "https://www.bullshift.app/logo.png",
-        width: 1200,
-        height: 630,
+        width: 512,
+        height: 512,
         alt: "BullShift - LinkedIn Jargon Decoder",
       },
     ],
   },
   twitter: {
-    card: "summary_large_image",
+    card: "summary",
     title: "BullShift — LinkedIn Jargon Decoder",
     description: "Decode LinkedIn corporate jargon instantly. Paste any corporate communication and get the real meaning.",
     images: ["https://www.bullshift.app/logo.png"],

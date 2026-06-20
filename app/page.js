@@ -1,10 +1,13 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { motion, useMotionValue, useSpring, useTransform, useScroll, useVelocity } from "framer-motion";
+import dynamic from "next/dynamic";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import Blob3D from "../components/Blob3D";
+// three.js references browser-only globals at import time, which throws during
+// Node SSR. Load it client-only so the server render never touches the module.
+const Blob3D = dynamic(() => import("../components/Blob3D"), { ssr: false });
 
 // Scroll-driven reveal: fades/slides an element up once it enters the viewport
 const Reveal = ({ children, delay = 0, y = 24, x = 0, ...props }) => (
@@ -371,13 +374,6 @@ export default function BullShift() {
     heroMouseY.set(0);
   };
 
-  // Scroll velocity drives the jargon ticker's playback speed — fast scroll, fast ticker
-  const { scrollY } = useScroll();
-  const scrollVelocity = useVelocity(scrollY);
-  const tickerSpeed = useTransform(scrollVelocity, [-3000, 0, 3000], [0.35, 1, 0.35], { clamp: true });
-  const tickerSpeedSpring = useSpring(tickerSpeed, { stiffness: 80, damping: 20 });
-  const tickerDuration = useTransform(tickerSpeedSpring, v => `${28 * v}s`);
-
   const runShift = async () => {
     if (!input.trim() || loading) return;
     setLoading(true); setOutput(null);
@@ -495,22 +491,16 @@ export default function BullShift() {
         </motion.div>
       </div>
 
-      {/* TICKER — speeds up with scroll velocity */}
+      {/* TICKER */}
       <div style={{ margin: "32px 0", overflow: "hidden", borderTop: "1.5px solid " + palette.border, borderBottom: "1.5px solid " + palette.border }}>
-        <motion.div
-          style={{
-            display: "flex", gap: 0, whiteSpace: "nowrap", padding: "12px 0",
-            animationName: "ticker", animationTimingFunction: "linear", animationIterationCount: "infinite",
-            animationDuration: tickerDuration,
-          }}
-        >
+        <div style={{ display: "flex", gap: 0, whiteSpace: "nowrap", padding: "12px 0", animation: "ticker 28s linear infinite" }}>
           {[...JARGON_WORDS, ...JARGON_WORDS].map((word, i) => (
             <span key={i} style={{ display: "inline-flex", alignItems: "center" }}>
               <span style={{ ...mono, fontSize: 11, color: palette.muted, padding: "0 16px" }}>{word}</span>
               <span style={{ color: palette.border }}>·</span>
             </span>
           ))}
-        </motion.div>
+        </div>
       </div>
 
       {/* MAIN WORKSPACE */}
