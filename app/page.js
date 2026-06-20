@@ -324,7 +324,6 @@ export default function BullShift() {
   const [tone, setTone] = useState(3);
   const [mode, setMode] = useState("linkedin-to-human"); // "linkedin-to-human" or "human-to-linkedin"
   const [loading, setLoading] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const [copyState, setCopyState] = useState("idle");
   const [history, setHistory] = useState(ORIGINAL_HISTORY);
   const [showCBRS, setShowCBRS] = useState(false);
@@ -333,7 +332,6 @@ export default function BullShift() {
   const heroRef = useRef(null);
   const heroWasVisible = useRef(false);
 
-  useEffect(() => setMounted(true), []);
   useEffect(() => {
     if (history.length >= 5) {
       setShowCBRS(true);
@@ -419,7 +417,6 @@ export default function BullShift() {
     setTimeout(() => setCopyState("idle"), 2000);
   };
 
-  if (!mounted) return null;
   const scoreVal = output ? Math.max(0, Math.min(100, parseInt(output.score) || 0)) : 0;
   const badge = output ? getBadge(scoreVal) : null;
   const cbrs = calculateCBRS(history);
