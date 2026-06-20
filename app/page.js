@@ -1,8 +1,58 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+
+// Scroll-driven reveal: fades/slides an element up once it enters the viewport
+const Reveal = ({ children, delay = 0, y = 24, ...props }) => (
+  <motion.div
+    initial={{ opacity: 0, y }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: "-60px" }}
+    transition={{ duration: 0.5, delay, ease: [0.16, 1, 0.3, 1] }}
+    {...props}
+  >
+    {children}
+  </motion.div>
+);
+
+// Magnetic pull: element gravitates toward the cursor within `strength`px, snaps back on leave
+const Magnetic = ({ children, strength = 18, ...props }) => {
+  const ref = useRef(null);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const springX = useSpring(x, { stiffness: 300, damping: 20, mass: 0.5 });
+  const springY = useSpring(y, { stiffness: 300, damping: 20, mass: 0.5 });
+
+  const handleMove = (e) => {
+    const el = ref.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const relX = e.clientX - (rect.left + rect.width / 2);
+    const relY = e.clientY - (rect.top + rect.height / 2);
+    x.set((relX / rect.width) * strength);
+    y.set((relY / rect.height) * strength);
+  };
+
+  const handleLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
+  return (
+    <motion.div
+      ref={ref}
+      onMouseMove={handleMove}
+      onMouseLeave={handleLeave}
+      style={{ x: springX, y: springY, display: "inline-block" }}
+      {...props}
+    >
+      {children}
+    </motion.div>
+  );
+};
 
 const TONES = [
   { id: 1, label: "Diplomatic",  desc: "Highly charitable translation layers. Keeps relationships entirely intact." },
@@ -298,6 +348,21 @@ export default function BullShift() {
     return () => observer.disconnect();
   }, []);
 
+  // Kinetic typography: hero headline tilts subtly toward the cursor
+  const heroMouseX = useMotionValue(0);
+  const heroMouseY = useMotionValue(0);
+  const heroRotateX = useSpring(useTransform(heroMouseY, [-0.5, 0.5], [4, -4]), { stiffness: 150, damping: 20 });
+  const heroRotateY = useSpring(useTransform(heroMouseX, [-0.5, 0.5], [-4, 4]), { stiffness: 150, damping: 20 });
+  const handleHeroMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    heroMouseX.set((e.clientX - rect.left) / rect.width - 0.5);
+    heroMouseY.set((e.clientY - rect.top) / rect.height - 0.5);
+  };
+  const handleHeroMouseLeave = () => {
+    heroMouseX.set(0);
+    heroMouseY.set(0);
+  };
+
   const runShift = async () => {
     if (!input.trim() || loading) return;
     setLoading(true); setOutput(null);
@@ -359,32 +424,33 @@ export default function BullShift() {
         <div style={{ ...mono, fontSize: "10px", letterSpacing: "0.12em", color: palette.accent, textTransform: "uppercase", marginBottom: 14 }}>
           Translation Engine
         </div>
-        <h1 ref={heroRef} style={{ ...syne, fontWeight: 800, fontSize: "clamp(32px,6vw,64px)", lineHeight: 0.92, letterSpacing: "-0.04em", color: palette.text, marginBottom: 28 }}>
+        <motion.h1
+          ref={heroRef}
+          onMouseMove={handleHeroMouseMove}
+          onMouseLeave={handleHeroMouseLeave}
+          style={{ ...syne, fontWeight: 800, fontSize: "clamp(32px,6vw,64px)", lineHeight: 0.92, letterSpacing: "-0.04em", color: palette.text, marginBottom: 28, rotateX: heroRotateX, rotateY: heroRotateY, transformPerspective: 800, willChange: "transform" }}
+        >
           LinkedIn jargon<br />
           <span className="strike-wrap" style={{ color: palette.muted }}>
             decoded
             <span key={decodedKey} className="strike-line" style={{ background: palette.accent }} />
           </span><br />
           without <span style={{ color: palette.accent }}>mercy</span>
-        </h1>
+        </motion.h1>
         <p style={{ fontSize: 18, lineHeight: 1.7, color: palette.text, fontWeight: 600, maxWidth: 580, marginBottom: 24 }}>
           Paste any opaque corporate communication down below. We analyze the speech architecture, isolate baseline truths, and strip away tactical filler words.
         </p>
 
         {/* Fun Stats */}
         <div style={{ display: "flex", gap: 32, flexWrap: "wrap", marginTop: 32, marginBottom: 8 }}>
-          <div style={{ ...mono, fontSize: 12, color: palette.muted }}>
-            <span style={{ ...syne, fontSize: 24, fontWeight: 800, color: palette.text, display: "block", marginBottom: 4 }}>142K+</span>
-            buzzwords autopsied
-          </div>
-          <div style={{ ...mono, fontSize: 12, color: palette.muted }}>
-            <span style={{ ...syne, fontSize: 24, fontWeight: 800, color: palette.text, display: "block", marginBottom: 4 }}>0</span>
-            circle-backs tolerated
-          </div>
-          <div style={{ ...mono, fontSize: 12, color: palette.muted }}>
-            <span style={{ ...syne, fontSize: 24, fontWeight: 800, color: palette.text, display: "block", marginBottom: 4 }}>100%</span>
-            bullshit-free
-          </div>
+          {[["142K+", "buzzwords autopsied"], ["0", "circle-backs tolerated"], ["100%", "bullshit-free"]].map(([value, label], i) => (
+            <Reveal key={label} delay={i * 0.08} y={14}>
+              <div style={{ ...mono, fontSize: 12, color: palette.muted }}>
+                <span style={{ ...syne, fontSize: 24, fontWeight: 800, color: palette.text, display: "block", marginBottom: 4 }}>{value}</span>
+                {label}
+              </div>
+            </Reveal>
+          ))}
         </div>
       </div>
 
@@ -416,7 +482,10 @@ export default function BullShift() {
             <div>
               <label style={{ ...mono, fontSize: 12, textTransform: "uppercase", color: palette.muted, display: "block", marginBottom: 16 }}>Translation Mode</label>
               <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
-                <button 
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
                   onClick={() => setMode("linkedin-to-human")}
                   style={{
                     flex: 1,
@@ -428,12 +497,15 @@ export default function BullShift() {
                     fontSize: 13,
                     fontWeight: 600,
                     cursor: "pointer",
-                    transition: "all 0.2s"
+                    transition: "background 0.2s, color 0.2s"
                   }}
                 >
                   LinkedIn → Human
-                </button>
-                <button 
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
                   onClick={() => setMode("human-to-linkedin")}
                   style={{
                     flex: 1,
@@ -445,11 +517,11 @@ export default function BullShift() {
                     fontSize: 13,
                     fontWeight: 600,
                     cursor: "pointer",
-                    transition: "all 0.2s"
+                    transition: "background 0.2s, color 0.2s"
                   }}
                 >
                   Human → LinkedIn
-                </button>
+                </motion.button>
               </div>
             </div>
 
@@ -457,8 +529,11 @@ export default function BullShift() {
               <label style={{ ...mono, fontSize: 12, textTransform: "uppercase", color: palette.muted, display: "block", marginBottom: 16 }}>Severity Profile Settings</label>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                 {TONES.map(t => (
-                  <button 
-                    key={t.id} 
+                  <motion.button
+                    key={t.id}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.93 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
                     onClick={() => setTone(t.id)}
                     style={{
                       padding: "8px 16px",
@@ -469,34 +544,38 @@ export default function BullShift() {
                       fontSize: 12,
                       fontWeight: 600,
                       cursor: "pointer",
-                      transition: "all 0.2s"
+                      transition: "background 0.2s, color 0.2s"
                     }}
                   >
                     {t.label}
-                  </button>
+                  </motion.button>
                 ))}
               </div>
               <div style={{ marginTop: 14, fontSize: 14, color: palette.muted, fontStyle: "italic" }}>↳ Posture: {TONES[tone - 1].desc}</div>
             </div>
 
-            <button 
-              onClick={runShift} 
-              disabled={loading || !input.trim()}
-              style={{
-                padding: "14px 24px",
-                background: loading || !input.trim() ? palette.border : palette.text,
-                color: loading || !input.trim() ? palette.muted : palette.bg,
-                border: "none",
-                borderRadius: 6,
-                fontSize: 13,
-                fontWeight: 700,
-                cursor: loading || !input.trim() ? "not-allowed" : "pointer",
-                ...mono,
-                transition: "all 0.2s"
-              }}
-            >
-              {loading ? "Processing..." : mode === "linkedin-to-human" ? "Deconstruct Targets" : "Generate Corporate Speak"}
-            </button>
+            <Magnetic strength={10}>
+              <motion.button
+                onClick={runShift}
+                disabled={loading || !input.trim()}
+                whileHover={loading || !input.trim() ? {} : { scale: 1.03 }}
+                whileTap={loading || !input.trim() ? {} : { scale: 0.95 }}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                style={{
+                  padding: "14px 24px",
+                  background: loading || !input.trim() ? palette.border : palette.text,
+                  color: loading || !input.trim() ? palette.muted : palette.bg,
+                  border: "none",
+                  borderRadius: 6,
+                  fontSize: 13,
+                  fontWeight: 700,
+                  cursor: loading || !input.trim() ? "not-allowed" : "pointer",
+                  ...mono,
+                }}
+              >
+                {loading ? "Processing..." : mode === "linkedin-to-human" ? "Deconstruct Targets" : "Generate Corporate Speak"}
+              </motion.button>
+            </Magnetic>
           </div>
 
           {/* Right Output Panel */}
@@ -593,15 +672,17 @@ export default function BullShift() {
           Corporate Bullshit Receptivity Scale — Four Dimensions
         </div>
         <div className="dimensions-grid" style={{ display: "grid", gridTemplateColumns: "1fr", gap: 16 }}>
-          {DIMENSIONS.map((dim) => (
-            <div key={dim.key} style={{ borderTop: `3px solid ${dim.color}`, paddingTop: 16 }}>
-              <div style={{ ...mono, fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.08em", color: palette.muted, marginBottom: 8 }}>
-                {dim.name}
+          {DIMENSIONS.map((dim, i) => (
+            <Reveal key={dim.key} delay={i * 0.08}>
+              <div style={{ borderTop: `3px solid ${dim.color}`, paddingTop: 16 }}>
+                <div style={{ ...mono, fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.08em", color: palette.muted, marginBottom: 8 }}>
+                  {dim.name}
+                </div>
+                <div style={{ fontSize: 13, color: palette.text, lineHeight: 1.5, fontWeight: 500 }}>
+                  {dim.desc}
+                </div>
               </div>
-              <div style={{ fontSize: 13, color: palette.text, lineHeight: 1.5, fontWeight: 500 }}>
-                {dim.desc}
-              </div>
-            </div>
+            </Reveal>
           ))}
         </div>
       </section>
@@ -667,8 +748,16 @@ export default function BullShift() {
 
         {/* History Grid */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 0, border: "1.5px solid " + palette.border, borderRadius: 8, overflow: "hidden" }}>
-          {history.map((item) => (
-            <div key={item.id} className="history-row" style={{ display: "grid", gridTemplateColumns: "1fr", gap: 16, padding: 20, borderBottom: "1.5px solid " + palette.border, ...(item === history[history.length - 1] ? { borderBottom: "none" } : {}) }}>
+          {history.map((item, i) => (
+            <motion.div
+              key={item.id}
+              layout
+              initial={{ opacity: 0, y: -12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: Math.min(i, 4) * 0.05, ease: [0.16, 1, 0.3, 1] }}
+              className="history-row"
+              style={{ display: "grid", gridTemplateColumns: "1fr", gap: 16, padding: 20, borderBottom: "1.5px solid " + palette.border, ...(item === history[history.length - 1] ? { borderBottom: "none" } : {}) }}
+            >
               <div>
                 <div style={{ fontSize: 12, color: palette.muted }}>{item.time}</div>
                 <div style={{ color: palette.text, fontWeight: 700, marginTop: 2, fontSize: 13 }}>{item.tone}</div>
@@ -679,7 +768,7 @@ export default function BullShift() {
                 <span style={{ ...mono, fontSize: 12, fontWeight: 700, background: getBadge(item.score).bg, color: getBadge(item.score).color, padding: "4px 10px", borderRadius: 6 }}>{item.score} IDX</span>
                 <button onClick={() => { setInput(item.original); setOutput(null); window.scrollTo({ top: 0, behavior: "smooth" }); }} style={{ border: "none", background: "none", cursor: "pointer", fontSize: 14, padding: 12, minWidth: 44, minHeight: 44 }}>↺</button>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </section>
