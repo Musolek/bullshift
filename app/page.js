@@ -279,7 +279,7 @@ function CBRSShareCard({ cbrs }) {
       gap: "24px"
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-        <img src="/logo.png" alt="BullShift" style={{ width: "48px", height: "48px" }} />
+        <img src="/logo.png" alt="BullShift" style={{ width: "48px", height: "auto" }} />
         <div>
           <div style={{ fontSize: "24px", fontWeight: 800, color: "#EDE8DE", letterSpacing: "-0.5px" }}>BullShift</div>
           <div style={{ fontSize: "11px", fontFamily: "var(--font-mono)", color: "#6B6560", letterSpacing: "0.08em", textTransform: "uppercase" }}>Corporate Bullshit Receptivity Scale</div>

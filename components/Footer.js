@@ -18,7 +18,7 @@ const Footer = ({ palette = DEFAULT_PALETTE }) => {
 
         <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
           <span style={{ fontFamily: "'Archivo Black', sans-serif", fontSize: "18px", color: palette.bg }}>BullShift!</span>
-          <img src="/logo.png" alt="BullShift Logo" style={{ height: "auto", width: "auto", maxWidth: 100, maxHeight: 40, borderRadius: 12 }} />
+          <img src="/logo.png" alt="BullShift Logo" style={{ width: "60px", height: "auto", borderRadius: 12 }} />
           <p style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: "14px", opacity: 0.75, maxWidth: "20rem", lineHeight: 1.6 }}>
             We handle the strategic translation of corporate dialect into raw human utility. No algorithms were rented to produce your copy.
           </p>

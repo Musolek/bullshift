@@ -14,8 +14,8 @@ export const metadata = {
     images: [
       {
         url: "https://www.bullshift.app/logo.png",
-        width: 350,
-        height: 350,
+        width: 512,
+        height: 512,
         alt: "BullShift - LinkedIn Jargon Decoder",
       },
     ],
