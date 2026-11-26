@@ -22,7 +22,7 @@ export default function Header() {
     <header className={"nav" + (open ? " open" : "")} id="nav">
       <div className="nav-in">
         <Link className="logo" href="/">
-          <img src="/logo.png" alt="BullShift logo" width="28" height="28" />
+          <img src="/logo-128.webp" alt="BullShift logo" width="28" height="28" />
           <b>BullShift</b>
         </Link>
         <nav id="navMenu" aria-label="Primary">

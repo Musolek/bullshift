@@ -83,27 +83,6 @@ export default function Home() {
   const levelsRef = useRef(null);
   const wordRefs = useRef([]);
 
-  /* Curtain: the inline script in layout.js adds html.curtain-on once per session. */
-  useEffect(() => {
-    const root = document.documentElement;
-    if (!root.classList.contains("curtain-on")) return;
-    let done = false;
-    const timers = [];
-    const finish = () => {
-      if (done) return;
-      done = true;
-      root.classList.remove("curtain-on", "curtain-go");
-      try { sessionStorage.setItem("bsc", "1"); } catch (e) {}
-      window.scrollTo(0, 0);
-    };
-    const lift = () => {
-      root.classList.add("curtain-go");
-      timers.push(setTimeout(finish, 1700));
-    };
-    timers.push(setTimeout(lift, 800));
-    return () => { timers.forEach(clearTimeout); finish(); };
-  }, []);
-
   /* Bullpen: the visitor's own list lives in this browser only. */
   useEffect(() => {
     try {
@@ -197,11 +176,6 @@ export default function Home() {
 
   return (
     <>
-      <div className="curtain" aria-hidden="true">
-        <i /><i /><i />
-        <span><img src="/logo.png" alt="BullShift logo" />BullShift</span>
-      </div>
-
       <Header />
 
       <main id="main">
