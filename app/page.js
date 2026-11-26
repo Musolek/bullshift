@@ -1,845 +1,370 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
-import Link from "next/link";
-import dynamic from "next/dynamic";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+
+import { useCallback, useEffect, useRef, useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-// three.js references browser-only globals at import time, which throws during
-// Node SSR. Load it client-only so the server render never touches the module.
-const Blob3D = dynamic(() => import("../components/Blob3D"), { ssr: false });
+import "./home.css";
 
-// Scroll-driven reveal: fades/slides an element up once it enters the viewport
-const Reveal = ({ children, delay = 0, y = 24, x = 0, ...props }) => (
-  <motion.div
-    initial={{ opacity: 0, y, x }}
-    whileInView={{ opacity: 1, y: 0, x: 0 }}
-    viewport={{ once: true, margin: "-60px" }}
-    transition={{ duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] }}
-    {...props}
-  >
-    {children}
-  </motion.div>
-);
-
-// Magnetic pull: element gravitates toward the cursor within `strength`px, snaps back on leave
-const Magnetic = ({ children, strength = 18, ...props }) => {
-  const ref = useRef(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const springX = useSpring(x, { stiffness: 300, damping: 20, mass: 0.5 });
-  const springY = useSpring(y, { stiffness: 300, damping: 20, mass: 0.5 });
-
-  const handleMove = (e) => {
-    const el = ref.current;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    const relX = e.clientX - (rect.left + rect.width / 2);
-    const relY = e.clientY - (rect.top + rect.height / 2);
-    x.set((relX / rect.width) * strength);
-    y.set((relY / rect.height) * strength);
-  };
-
-  const handleLeave = () => {
-    x.set(0);
-    y.set(0);
-  };
-
-  return (
-    <motion.div
-      ref={ref}
-      onMouseMove={handleMove}
-      onMouseLeave={handleLeave}
-      style={{ x: springX, y: springY, display: "inline-block" }}
-      {...props}
-    >
-      {children}
-    </motion.div>
-  );
-};
-
-const TONES = [
-  { id: 1, label: "Diplomatic",  desc: "Highly charitable translation layers. Keeps relationships entirely intact." },
-  { id: 2, label: "Measured",    desc: "Clear, structural interpretation containing modern professional warmth." },
-  { id: 3, label: "Balanced",    desc: "Completely neutral posture. Absolutely zero optimization padding." },
-  { id: 4, label: "Blunt",       desc: "Terse, hyper-compact output profiles. Says exactly what it implies." },
-  { id: 5, label: "Obliterate",  desc: "Surgical baseline exposure. Withering analytical execution." },
-];
-
-const hexToInt = (hex) => parseInt(hex.replace("#", ""), 16);
-
-// Playful-maximalist mood palettes. `accent` is a contrast-safe darker tone used
-// for accent TEXT (labels, "mercy", stat numbers); `accentBright` is the vivid
-// sticker/blob/button-fill color, never used as text-on-bg (it fails AA there).
-const PALETTES = [
-  { id: "cream", name: "Cream", bg: "#FFF4E0", text: "#1A1330", muted: "#5B5078", accent: "#A8311A", accentBright: "#FF6B6B", border: "#1A1330" },
-  { id: "teal", name: "Teal", bg: "#E3FBF7", text: "#0B3D38", muted: "#3A6F68", accent: "#0B6E64", accentBright: "#4ECDC4", border: "#0B3D38" },
-  { id: "sun", name: "Sun", bg: "#FFF1B8", text: "#3D2B00", muted: "#7A5C12", accent: "#A8311A", accentBright: "#FFD93D", border: "#3D2B00" },
-  { id: "bubblegum", name: "Bubblegum", bg: "#FFE3F0", text: "#3D0C24", muted: "#7A3358", accent: "#0B6E64", accentBright: "#4ECDC4", border: "#3D0C24" },
-  { id: "dark", name: "Dark", bg: "#1A1330", text: "#FFF4E0", muted: "#C9C2E0", accent: "#FFD93D", accentBright: "#FF6B6B", border: "#FFF4E0" },
-];
-
-const syne = { fontFamily: "'Archivo Black', sans-serif", fontStyle: "normal" };
-const mono = { fontFamily: "'IBM Plex Mono', monospace", fontStyle: "normal" };
-const sans = { fontFamily: "'Plus Jakarta Sans', sans-serif", fontStyle: "normal", fontWeight: 500 };
-
-// CBRS Archetypes
-const ARCHETYPES = [
-  { min: 0, max: 20, name: "The Innocent", desc: "You barely encounter corporate speak. Either you work in a very honest place or you're very new here." },
-  { min: 21, max: 40, name: "The Observer", desc: "You see the jargon but don't engage. Smart. You're watching from a safe distance." },
-  { min: 41, max: 60, name: "The Skeptic", desc: "You know it's nonsense and you call it out. You're the person everyone wants on their team." },
-  { min: 61, max: 80, name: "The Translator", desc: "You can speak both languages fluently. Useful, but be careful not to lose your soul." },
-  { min: 81, max: 100, name: "The Carrier", desc: "You might be the problem. High receptivity to corporate bullshit detected." },
-];
-
-// CBRS Dimension definitions
-const DIMENSIONS = [
-  { key: "exposure", name: "Exposure Index", desc: "How much high-inflation content you're translating. High = you're swimming in it.", color: "#C0392B" },
-  { key: "tolerance", name: "Tolerance Quotient", desc: "How often you accept gentle translations vs. demanding harder ones. High = you're easy on jargon.", color: "#F0B429" },
-  { key: "production", name: "Production Risk", desc: "How frequently you use Human→LinkedIn mode. High = you might be generating the problem.", color: "#3B6D11" },
-  { key: "clarity", name: "Clarity Seeking", desc: "Whether your translation requests trend toward more honesty over time. High = you're improving.", color: "#185FA5" },
-];
-
-function calculateCBRS(history) {
-  if (history.length < 5) return null;
-
-  const translations = history.slice(0, 20); // Use last 20 translations max
-
-  // Exposure Index: Average score of translated content (0-25)
-  const avgScore = translations.reduce((sum, t) => sum + t.score, 0) / translations.length;
-  const exposure = Math.min(25, (avgScore / 100) * 25);
-
-  // Tolerance Quotient: How often you choose gentle tones (0-25)
-  const gentleCount = translations.filter(t => t.tone === "Diplomatic" || t.tone === "Measured").length;
-  const tolerance = Math.min(25, (gentleCount / translations.length) * 25);
-
-  // Production Risk: How often you use Human→LinkedIn mode (0-25)
-  const productionCount = translations.filter(t => t.mode === "human-to-linkedin").length;
-  const production = Math.min(25, (productionCount / translations.length) * 25);
-
-  // Clarity Seeking: Are you choosing harsher tones over time? (0-25)
-  const firstHalf = translations.slice(0, Math.floor(translations.length / 2));
-  const secondHalf = translations.slice(Math.floor(translations.length / 2));
-  const firstAvgTone = firstHalf.reduce((sum, t) => sum + t.toneId, 0) / firstHalf.length;
-  const secondAvgTone = secondHalf.reduce((sum, t) => sum + t.toneId, 0) / secondHalf.length;
-  const clarity = Math.min(25, Math.max(0, (secondAvgTone - firstAvgTone) * 5));
-
-  const composite = Math.round(exposure + tolerance + production + clarity);
-
-  // Find archetype
-  const archetype = ARCHETYPES.find(a => composite >= a.min && composite <= a.max) || ARCHETYPES[4];
-
-  return {
-    exposure: Math.round(exposure),
-    tolerance: Math.round(tolerance),
-    production: Math.round(production),
-    clarity: Math.round(clarity),
-    composite,
-    archetype: archetype.name,
-    archetypeDesc: archetype.desc,
-  };
-}
-
-const SCORE_VERDICTS = [
-  [0,  9,  "Barely a trace. Suspiciously transparent and direct for public networks."],
-  [10, 29, "Low-grade structural jargon. Annoying corporate habits but functionally forgivable."],
-  [30, 49, "Moderate padding detected. This author has attended multiple alignment workshops."],
-  [50, 69, "High conversational bloat. Significant efforts taken to shield operational reality."],
-  [70, 84, "Severe syntax inflation. Authentic information framework has exited the premises."],
-  [85, 100,"Terminal buzzword cascade. Pure high-frequency spatial noise. Zero information payload."],
-];
-
-const SCORE_BADGES = [
-  [0,  29, { label: "Low Density", bg: "rgba(16, 185, 129, 0.1)", color: "#10b981", border: "rgba(16, 185, 129, 0.2)" }],
-  [30, 59, { label: "Mid Density",  bg: "rgba(245, 158, 11, 0.1)", color: "#f59e0b", border: "rgba(245, 158, 11, 0.2)" }],
-  [60, 100,{ label: "High Density", bg: "rgba(239, 68, 68, 0.1)", color: "#ef4444", border: "rgba(239, 68, 68, 0.2)" }],
+const TONES = ["Diplomatic", "Measured", "Balanced", "Blunt", "Obliterate"];
+const DESC = [
+  "Kind to the author. Still true.",
+  "Clear, with a little warmth.",
+  "Just the facts. No spin either way.",
+  "Short. Says the quiet part.",
+  "Sharp and a bit withering. Never cruel.",
 ];
 
 const EXAMPLES = [
-  "Excited to share that I've been on an incredible journey of self-disruption, leveraging my authentic personal brand to ideate at the intersection of purpose and scalability.",
-  "We need to circle back and synergize our core competencies to ensure we're moving the needle on our key deliverables while staying agile in this ever-evolving landscape.",
-  "Just had a powerful conversation with an incredible human. The energy in the room was palpable. So grateful for this season of growth. More soon. 🚀",
+  { label: "a layoff", text: "We're thrilled to announce a strategic realignment of our talent pipeline as we sharpen focus on long-term value creation." },
+  { label: "a humblebrag", text: "Humbled and honored to share that I've been named a Top Voice in Thought Leadership. None of this would be possible without my incredible network. Grateful beyond words. #blessed" },
+  { label: "a meeting", text: "Let's circle back offline to align on next steps and ensure we're all rowing in the same direction before the deliverable is socialized." },
 ];
 
-const JARGON_WORDS = [
-  "SYNERGIZE", "CIRCLE BACK", "ALIGNMENT PROTOCOL", "BOIL THE OCEAN", "TAKE IT OFFLINE",
-  "LEVERAGE ASSETS", "PARADIGM SHIFT", "THOUGHT LEADER", "DEEP DIVE MATRIX", "TOUCH BASE"
+// Hand-written editor's picks. They are not user data and are not model output.
+const PICKS = [
+  { from: EXAMPLES[0].text, to: "We fired people and hired a thesaurus to explain it.", score: 88, tone: "Obliterate", pick: true },
+  { from: EXAMPLES[1].text, to: "Look at my badge. Please.", score: 79, tone: "Blunt", pick: true },
+  { from: EXAMPLES[2].text, to: "Let's talk later and agree on a plan before we share this.", score: 83, tone: "Balanced", pick: true },
 ];
 
-// Re-populated original data structures exactly as presented in the baseline architecture
-const ORIGINAL_HISTORY = [
-  {
-    id: "h-1",
-    time: "4 mins ago",
-    tone: "Obliterate",
-    toneId: 5,
-    score: 92,
-    mode: "linkedin-to-human",
-    original: "We are hyper-focused on executing a cross-functional optimization sweep to anchor our core value pillars.",
-    translation: "We are firing several people across mid-tier management to balance this quarter's net expenditure."
-  },
-  {
-    id: "h-2",
-    time: "32 mins ago",
-    tone: "Diplomatic",
-    toneId: 1,
-    score: 54,
-    mode: "linkedin-to-human",
-    original: "Moving forward, let's establish a more robust cadence for out-of-the-box conceptual syncs.",
-    translation: "We need to set up more recurrent status updates because deadlines are currently being missed."
-  }
+const LEVELS = [
+  "The company is reducing its team to manage costs. It is a hard decision, and they are presenting it as a plan.",
+  "The company is laying people off to cut costs.",
+  "We are laying people off.",
+  "Layoffs. Costs went up, so people went out.",
+  "We fired people and hired a thesaurus to explain it.",
 ];
 
-function getVerdict(score) {
-  for (const [lo, hi, txt] of SCORE_VERDICTS) if (score >= lo && score <= hi) return txt;
-  return "";
-}
-function getBadge(score) {
-  for (const [lo, hi, b] of SCORE_BADGES) if (score >= lo && score <= hi) return b;
-  return SCORE_BADGES[2][2];
-}
+const LIT_TEXT =
+  "“I’m humbled to announce” means “I want you to know.” “Let’s circle back” means “not now.” “We’re restructuring” means someone lost a job. BullShift says the quiet part out loud.";
 
-function UniversalBrandBadge() {
-  return (
-    <svg width="48" height="48" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ opacity: 0.85 }}>
-      {/* Structural trademark vector container — explicit text elements eliminated */}
-      <path d="M50 8C26.8 8 8 26.8 8 50C8 73.2 26.8 92 50 92C73.2 92 92 73.2 92 50C92 26.8 73.2 8 50 8ZM50 86C30.1 86 14 69.9 14 50C14 30.1 30.1 14 50 14C69.9 14 86 30.1 86 50C86 69.9 69.9 86 50 86Z" fill="currentColor"/>
-      <path d="M35 32C33.3 32 32 33.3 32 35V65C32 66.7 33.3 68 35 68H42C43.7 68 45 66.7 45 65V53H55V65C55 66.7 56.3 68 58 68H65C66.7 68 68 66.7 68 65V35C68 33.3 66.7 32 65 32H58C56.3 32 55 33.3 55 35V45H45V35C45 33.3 43.7 32 42 32H35Z" fill="currentColor"/>
-      <path d="M50 20C48.3 20 47 21.3 47 23V27C47 28.7 48.3 30 50 30C51.7 30 53 28.7 53 27V23C53 21.3 51.7 20 50 20Z" fill="currentColor"/>
-      <path d="M50 70C48.3 70 47 71.3 47 73V77C47 78.7 48.3 80 50 80C51.7 80 53 78.7 53 77V73C53 71.3 51.7 70 50 70Z" fill="currentColor"/>
-    </svg>
-  );
-}
+const FAQS = [
+  ["What is BullShift?", "A free tool that translates LinkedIn and corporate jargon into plain English. Paste something, pick how blunt you want the answer, and read what the author most likely meant."],
+  ["Is it free?", "Yes. No sign-up, no paywall."],
+  ["What happens to what I paste?", "Your text goes to Anthropic’s Claude to produce the translation and is not stored by BullShift. Your recent translations stay in your own browser."],
+  ["Is the translation accurate?", "It is an educated guess about tone and intent, written to be funny and fair. It cannot read minds, and it does not know the author. Use it for a laugh, or for a sanity check on a vague message."],
+  ["What does the jargon score mean?", "0 is plain speech. 100 is a paragraph with nothing in it. It rates the text you pasted, not the person who wrote it."],
+];
 
-function CinematicFrame() {
-  const videoRef = useRef(null);
-  const handleMouseMove = (e) => {
-    if (!videoRef.current) return;
-    const { width, height, left, top } = e.currentTarget.getBoundingClientRect();
-    const xVal = (e.clientX - left) / width - 0.5;
-    const yVal = (e.clientY - top) / height - 0.5;
-    videoRef.current.style.transform = `scale(1.04) translate(${xVal * -12}px, ${yVal * -12}px) rotateY(${xVal * 6}deg) rotateX(${yVal * -6}deg)`;
-  };
-  const handleMouseLeave = () => {
-    if (!videoRef.current) return;
-    videoRef.current.style.transform = "scale(1) translate(0px, 0px) rotateY(0deg) rotateX(0deg)";
-  };
-  return (
-    <div className="video-frame-container" onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave}>
-      <video ref={videoRef} className="video-frame-element" autoPlay loop muted playsInline>
-        <source src="/9656450-uhd_4096_2160_25fps.mp4" type="video/mp4" />
-      </video>
-    </div>
-  );
+const PEN_KEY = "bs-pen";
+
+function verdictFor(s) {
+  if (s < 30) return "Mostly human.";
+  if (s < 60) return "Some padding.";
+  if (s < 85) return "Heavy fog.";
+  return "Pure fog. Nothing to hold on to.";
+}
+function short(s, n) {
+  return s.length > n ? s.slice(0, n - 1).trim() + "…" : s;
+}
+function progress(el) {
+  const r = el.getBoundingClientRect();
+  const span = r.height - window.innerHeight;
+  return span > 0 ? Math.max(0, Math.min(1, -r.top / span)) : 0;
 }
 
-function SpotlightCard({ original, shifted, note, palette }) {
-  const [mousePos, setMousePos] = useState({ x: -1000, y: -1000 });
-  const containerRef = useRef(null);
-  const handleMouseMove = (e) => {
-    if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    setMousePos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-  };
-  return (
-    <div ref={containerRef} onMouseMove={handleMouseMove} style={{
-      position: "relative",
-      borderRadius: 16,
-      overflow: "hidden",
-      border: "1.5px solid " + palette.border,
-      background: "rgba(255,255,255,0.3)",
-      backdropFilter: "blur(12px)",
-    }}>
-      <div style={{ padding: 32, borderBottom: "1.5px solid " + palette.border, background: "rgba(255,255,255,0.2)" }}>
-        <div style={{ ...mono, fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", color: palette.muted, marginBottom: 16 }}>Original Transmission // Move cursor over text to scan</div>
-        <p style={{ fontSize: 16, lineHeight: 1.7, color: palette.text }}>{original}</p>
-      </div>
-      <div style={{ padding: 32, background: palette.text }}>
-        <div style={{ ...mono, fontSize: 11, color: palette.accent, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 16 }}>Decoded Core Intention</div>
-        <p style={{ fontSize: 18, fontWeight: 600, lineHeight: 1.6, color: palette.bg }}>{shifted}</p>
-        {note && <div style={{ marginTop: 24, paddingTop: 16, borderTop: "1px solid rgba(255,255,255,0.1)", fontSize: 14, color: palette.muted, fontStyle: "italic" }}>⚡ {note}</div>}
-      </div>
-    </div>
-  );
-}
+export default function Home() {
+  const [text, setText] = useState("");
+  const [tone, setTone] = useState(2);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const [result, setResult] = useState(null);
+  const [barOn, setBarOn] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [mine, setMine] = useState([]);
+  const [level, setLevel] = useState(0);
+  const [swap, setSwap] = useState(false);
+  const [shownLevel, setShownLevel] = useState(0);
 
-function CBRSShareCard({ cbrs }) {
-  return (
-    <div id="cbrs-share-card" style={{
-      position: "fixed",
-      top: "-9999px",
-      left: "-9999px",
-      width: "600px",
-      height: "400px",
-      background: "#1A1714",
-      padding: "40px",
-      borderRadius: "16px",
-      display: "flex",
-      flexDirection: "column",
-      gap: "24px"
-    }}>
-      <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-        <img src="/logo.png" alt="BullShift" style={{ width: "48px", height: "auto" }} />
-        <div>
-          <div style={{ fontSize: "24px", fontWeight: 800, color: "#EDE8DE", letterSpacing: "-0.5px" }}>BullShift</div>
-          <div style={{ fontSize: "11px", fontFamily: "var(--font-mono)", color: "#6B6560", letterSpacing: "0.08em", textTransform: "uppercase" }}>Corporate Bullshit Receptivity Scale</div>
-        </div>
-      </div>
-      
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
-        <div style={{ fontSize: "48px", fontWeight: 800, color: "#F0B429", lineHeight: 1, marginBottom: "12px" }}>
-          {cbrs.archetype}
-        </div>
-        <div style={{ fontSize: "16px", color: "#A8A39D", lineHeight: 1.5, marginBottom: "24px" }}>
-          {cbrs.archetypeDesc}
-        </div>
-        
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px" }}>
-          {DIMENSIONS.map((dim) => (
-            <div key={dim.key} style={{ textAlign: "center" }}>
-              <div style={{ fontSize: "24px", fontWeight: 800, color: dim.color, lineHeight: 1 }}>{cbrs[dim.key]}</div>
-              <div style={{ fontSize: "9px", fontFamily: "var(--font-mono)", textTransform: "uppercase", color: "#6B6560", marginTop: "4px" }}>
-                {dim.name}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-      
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: "16px", borderTop: "1px solid rgba(255,255,255,0.1)" }}>
-        <div style={{ fontSize: "13px", color: "#6B6560" }}>
-          Composite: <span style={{ color: "#EDE8DE", fontWeight: 700 }}>{cbrs.composite}/100</span>
-        </div>
-        <div style={{ fontSize: "11px", color: "#6B6560", fontFamily: "var(--font-mono)" }}>
-          bullshift.app
-        </div>
-      </div>
-    </div>
-  );
-}
+  const taRef = useRef(null);
+  const topRef = useRef(null);
+  const resultRef = useRef(null);
+  const sayRef = useRef(null);
+  const levelsRef = useRef(null);
+  const wordRefs = useRef([]);
 
-export default function BullShift() {
-  const [input, setInput] = useState("");
-  const [output, setOutput] = useState(null);
-  const [tone, setTone] = useState(3);
-  const [mode, setMode] = useState("linkedin-to-human"); // "linkedin-to-human" or "human-to-linkedin"
-  const [loading, setLoading] = useState(false);
-  const [copyState, setCopyState] = useState("idle");
-  const [history, setHistory] = useState(ORIGINAL_HISTORY);
-  const [showCBRS, setShowCBRS] = useState(false);
-  const [palette, setPalette] = useState(PALETTES[0]); // Default to tan palette
-  const [decodedKey, setDecodedKey] = useState(0);
-  const heroRef = useRef(null);
-  const heroWasVisible = useRef(false);
-
+  /* Curtain: the inline script in layout.js adds html.curtain-on once per session. */
   useEffect(() => {
-    if (history.length >= 5) {
-      setShowCBRS(true);
-    }
-  }, [history]);
-
-  // Replay the "decoded" strike-through whenever the hero scrolls back into view
-  useEffect(() => {
-    const el = heroRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting && !heroWasVisible.current) {
-        heroWasVisible.current = true;
-        setDecodedKey(k => k + 1);
-      } else if (!entry.isIntersecting) {
-        heroWasVisible.current = false;
-      }
-    }, { threshold: 0.6 });
-    observer.observe(el);
-    return () => observer.disconnect();
+    const root = document.documentElement;
+    if (!root.classList.contains("curtain-on")) return;
+    let done = false;
+    const timers = [];
+    const finish = () => {
+      if (done) return;
+      done = true;
+      root.classList.remove("curtain-on", "curtain-go");
+      try { sessionStorage.setItem("bsc", "1"); } catch (e) {}
+      window.scrollTo(0, 0);
+    };
+    const lift = () => {
+      root.classList.add("curtain-go");
+      timers.push(setTimeout(finish, 1700));
+    };
+    timers.push(setTimeout(lift, 800));
+    return () => { timers.forEach(clearTimeout); finish(); };
   }, []);
 
-  // Kinetic typography: hero headline tilts toward the cursor with real depth,
-  // "mercy" pops forward on its own layer for a physical, layered feel.
-  const heroMouseX = useMotionValue(0);
-  const heroMouseY = useMotionValue(0);
-  const heroRotateX = useSpring(useTransform(heroMouseY, [-0.5, 0.5], [14, -14]), { stiffness: 120, damping: 14 });
-  const heroRotateY = useSpring(useTransform(heroMouseX, [-0.5, 0.5], [-14, 14]), { stiffness: 120, damping: 14 });
-  const mercyX = useSpring(useTransform(heroMouseX, [-0.5, 0.5], [-18, 18]), { stiffness: 150, damping: 15 });
-  const mercyY = useSpring(useTransform(heroMouseY, [-0.5, 0.5], [-10, 10]), { stiffness: 150, damping: 15 });
-  const handleHeroMouseMove = (e) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    heroMouseX.set((e.clientX - rect.left) / rect.width - 0.5);
-    heroMouseY.set((e.clientY - rect.top) / rect.height - 0.5);
-  };
-  const handleHeroMouseLeave = () => {
-    heroMouseX.set(0);
-    heroMouseY.set(0);
-  };
+  /* Bullpen: the visitor's own list lives in this browser only. */
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(PEN_KEY) || "[]");
+      if (Array.isArray(saved)) setMine(saved.slice(0, 12));
+    } catch (e) {}
+  }, []);
+  const saveMine = useCallback((list) => {
+    setMine(list);
+    try { localStorage.setItem(PEN_KEY, JSON.stringify(list)); } catch (e) {}
+  }, []);
 
-  const runShift = async () => {
-    if (!input.trim() || loading) return;
-    setLoading(true); setOutput(null);
-    const label = TONES[tone - 1].label;
+  /* Scroll-lit sentence and the five-levels stage. */
+  const litWords = LIT_TEXT.split(/\s+/);
+  useEffect(() => {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) return;
+    let ticking = false;
+    const tick = () => {
+      ticking = false;
+      if (sayRef.current) {
+        const n = Math.round(Math.min(1, progress(sayRef.current) / 0.8) * litWords.length);
+        wordRefs.current.forEach((w, i) => { if (w) w.style.opacity = i < n ? 1 : 0.2; });
+      }
+      if (levelsRef.current) {
+        setLevel(Math.min(4, Math.floor(progress(levelsRef.current) * 5)));
+      }
+    };
+    const onScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(tick); } };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    tick();
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
+  useEffect(() => {
+    if (level === shownLevel) return;
+    setSwap(true);
+    const t = setTimeout(() => { setShownLevel(level); setSwap(false); }, 160);
+    return () => clearTimeout(t);
+  }, [level, shownLevel]);
+
+  async function translate() {
+    if (busy) return;
+    if (!text.trim()) { taRef.current?.focus(); return; }
+    setBusy(true);
+    setError("");
     try {
       const res = await fetch("/api/translate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: input, tone: label }),
+        body: JSON.stringify({ text, tone: TONES[tone] }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.error || "Translation failed.");
-
-      const parsedData = {
-        translation: data.translation,
-        score: data.score,
-        note: data.note,
-        jargon: data.jargon,
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Something went wrong. Try again.");
+      const r = {
+        translation: String(data.translation || ""),
+        score: Math.max(0, Math.min(100, Number(data.score) || 0)),
+        jargon: Array.isArray(data.jargon) ? data.jargon : [],
+        note: data.note ? String(data.note) : "",
       };
-      setOutput(parsedData);
-      setHistory(prev => [{
-        id: `h-${Date.now()}`,
-        time: "Just now",
-        tone: label,
-        toneId: tone,
-        mode: mode,
-        score: parsedData.score,
-        original: input,
-        translation: parsedData.translation
-      }, ...prev]);
-    } catch (err) {
-      setOutput({ translation: err.message || "Translation failed. Please try again.", score: 0, note: "", jargon: [] });
+      setResult(r);
+      setBarOn(false);
+      requestAnimationFrame(() => requestAnimationFrame(() => setBarOn(true)));
+      saveMine([{ from: text.trim(), to: r.translation, score: r.score, tone: TONES[tone] }, ...mine].slice(0, 12));
+      setTimeout(() => resultRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" }), 50);
+    } catch (e) {
+      setError(e.message || "Something went wrong. Try again.");
     } finally {
-      setLoading(false);
+      setBusy(false);
     }
-  };
+  }
 
-  const copyOutput = async () => {
-    if (!output?.translation) return;
-    await navigator.clipboard.writeText(output.translation);
-    setCopyState("copied");
-    setTimeout(() => setCopyState("idle"), 2000);
-  };
+  async function copy() {
+    try { await navigator.clipboard.writeText(result.translation); } catch (e) {}
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1600);
+  }
 
-  const scoreVal = output ? Math.max(0, Math.min(100, parseInt(output.score) || 0)) : 0;
-  const badge = output ? getBadge(scoreVal) : null;
-  const cbrs = calculateCBRS(history);
+  function loadFromPen(p) {
+    setText(p.from);
+    setTone(Math.max(0, TONES.indexOf(p.tone)));
+    topRef.current?.scrollIntoView({ behavior: "smooth" });
+  }
+
+  const pen = [...mine, ...PICKS];
 
   return (
-    <div style={{ background: palette.bg, minHeight: "100vh", ...sans, color: palette.text }}>
-      {cbrs && <CBRSShareCard cbrs={cbrs} />}
-      
-      <Header isTyping={loading} jargonDensity={scoreVal} palette={palette} setPalette={setPalette} />
-
-      {/* HERO — cinematic entrance + WebGL blob field + cinematic tilt, restyled playful-maximalist */}
-      <div style={{ position: "relative", overflow: "hidden" }}>
-        <div style={{ position: "absolute", inset: 0, zIndex: 0 }}>
-          <Blob3D colors={[hexToInt(palette.accentBright), hexToInt(palette.accent), hexToInt(palette.border)]} />
-        </div>
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.12, delayChildren: 0.05 } } }}
-          style={{ position: "relative", zIndex: 1, padding: "64px 20px 32px", maxWidth: 900, margin: "0 auto" }}
-        >
-          <motion.div
-            variants={{ hidden: { opacity: 0, y: 16, rotate: 0 }, visible: { opacity: 1, y: 0, rotate: -2, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } } }}
-            style={{ ...mono, display: "inline-flex", alignItems: "center", gap: 8, fontSize: "12px", fontWeight: 700, letterSpacing: "0.04em", color: palette.bg, background: palette.text, padding: "10px 20px", borderRadius: 999, marginBottom: 22 }}
-          >
-            ✦ ZERO CIRCLE-BACKS GUARANTEED
-          </motion.div>
-          <motion.h1
-            ref={heroRef}
-            onMouseMove={handleHeroMouseMove}
-            onMouseLeave={handleHeroMouseLeave}
-            variants={{ hidden: { opacity: 0, y: 40, scale: 0.96, filter: "blur(8px)" }, visible: { opacity: 1, y: 0, scale: 1, filter: "blur(0px)", transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } } }}
-            style={{ ...syne, fontSize: "clamp(38px,7.5vw,92px)", lineHeight: 0.96, letterSpacing: "-0.01em", color: palette.text, marginBottom: 28, rotateX: heroRotateX, rotateY: heroRotateY, transformPerspective: 800, willChange: "transform" }}
-          >
-            LinkedIn jargon<br />
-            <span className="strike-wrap" style={{ color: palette.muted }}>
-              decoded
-              <span key={decodedKey} className="strike-line" style={{ background: palette.accentBright }} />
-            </span><br />
-            without{" "}
-            <motion.span style={{ display: "inline-block", background: palette.text, color: palette.accentBright, padding: "0 16px", borderRadius: 16, x: mercyX, y: mercyY }}>
-              mercy
-            </motion.span>
-          </motion.h1>
-          <motion.p
-            variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } } }}
-            style={{ fontSize: 19, lineHeight: 1.65, color: palette.muted, fontWeight: 600, maxWidth: 520, marginBottom: 24 }}
-          >
-            Paste the jargon. Get the truth. It's honestly kind of fun to watch.
-          </motion.p>
-
-          {/* Fun Stats — sticker cards */}
-          <motion.div
-            variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.08 } } }}
-            style={{ display: "flex", gap: 16, flexWrap: "wrap", marginTop: 36 }}
-          >
-            {[["142K+", "buzzwords autopsied", -2], ["0", "circle-backs tolerated", 1.5], ["100%", "bullshit-free", -1.5]].map(([value, label, rot]) => (
-              <motion.div
-                key={label}
-                variants={{ hidden: { opacity: 0, y: 14, rotate: 0 }, visible: { opacity: 1, y: 0, rotate: rot, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } } }}
-                whileHover={{ rotate: 0, scale: 1.04 }}
-                style={{ ...mono, fontSize: 12, color: palette.text, background: palette.bg, border: `3px solid ${palette.border}`, borderRadius: 16, padding: "14px 20px", boxShadow: `4px 4px 0 ${palette.border}` }}
-              >
-                <span style={{ ...syne, fontSize: 26, color: palette.text, display: "block", marginBottom: 4 }}>{value}</span>
-                {label}
-              </motion.div>
-            ))}
-          </motion.div>
-        </motion.div>
+    <>
+      <div className="curtain" aria-hidden="true">
+        <i /><i /><i />
+        <span><img src="/logo.png" alt="" />BullShift</span>
       </div>
 
-      {/* TICKER */}
-      <div style={{ margin: "32px 0", overflow: "hidden", borderTop: "1.5px solid " + palette.border, borderBottom: "1.5px solid " + palette.border }}>
-        <div style={{ display: "flex", gap: 0, whiteSpace: "nowrap", padding: "12px 0", animation: "ticker 28s linear infinite" }}>
-          {[...JARGON_WORDS, ...JARGON_WORDS].map((word, i) => (
-            <span key={i} style={{ display: "inline-flex", alignItems: "center" }}>
-              <span style={{ ...mono, fontSize: 11, color: palette.muted, padding: "0 16px" }}>{word}</span>
-              <span style={{ color: palette.border }}>·</span>
-            </span>
-          ))}
-        </div>
-      </div>
+      <Header />
 
-      {/* MAIN WORKSPACE */}
-      <main id="engine" style={{ maxWidth: "1400px", margin: "0 auto", padding: "24px 20px" }}>
-        <div className="workspace-grid" style={{ display: "grid", gridTemplateColumns: "1fr", gap: 24 }}>
-          {/* Left Input Panel */}
-          <Reveal y={0} x={-50}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-            <div>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 14, alignItems: "center" }}>
-                <label style={{ ...mono, fontSize: 12, textTransform: "uppercase", color: palette.muted }}>Input Matrix</label>
-                <button onClick={() => { setInput(EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)]); setOutput(null); }} style={{ background: "none", border: "none", fontSize: 13, fontWeight: 600, cursor: "pointer", ...sans, color: palette.text }}>Load random example →</button>
-              </div>
-              <textarea value={input} onChange={e => setInput(e.target.value)} placeholder="Paste corporate communication strings here..." style={{ width: "100%", minHeight: 200, padding: 18, borderRadius: 20, border: `3px solid ${palette.border}`, background: palette.bg, fontFamily: sans, fontSize: 15, color: palette.text, resize: "vertical" }} />
+      <main id="main">
+        {/* 1. Hero and tool */}
+        <section className="hero" id="top" ref={topRef}>
+          <div className="wrap hero-grid">
+            <div className="hero-copy">
+              <p className="eyebrow">A LinkedIn-to-English dictionary</p>
+              <h1>Paste the jargon. Get the <mark>truth.</mark></h1>
+              <p className="lede">BullShift reads corporate speak and tells you what the person actually meant. You pick how blunt it gets.</p>
+              <p className="tryline">
+                Nothing to paste? Try one:{" "}
+                {EXAMPLES.map((ex) => (
+                  <button key={ex.label} className="chip" onClick={() => { setText(ex.text); taRef.current?.focus(); }}>
+                    {ex.label}
+                  </button>
+                ))}
+              </p>
             </div>
 
-            <div>
-              <label style={{ ...mono, fontSize: 12, textTransform: "uppercase", color: palette.muted, display: "block", marginBottom: 16 }}>Translation Mode</label>
-              <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.95 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                  onClick={() => setMode("linkedin-to-human")}
-                  style={{
-                    flex: 1,
-                    padding: "12px 16px",
-                    background: mode === "linkedin-to-human" ? palette.text : palette.bg,
-                    color: mode === "linkedin-to-human" ? palette.bg : palette.text,
-                    border: `3px solid ${palette.border}`,
-                    borderRadius: 999,
-                    fontSize: 13,
-                    fontWeight: 700,
-                    cursor: "pointer",
-                    transition: "background 0.2s, color 0.2s"
-                  }}
-                >
-                  LinkedIn → Human
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.95 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                  onClick={() => setMode("human-to-linkedin")}
-                  style={{
-                    flex: 1,
-                    padding: "12px 16px",
-                    background: mode === "human-to-linkedin" ? palette.text : palette.bg,
-                    color: mode === "human-to-linkedin" ? palette.bg : palette.text,
-                    border: `3px solid ${palette.border}`,
-                    borderRadius: 999,
-                    fontSize: 13,
-                    fontWeight: 700,
-                    cursor: "pointer",
-                    transition: "background 0.2s, color 0.2s"
-                  }}
-                >
-                  Human → LinkedIn
-                </motion.button>
-              </div>
-            </div>
+            <div className="tool" id="tool">
+              <label className="tlabel" htmlFor="input">Paste the post</label>
+              <textarea
+                id="input"
+                ref={taRef}
+                rows={6}
+                maxLength={2000}
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                onKeyDown={(e) => { if ((e.metaKey || e.ctrlKey) && e.key === "Enter") translate(); }}
+                placeholder="We're thrilled to announce a strategic realignment of our talent pipeline…"
+              />
+              <div className="count"><span>{text.length}</span> / 2000</div>
 
-            <div>
-              <label style={{ ...mono, fontSize: 12, textTransform: "uppercase", color: palette.muted, display: "block", marginBottom: 16 }}>Severity Profile Settings</label>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                {TONES.map(t => (
-                  <motion.button
-                    key={t.id}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.93 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                    onClick={() => setTone(t.id)}
-                    style={{
-                      padding: "8px 18px",
-                      background: tone === t.id ? palette.accentBright : palette.bg,
-                      color: palette.text,
-                      border: `2px solid ${palette.border}`,
-                      borderRadius: 999,
-                      fontSize: 12,
-                      fontWeight: 700,
-                      cursor: "pointer",
-                      transition: "background 0.2s, color 0.2s"
-                    }}
-                  >
-                    {t.label}
-                  </motion.button>
+              <p className="tlabel">How blunt?</p>
+              <div className="tones" role="radiogroup" aria-label="Bluntness">
+                {TONES.map((t, i) => (
+                  <button key={t} role="radio" aria-checked={tone === i} onClick={() => setTone(i)}>{t}</button>
                 ))}
               </div>
-              <div style={{ marginTop: 14, fontSize: 14, color: palette.muted, fontWeight: 600 }}>↳ Posture: {TONES[tone - 1].desc}</div>
-            </div>
+              <p className="tonedesc">{DESC[tone]}</p>
 
-            <Magnetic strength={10}>
-              <motion.button
-                onClick={runShift}
-                disabled={loading || !input.trim()}
-                whileHover={loading || !input.trim() ? {} : { scale: 1.03, y: -2 }}
-                whileTap={loading || !input.trim() ? {} : { scale: 0.96, y: 0 }}
-                transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                style={{
-                  padding: "16px 28px",
-                  background: loading || !input.trim() ? palette.bg : palette.accentBright,
-                  color: palette.text,
-                  border: `4px solid ${palette.border}`,
-                  borderRadius: 999,
-                  fontSize: 14,
-                  fontWeight: 800,
-                  cursor: loading || !input.trim() ? "not-allowed" : "pointer",
-                  boxShadow: loading || !input.trim() ? "none" : `5px 5px 0 ${palette.border}`,
-                  ...sans,
-                }}
-              >
-                {loading ? "Processing..." : mode === "linkedin-to-human" ? "Deconstruct Targets →" : "Generate Corporate Speak →"}
-              </motion.button>
-            </Magnetic>
-          </div>
-          </Reveal>
+              <button className="go" onClick={translate} disabled={busy}>
+                {busy ? "Reading… " : "Translate "}<span aria-hidden="true">→</span>
+              </button>
 
-          {/* Right Output Panel */}
-          <Reveal y={0} x={50} delay={0.1}>
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            <label style={{ ...mono, fontSize: 12, textTransform: "uppercase", color: palette.muted, marginBottom: 14, display: "block" }}>Output Spectrum Matrix</label>
-            
-            {output && !loading ? (
-              <div style={{ display: "flex", flexDirection: "column", gap: 24, height: "100%" }}>
-                <SpotlightCard original={input} shifted={output.translation} note={output.note} palette={palette} />
-                
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: 32, background: "rgba(255,255,255,0.3)", backdropFilter: "blur(12px)", borderRadius: 16, border: "1.5px solid " + palette.border }}>
-                  <div>
-                    <div style={{ ...mono, fontSize: 11, color: palette.muted, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>
-                      Jargon Density Index
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-                      <span style={{ fontSize: 48, ...syne, fontWeight: 800, lineHeight: 1 }}>{scoreVal}<span style={{ fontSize: 18, color: palette.muted, ...sans, fontWeight: 400 }}>/100</span></span>
-                      <span style={{ background: badge.bg, color: badge.color, border: `1px solid ${badge.border}`, padding: "6px 14px", borderRadius: 8, fontSize: 12, ...mono, fontWeight: 500 }}>
-                        {badge.label}
-                      </span>
-                    </div>
-                    <div style={{ marginTop: 14, fontSize: 14, color: palette.muted, fontWeight: 500, lineHeight: 1.4 }}>
-                      {getVerdict(scoreVal)}
-                    </div>
+              {error && <p className="note" role="alert">{error}</p>}
+
+              {result && (
+                <div className="result" ref={resultRef} aria-live="polite">
+                  <p className="tlabel">What they meant</p>
+                  <p className="out">{result.translation}</p>
+                  <div className="score">
+                    <div className="score-top"><span>Jargon score</span><b>{result.score}</b><em>/ 100</em></div>
+                    <div className="bar"><i style={{ width: barOn ? result.score + "%" : 0 }} /></div>
+                    <p className="verdict">{verdictFor(result.score)}</p>
                   </div>
-                  <button 
-                    onClick={copyOutput}
-                    style={{ 
-                      padding: "14px 24px", 
-                      background: palette.text, 
-                      border: "1.5px solid " + palette.border, 
-                      borderRadius: 6, 
-                      color: palette.bg, 
-                      ...mono, 
-                      fontSize: 13, 
-                      cursor: "pointer", 
-                      transition: "all 0.2s" 
-                    }}
-                  >
-                    {copyState === "copied" ? "COPIED //" : "COPY OUTPUT"}
-                  </button>
+                  {result.jargon.length > 0 && (
+                    <div className="flagged">
+                      <p className="tlabel">Phrases doing the hiding</p>
+                      <p>{result.jargon.map((j, i) => <span key={i}>{j}</span>)}</p>
+                    </div>
+                  )}
+                  {result.note && <p className="note">{result.note}</p>}
+                  <div className="actions">
+                    <button className="ghost" onClick={copy}>{copied ? "Copied" : "Copy translation"}</button>
+                  </div>
                 </div>
+              )}
+            </div>
+          </div>
+        </section>
 
-                {output.jargon?.length > 0 && (
-                  <div>
-                    <div style={{ ...mono, fontSize: 11, color: palette.muted, textTransform: "uppercase", marginBottom: 16 }}>Purged Linguistic Inflations</div>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-                      {output.jargon.map((j, i) => (
-                        <span key={i} style={{ padding: "8px 16px", background: "rgba(192, 57, 43, 0.1)", color: "#C0392B", borderRadius: 8, fontSize: 13, ...mono, border: "1px solid rgba(192, 57, 43, 0.2)", textDecoration: "line-through" }}>
-                          {j}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
+        {/* 2. Scroll-lit sentence */}
+        <section className="sheet say" id="say" ref={sayRef}>
+          <div className="say-stage">
+            <p className="lit">
+              {litWords.map((w, i) => (
+                <span key={i} className="w" ref={(el) => (wordRefs.current[i] = el)}>{w}{" "}</span>
+              ))}
+            </p>
+          </div>
+        </section>
+
+        {/* 3. How it works */}
+        <section className="sheet how" id="how">
+          <div className="wrap">
+            <p className="eyebrow">How it works</p>
+            <h2>Three steps. About ten seconds.</h2>
+            <div className="steps">
+              <article><span>1</span><h3>Paste it</h3><p>A post, an email, a job ad. Up to 2,000 characters.</p></article>
+              <article><span>2</span><h3>Pick how blunt</h3><p>Five settings, from kind to withering.</p></article>
+              <article><span>3</span><h3>Read what they meant</h3><p>You get the plain version, a jargon score, and the exact phrases that did the hiding.</p></article>
+            </div>
+          </div>
+        </section>
+
+        {/* 4. Five levels */}
+        <section className="sheet levels" id="levels" ref={levelsRef}>
+          <div className="levels-stage">
+            <div className="wrap">
+              <p className="eyebrow">Five levels</p>
+              <h2>Same sentence. Five levels of honesty.</h2>
+              <blockquote className="src">“We’re realigning our talent pipeline to unlock long-term value.”</blockquote>
+              <div className="dial" aria-hidden="true">
+                {TONES.map((t, i) => <i key={t} className={i <= level ? "on" : ""} />)}
               </div>
-            ) : (
-              /* Empty State */
-              <div style={{ flex: 1, borderRadius: 16, border: "1.5px dashed " + palette.border, display: "flex", flexDirection: "column", padding: 48, background: "rgba(255,255,255,0.2)", backdropFilter: "blur(12px)" }}>
-                {loading ? (
-                  <div style={{ margin: "auto", textAlign: "center" }}>
-                    <div style={{ width: 40, height: 40, border: "3px solid " + palette.border, borderTopColor: palette.accent, borderRadius: "50%", animation: "spin 1s linear infinite", margin: "0 auto 24px" }} />
-                    <p style={{ fontSize: 14, ...mono, color: palette.muted, textTransform: "uppercase", letterSpacing: "0.1em" }}>Analyzing Speech Matrix...</p>
+              <p className="lvl-name">{TONES[shownLevel]}</p>
+              <p className={"lvl-out" + (swap ? " swap" : "")}>{LEVELS[shownLevel]}</p>
+              <p className="lvl-hint">Keep scrolling</p>
+            </div>
+          </div>
+          <ol className="levels-static">
+            {TONES.map((t, i) => <li key={t}><b>{t}</b> {LEVELS[i]}</li>)}
+          </ol>
+        </section>
+
+        {/* 5. The Bullpen */}
+        <section className="sheet bullpen" id="bullpen">
+          <div className="wrap">
+            <p className="eyebrow">The Bullpen</p>
+            <h2>Translations worth reading twice.</h2>
+            <p className="lede">Three picks from the editor, then anything you translate here. Your own list stays in this browser and nowhere else.</p>
+            <ul className="pen">
+              {pen.map((p, i) => (
+                <li
+                  key={i}
+                  tabIndex={0}
+                  onClick={() => loadFromPen(p)}
+                  onKeyDown={(e) => { if (e.key === "Enter") loadFromPen(p); }}
+                >
+                  <p className="from">“{short(p.from, 120)}”</p>
+                  <p className="to">{short(p.to, 140)}</p>
+                  <div className="meta">
+                    {p.pick && <span className="tag">Editor’s pick</span>}
+                    <b>{p.score}</b>{p.tone}
                   </div>
-                ) : (
-                  <>
-                    <h3 style={{ fontSize: 14, ...mono, textTransform: "uppercase", letterSpacing: "0.15em", color: palette.text, marginBottom: 32 }}>Engine Diagnostics Protocol</h3>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
-                      {[
-                        ["01 /", "Isolate Context Layer", "Drop messy organizational copy, performance alignment reports, or abstract LinkedIn communications into the frame."],
-                        ["02 /", "Calibrate Friction Level", "Toggle through our scaling system. Move from nice translation profiles directly up into high-intensity logical reductions."],
-                        ["03 /", "Deconstruct Speak Elements", "Extract plain text representations immediately. Isolate dense structural bloat with full numerical score data."]
-                      ].map(([step, title, desc], i) => (
-                        <Reveal key={i} delay={i * 0.12} y={18}>
-                          <div style={{ display: "grid", gridTemplateColumns: "60px 1fr", gap: 16 }}>
-                            <span style={{ ...mono, color: palette.accent, fontSize: 14, fontWeight: 500 }}>{step}</span>
-                            <div>
-                              <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 6, letterSpacing: "-0.01em" }}>{title}</div>
-                              <div style={{ color: palette.muted, fontSize: 14, lineHeight: 1.5 }}>{desc}</div>
-                            </div>
-                          </div>
-                        </Reveal>
-                      ))}
-                    </div>
-                  </>
-                )}
-              </div>
+                </li>
+              ))}
+            </ul>
+            {mine.length > 0 && (
+              <button className="ghost" id="clearPen" onClick={() => saveMine([])}>Clear my translations</button>
             )}
           </div>
-          </Reveal>
-        </div>
-      </main>
+        </section>
 
-      {/* Red Thread: Dimension Explanations */}
-      <section style={{ maxWidth: "860px", margin: "0 auto", padding: "48px 20px" }}>
-        <div style={{ ...mono, fontSize: "10px", letterSpacing: "0.12em", textTransform: "uppercase", color: palette.accent, marginBottom: 20 }}>
-          Corporate Bullshit Receptivity Scale — Four Dimensions
-        </div>
-        <div className="dimensions-grid" style={{ display: "grid", gridTemplateColumns: "1fr", gap: 16 }}>
-          {DIMENSIONS.map((dim, i) => (
-            <Reveal key={dim.key} delay={i * 0.08}>
-              <div style={{ borderTop: `3px solid ${dim.color}`, paddingTop: 16 }}>
-                <div style={{ ...mono, fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.08em", color: palette.muted, marginBottom: 8 }}>
-                  {dim.name}
-                </div>
-                <div style={{ fontSize: 13, color: palette.text, lineHeight: 1.5, fontWeight: 500 }}>
-                  {dim.desc}
-                </div>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </section>
-
-      {/* BULLPEN */}
-      <section id="bullpen" style={{ maxWidth: "1400px", margin: "0 auto", padding: "48px 20px" }}>
-        <Reveal>
-        <div className="flex-row-mobile" style={{ display: "flex", justifyContent: "space-between", marginBottom: 24, alignItems: "center", flexDirection: "column", gap: 16 }}>
-          <div>
-            <h2 style={{ ...syne, fontSize: 18, fontWeight: 800, letterSpacing: "-0.5px", marginBottom: 4 }}>The Bullpen</h2>
-            <p style={{ fontSize: 13, color: palette.muted }}>Linguistic ledger tracking audited pipeline corporate updates</p>
-          </div>
-          {history.length > 0 && <button onClick={() => setHistory([])} style={{ background: "none", border: "none", ...mono, fontSize: 11, color: "#C0392B", cursor: "pointer", fontWeight: 600, padding: 12, minWidth: 44, minHeight: 44 }}>Purge Records [×]</button>}
-        </div>
-        </Reveal>
-
-        {/* CBRS Diagnostic - Shows after 5 translations */}
-        {showCBRS && cbrs && (
-          <div style={{ marginBottom: 32, padding: 24, background: "rgba(255,255,255,0.3)", backdropFilter: "blur(12px)", borderRadius: 16, border: "1.5px solid " + palette.border }}>
-            <div style={{ marginBottom: 24, paddingBottom: 16, borderBottom: "1px solid rgba(0,0,0,0.1)" }}>
-              <div style={{ ...mono, fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: palette.accent, marginBottom: 8 }}>
-                Corporate Bullshit Receptivity Scale
-              </div>
-              <div style={{ fontSize: 28, ...syne, fontWeight: 800, color: palette.text, lineHeight: 1, marginBottom: 8 }}>
-                {cbrs.archetype}
-              </div>
-              <div style={{ fontSize: 14, color: palette.muted, lineHeight: 1.5 }}>
-                {cbrs.archetypeDesc}
-              </div>
+        {/* 6. FAQ */}
+        <section className="sheet faq" id="faq">
+          <div className="wrap faq-grid">
+            <div>
+              <p className="eyebrow">Straight answers</p>
+              <h2>Questions people ask.</h2>
             </div>
-
-            <div className="cbrs-grid" style={{ display: "grid", gridTemplateColumns: "1fr", gap: 16 }}>
-              {DIMENSIONS.map((dim) => (
-                <div key={dim.key} style={{ padding: 16, background: "rgba(255,255,255,0.3)", borderRadius: 8 }}>
-                  <div style={{ fontSize: 28, ...syne, fontWeight: 800, color: dim.color, lineHeight: 1, marginBottom: 4 }}>
-                    {cbrs[dim.key]}
-                  </div>
-                  <div style={{ ...mono, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.08em", color: palette.muted, marginBottom: 6 }}>
-                    {dim.name}
-                  </div>
-                  <div style={{ fontSize: 11, color: palette.muted, lineHeight: 1.4 }}>
-                    {dim.desc}
-                  </div>
-                </div>
+            <div className="qa">
+              {FAQS.map(([q, a]) => (
+                <details key={q}><summary>{q}</summary><p>{a}</p></details>
               ))}
             </div>
-
-            <div className="flex-row-mobile" style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid rgba(0,0,0,0.1)", display: "flex", justifyContent: "space-between", alignItems: "center", flexDirection: "column", gap: 16 }}>
-              <div style={{ fontSize: 13, color: palette.muted }}>
-                Composite Score: <span style={{ color: palette.text, fontWeight: 700 }}>{cbrs.composite}/100</span>
-              </div>
-              <button 
-                onClick={() => {
-                  const text = `I took the BullShift Corporate Bullshit Receptivity Test and scored ${cbrs.composite}/100. I'm a ${cbrs.archetype}. ${cbrs.archetypeDesc}`;
-                  navigator.clipboard.writeText(text);
-                  alert('Archetype copied to clipboard! Share it on LinkedIn for maximum irony.');
-                }}
-                style={{ padding: "12px 20px", background: palette.accent, color: palette.text, border: "none", borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: "pointer", ...mono, minWidth: 44, minHeight: 44 }}
-              >
-                Share Archetype
-              </button>
-            </div>
           </div>
-        )}
+        </section>
+      </main>
 
-        {/* History Grid */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 0, border: "1.5px solid " + palette.border, borderRadius: 8, overflow: "hidden" }}>
-          {history.map((item, i) => (
-            <motion.div
-              key={item.id}
-              layout
-              initial={{ opacity: 0, y: -12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: Math.min(i, 4) * 0.05, ease: [0.16, 1, 0.3, 1] }}
-              className="history-row"
-              style={{ display: "grid", gridTemplateColumns: "1fr", gap: 16, padding: 20, borderBottom: "1.5px solid " + palette.border, ...(item === history[history.length - 1] ? { borderBottom: "none" } : {}) }}
-            >
-              <div>
-                <div style={{ fontSize: 12, color: palette.muted }}>{item.time}</div>
-                <div style={{ color: palette.text, fontWeight: 700, marginTop: 2, fontSize: 13 }}>{item.tone}</div>
-              </div>
-              <div style={{ fontSize: 14, color: palette.muted, lineHeight: 1.5, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.original}</div>
-              <div style={{ fontSize: 14, color: palette.text, fontWeight: 500, lineHeight: 1.5, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.translation}</div>
-              <div style={{ display: "flex", alignItems: "center", gap: 12, justifyContent: "flex-end" }}>
-                <span style={{ ...mono, fontSize: 12, fontWeight: 700, background: getBadge(item.score).bg, color: getBadge(item.score).color, padding: "4px 10px", borderRadius: 6 }}>{item.score} IDX</span>
-                <button onClick={() => { setInput(item.original); setOutput(null); window.scrollTo({ top: 0, behavior: "smooth" }); }} style={{ border: "none", background: "none", cursor: "pointer", fontSize: 14, padding: 12, minWidth: 44, minHeight: 44 }}>↺</button>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      <Footer palette={palette} />
-
-      <style>{`
-        @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        
-        @media (max-width: 767px) {
-          .nav-link { display: none !important; }
-          .workspace-grid { grid-template-columns: 1fr !important; }
-          .dimensions-grid { grid-template-columns: 1fr !important; }
-          .cbrs-grid { grid-template-columns: 1fr !important; }
-          .history-row { grid-template-columns: 1fr !important; }
-          .flex-row-mobile { flex-direction: column !important; }
-        }
-        
-        @media (min-width: 768px) {
-          .nav-link { display: block !important; }
-          .workspace-grid { grid-template-columns: 1fr 1fr !important; gap: 32px !important; }
-          .dimensions-grid { grid-template-columns: repeat(4, 1fr) !important; gap: 24px !important; }
-          .cbrs-grid { grid-template-columns: repeat(4, 1fr) !important; }
-          .history-row { grid-template-columns: 100px 1fr 1fr 120px !important; gap: 0 !important; }
-          .flex-row-mobile { flex-direction: row !important; }
-        }
-      `}</style>
-    </div>
+      <Footer />
+    </>
   );
 }
