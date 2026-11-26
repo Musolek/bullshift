@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import HeroStage from "../components/HeroStage";
 import "./home.css";
 
 const TONES = ["Diplomatic", "Measured", "Balanced", "Blunt", "Obliterate"];
@@ -182,6 +183,7 @@ export default function Home() {
         {/* 1. Hero and tool */}
         <section className="hero" id="top" ref={topRef}>
           <div className="wrap hero-grid">
+            <div className="hero-main">
             <div className="hero-copy">
               <p className="eyebrow">A LinkedIn-to-English dictionary</p>
               <h1>Paste the jargon. Get the <mark>truth.</mark></h1>
@@ -247,6 +249,8 @@ export default function Home() {
                 </div>
               )}
             </div>
+            </div>
+            <HeroStage tone={tone} setTone={setTone} text={text} result={result} />
           </div>
         </section>
 
