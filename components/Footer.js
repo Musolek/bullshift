@@ -5,7 +5,7 @@ export default function Footer() {
     <footer className="sheet foot">
       <div className="wrap foot-in">
         <p className="foot-brand">
-          <img src="/logo.png" alt="" width="36" height="36" />
+          <img src="/logo.png" alt="BullShift logo" width="36" height="36" />
           <b>BullShift</b>
         </p>
         <p className="foot-line">Paste the jargon. Get the truth.</p>
