@@ -199,7 +199,7 @@ export default function Home() {
     <>
       <div className="curtain" aria-hidden="true">
         <i /><i /><i />
-        <span><img src="/logo.png" alt="" />BullShift</span>
+        <span><img src="/logo.png" alt="BullShift logo" />BullShift</span>
       </div>
 
       <Header />
@@ -220,6 +220,7 @@ export default function Home() {
                   </button>
                 ))}
               </p>
+              <a className="jump" href="#tool">Jump to the tool</a>
             </div>
 
             <div className="tool" id="tool">
